@@ -1,16 +1,17 @@
 <script lang="ts">
-	import { SocialLink, AnimatedSection } from '$lib/components';
+	import { SocialLink, AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { ANIMATION_DELAY, CV_INFO, SOCIAL_LINKS } from '$lib/constants';
 </script>
 
 <div class="relative h-screen overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
+	<InteractiveBackground enableStars={true} enableClouds={false} enableParticles={true} enableAurora={true} />
 	<main class="relative z-10 flex flex-col items-center justify-center h-screen px-6">
 		<div class="max-w-2xl w-full space-y-8 content-wrapper">
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE} class="space-y-6 text-center">
-				<h1 class="text-6xl md:text-7xl font-bold text-muted-900 title-typewriter">
-					[ivan iliev]
-				</h1>
+			<h1 class="text-6xl md:text-7xl font-bold title-typewriter">
+				[ivan iliev]
+			</h1>
 			</AnimatedSection>
 
 			<AnimatedSection delay={ANIMATION_DELAY.SUBTITLE} class="text-center">
