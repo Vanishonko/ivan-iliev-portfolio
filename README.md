@@ -6,9 +6,10 @@ Just a small, clean portfolio website built with SvelteKit for myself. Might gro
 - SvelteKit
 - TypeScript
 - Vite
+- Tailwind
 
 ## Deployment
-The `main` branch is used to deploy the site using Vercel at (ivaniliev.com)[https://www.ivaniliev.com], whereas the `develop` branch is used for the development.
+The `main` branch is used to deploy the site using Vercel at [ivaniliev.com](https://www.ivaniliev.online), whereas the `develop` branch is used for the development.
 
 ## Running locally
 ```bash
@@ -17,4 +18,4 @@ npm run dev
 ```
 ## Live version
 
-Will be added soon hopefully :)
+[Here.](https://www.ivaniliev.online)
