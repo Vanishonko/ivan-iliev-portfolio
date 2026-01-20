@@ -1,19 +1,15 @@
 <script lang="ts">
-	import { ANIMATION_DURATION } from '$lib/constants';
-
-	interface Props {
+	let {
+		delay = '0s',
+		duration = '1s',
+		class: className = '',
+		children
+	}: {
 		delay?: string;
 		duration?: string;
 		class?: string;
 		children: import('svelte').Snippet;
-	}
-
-	let {
-		delay = '0s',
-		duration = ANIMATION_DURATION.NORMAL,
-		class: className = '',
-		children
-	}: Props = $props();
+	} = $props();
 </script>
 
 <div

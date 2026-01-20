@@ -1,22 +1,26 @@
 <script lang="ts">
 	import { SocialLink, AnimatedSection, InteractiveBackground } from '$lib/components';
-	import { ANIMATION_DELAY, CV_INFO, SOCIAL_LINKS } from '$lib/constants';
+	import { ANIMATION_DELAY, CV_INFO, PAGE_SUBTITLE, PAGE_TITLE, SOCIAL_LINKS } from '$lib/constants';
+
+	const titleChars = PAGE_TITLE.split('');
 </script>
 
 <div class="relative h-screen overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
-	<InteractiveBackground enableStars={true} enableClouds={false} enableParticles={true} enableAurora={true} />
+	<InteractiveBackground enableStars enableClouds enableAurora />
 	<main class="relative z-10 flex flex-col items-center justify-center h-screen px-6">
-		<div class="max-w-2xl w-full space-y-8 content-wrapper">
+		<div class="max-w-2xl w-full space-y-8 fade-in">
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE} class="space-y-6 text-center">
-			<h1 class="text-6xl md:text-7xl font-bold title-typewriter">
-				[ivan iliev]
-			</h1>
+				<h1 class="text-4xl md:text-5xl font-bold title-typewriter">
+					{#each titleChars as char, i (i)}
+						<span class="title-char">{char === ' ' ? '\u00A0' : char}</span>
+					{/each}
+				</h1>
 			</AnimatedSection>
 
 			<AnimatedSection delay={ANIMATION_DELAY.SUBTITLE} class="text-center">
-				<p class="text-xl md:text-2xl text-muted-600 font-light">
-					ICT Student at HZ University of Applied Sciences
+				<p class="text-xl md:text-2xl text-muted-50 font-light subtitle-text">
+					{PAGE_SUBTITLE}
 				</p>
 			</AnimatedSection>
 
@@ -45,7 +49,7 @@
 				<nav class="flex justify-center" aria-label="Navigation">
 					<a
 						href="/projects"
-						class="projects-link text-muted-600 hover:text-muted-900 transition-all duration-300 text-lg font-light relative inline-block focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2 rounded"
+						class="projects-link text-muted-50 hover:text-white transition-all duration-300 text-lg font-light relative inline-block focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2 rounded link-text"
 						aria-label="View portfolio projects"
 					>
 						<span>view projects →</span>
@@ -55,9 +59,3 @@
 		</div>
 	</main>
 </div>
-
-<style>
-	.content-wrapper {
-		animation: fadeIn 1.2s ease-out;
-	}
-</style>
