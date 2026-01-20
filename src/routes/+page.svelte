@@ -2,24 +2,32 @@
 	import { SocialLink, AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { ANIMATION_DELAY, CV_INFO, PAGE_SUBTITLE, PAGE_TITLE, SOCIAL_LINKS } from '$lib/constants';
 
-	const titleChars = PAGE_TITLE.split('');
+	const titleWords = PAGE_TITLE.split(' ');
+	const titleWordChars = titleWords.map((word) => word.split(''));
+	
 </script>
 
-<div class="relative h-screen overflow-hidden">
+<div class="relative min-h-[100sh] overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
 	<InteractiveBackground enableStars enableClouds enableAurora />
-	<main class="relative z-10 flex flex-col items-center justify-center h-screen px-6">
-		<div class="max-w-2xl w-full space-y-8 fade-in">
+	<main class="relative z-10 flex flex-col items-center justify-center min-h-[100svh] px-4 sm:px-6">
+		<div class="max-w-2xl w-full space-y-6 sm:space-y-8 fade-in">
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE} class="space-y-6 text-center">
-				<h1 class="text-4xl md:text-5xl font-bold title-typewriter">
-					{#each titleChars as char, i (i)}
-						<span class="title-char">{char === ' ' ? '\u00A0' : char}</span>
-					{/each}
+				<h1 class="text-[clamp(1.65rem,8.5vw,3rem)] font-bold title-typewriter leading-[1.05] text-center">
+					<span class="inline-flex flex-wrap justify-center gap-x-3 gap-y-2">
+						{#each titleWordChars as wordChars, wi (wi)}
+							<span class="inline-flex">
+								{#each wordChars as char, ci (`${wi}-${ci}`)}
+									<span class="title-char">{char}</span>
+								{/each}
+							</span>
+						{/each}
+					</span>
 				</h1>
 			</AnimatedSection>
 
 			<AnimatedSection delay={ANIMATION_DELAY.SUBTITLE} class="text-center">
-				<p class="text-xl md:text-2xl text-muted-50 font-light subtitle-text">
+				<p class="text-base sm:text-xl md:text-2xl text-muted-50 font-light subtitle-text">
 					{PAGE_SUBTITLE}
 				</p>
 			</AnimatedSection>
@@ -39,17 +47,17 @@
 				</a>
 			</AnimatedSection>
 
-			<AnimatedSection delay={ANIMATION_DELAY.SOCIAL} class="flex justify-center gap-8 pt-4">
+			<AnimatedSection delay={ANIMATION_DELAY.SOCIAL} class="flex justify-center gap-6 sm:gap-8 pt-4">
 				{#each SOCIAL_LINKS as link}
 					<SocialLink href={link.href} label={link.label} icon={link.icon} />
 				{/each}
 			</AnimatedSection>
 
-			<AnimatedSection delay={ANIMATION_DELAY.PROJECTS} class="flex justify-center pt-8">
+			<AnimatedSection delay={ANIMATION_DELAY.PROJECTS} class="flex justify-center pt-6 sm:pt-8">
 				<nav class="flex justify-center" aria-label="Navigation">
 					<a
 						href="/projects"
-						class="projects-link text-muted-50 hover:text-white transition-all duration-300 text-lg font-light relative inline-block focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2 rounded link-text"
+						class="projects-link text-muted-50 hover:text-white transition-all duration-300 text-base sm:text-lg font-light relative inline-block focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2 rounded link-text"
 						aria-label="View portfolio projects"
 					>
 						<span>view projects →</span>
