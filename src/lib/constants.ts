@@ -47,7 +47,7 @@ export const INTERACTIVE_BACKGROUND = {
 	initDelayMs: 100,
 
 	parallax: {
-		maxOffsetPx: 18,
+		maxOffsetPx: 25,
 		ease: 0.06,
 		depth: {
 			stars: 1.0,
