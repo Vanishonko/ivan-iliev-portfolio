@@ -40,7 +40,7 @@
 		{
 			id: 'portfolio',
 			title: 'ivaniliev.online',
-			subtitle: 'This website',
+			subtitle: 'this website',
 			tags: ['SvelteKit', 'Tailwind', 'Responsive', 'Animation'],
 			description: [
 				'A minimalist galaxy-themed portfolio built with SvelteKit + Tailwind, with a custom interactive background (stars, constellations, auroras, clouds).'
@@ -96,7 +96,7 @@
 										<div class="flex items-center justify-center sm:justify-start gap-2">
 											<h2 class="text-xl sm:text-2xl font-semibold text-muted-50">{project.title}</h2>
 										</div>
-										<p class="text-muted-50/70 text-sm">{project.subtitle}</p>
+										<p class="text-muted-50/70 text-sm text-center sm:text-left">{project.subtitle}</p>
 									</div>
 
 									<div class="flex flex-wrap justify-center sm:justify-end gap-2">
