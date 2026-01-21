@@ -7,7 +7,7 @@
 	
 </script>
 
-<div class="relative min-h-[100sh] overflow-hidden">
+<div class="relative min-h-[100svh] overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
 	<InteractiveBackground enableStars enableClouds enableAurora />
 	<main class="relative z-10 flex flex-col items-center justify-center min-h-[100svh] px-4 sm:px-6">
