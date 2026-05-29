@@ -124,7 +124,7 @@
 	<meta property="og:description" content="A showcase of my recent projects including BeaverWize, Laravel web applications, and this portfolio." />
 </svelte:head>
 
-<svelte:window on:keydown={handleKeyDown} />
+<svelte:window onkeydown={handleKeyDown} />
 
 <div class="relative min-h-[100svh] overflow-x-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
@@ -189,7 +189,7 @@
 										{#each project.galleryImages as image, idx (image)}
 											<button
 												type="button"
-												on:click={() => openGallery(project.galleryImages ?? [], idx, project.galleryLabel)}
+												onclick={() => openGallery(project.galleryImages ?? [], idx, project.galleryLabel)}
 												class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
 												aria-label={`Open screenshot ${idx + 1} for ${project.title}`}
 											>
@@ -247,14 +247,14 @@
 {#if isGalleryOpen}
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
-		on:click={closeGallery}
+		onclick={closeGallery}
 		role="dialog"
 		aria-modal="true"
 		aria-label={galleryLabel}
 	>
 		<button
 			type="button"
-			on:click={closeGallery}
+			onclick={closeGallery}
 			class="absolute right-4 top-4 rounded-lg bg-white/10 p-2 text-white transition-colors duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50 sm:right-6 sm:top-6"
 			aria-label="Close gallery"
 		>
@@ -265,11 +265,11 @@
 
 		<div
 			class="relative flex w-full max-w-5xl items-center justify-center gap-3"
-			on:click|stopPropagation
+			onclick={(e) => e.stopPropagation()}
 		>
 			<button
 				type="button"
-				on:click={showPreviousImage}
+				onclick={showPreviousImage}
 				class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
 				aria-label="Previous image"
 			>
@@ -291,7 +291,7 @@
 
 			<button
 				type="button"
-				on:click={showNextImage}
+				onclick={showNextImage}
 				class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition-colors duration-300 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/50"
 				aria-label="Next image"
 			>
