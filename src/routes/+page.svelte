@@ -7,6 +7,10 @@
 	
 </script>
 
+<svelte:head>
+	<title>Ivan Iliev | Portfolio</title>
+</svelte:head>
+
 <div class="relative min-h-[100svh] overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
 	<InteractiveBackground enableStars enableClouds enableAurora />
