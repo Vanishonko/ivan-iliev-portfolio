@@ -9,6 +9,8 @@
 
 	const openInNewTab = (link: ProjectLink) => link.external ?? link.href.startsWith('http');
 
+	const isVideo = (path: string) => path.endsWith('.webm');
+
 	const openGallery = (images: string[], label = 'Project gallery') => {
 		galleryImages = images;
 		galleryLabel = label;
@@ -94,11 +96,22 @@
 												class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
 												aria-label={`Open screenshot ${idx + 1} for ${project.title}`}
 											>
+											{#if isVideo(image)}
+												<video
+													src={image}
+													class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+													muted
+													playsinline
+													autoplay
+													loop
+												></video>
+											{:else}
 												<img
 													src={image}
 													alt={`${project.title} screenshot ${idx + 1}`}
 													class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
 												/>
+											{/if}
 												<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
 											</button>
 										{/each}
