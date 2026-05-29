@@ -11,11 +11,13 @@ export const projects = [
 			'The concept also focused on cooperation with sustainable brands, allowing users to exchange in-game currency for real discounts and promotions. The application featured multiple water-measuring activities, statistics, and data visualizations, as well as an achievement system that rewarded users with items to equip on their in-game character. In addition, it included a community feature that allowed users to collectively track and contribute to water-saving goals. On the backend, the system was built around individual microservices that communicated with the front end through an API gateway.'
 		],
 		galleryImages: [
-			'/images/placeholder_image.png',
-			'/images/placeholder_image2.png',
-			'/images/placeholder_image3.png',
-			'/images/placeholder_image4.png',
-			'/images/placeholder_image5.png'
+			'/images/questionnaire.png',
+			'/images/sink.webm',
+			'/images/shower.png',
+			'/images/showerstat.png',
+			'/images/gardening.png',
+			'/images/inventory.png',
+			'/images/rewards.png',
 		],
 		galleryLabel: 'BeaverWize screenshot gallery'
 	},

@@ -88,8 +88,8 @@
 							{#if project.galleryImages?.length}
 								<div class="mt-6 space-y-3">
 									<p class="text-sm text-muted-50/70">Selected screenshots</p>
-									<div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-										{#each project.galleryImages as image, idx (image)}
+									<div class="grid grid-cols-3 gap-3">
+										{#each project.galleryImages.slice(0, 3) as image, idx (image)}
 											<button
 												type="button"
 												onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
@@ -113,6 +113,11 @@
 												/>
 											{/if}
 												<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
+												{#if idx === 2 && project.galleryImages.length > 3}
+													<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+														<span class="text-2xl font-bold text-white">+{project.galleryImages.length - 3}</span>
+													</div>
+												{/if}
 											</button>
 										{/each}
 									</div>
