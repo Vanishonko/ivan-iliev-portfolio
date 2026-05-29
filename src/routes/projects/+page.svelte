@@ -117,6 +117,13 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Projects | Ivan Iliev</title>
+	<meta name="description" content="A showcase of my recent projects including BeaverWize, Laravel web applications, and this portfolio." />
+	<meta property="og:title" content="Projects | Ivan Iliev" />
+	<meta property="og:description" content="A showcase of my recent projects including BeaverWize, Laravel web applications, and this portfolio." />
+</svelte:head>
+
 <svelte:window on:keydown={handleKeyDown} />
 
 <div class="relative min-h-[100svh] overflow-x-hidden">

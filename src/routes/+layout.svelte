@@ -7,6 +7,11 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
+	<meta name="description" content="ICT Student at HZ University of Applied Sciences. Portfolio showcasing projects in SvelteKit, Laravel, and more." />
+	<meta property="og:title" content="Ivan Iliev | Portfolio" />
+	<meta property="og:description" content="ICT Student at HZ University of Applied Sciences. Portfolio showcasing projects in SvelteKit, Laravel, and more." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://www.ivaniliev.online" />
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link
