@@ -54,6 +54,7 @@
 		role="dialog"
 		aria-modal="true"
 		aria-label={label}
+		tabindex="-1"
 	>
 		<button
 			type="button"
@@ -69,6 +70,7 @@
 		<div
 			class="relative flex w-full max-w-5xl items-center justify-center gap-3"
 			onclick={(e) => e.stopPropagation()}
+			role="presentation"
 		>
 			<button
 				type="button"
