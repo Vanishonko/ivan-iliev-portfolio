@@ -40,6 +40,8 @@
 		setBodyScroll(open);
 	});
 
+	const isVideo = (path: string) => path.endsWith('.webm');
+
 	onDestroy(() => {
 		setBodyScroll(false);
 	});
@@ -84,11 +86,22 @@
 			</button>
 
 			<div class="relative flex-1 overflow-hidden rounded-xl border border-white/10 bg-white/5">
-				<img
-					src={images[currentIndex]}
-					alt={`Gallery image ${currentIndex + 1}`}
-					class="max-h-[85vh] w-full object-contain"
-				/>
+				{#if isVideo(images[currentIndex])}
+					<video
+						src={images[currentIndex]}
+						class="max-h-[85vh] w-full object-contain"
+						autoplay
+						loop
+						muted
+						playsinline
+					></video>
+				{:else}
+					<img
+						src={images[currentIndex]}
+						alt={`Gallery image ${currentIndex + 1}`}
+						class="max-h-[85vh] w-full object-contain"
+					/>
+				{/if}
 				<div class="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/55 px-3 py-1 text-sm text-white">
 					{currentIndex + 1} / {images.length}
 				</div>
