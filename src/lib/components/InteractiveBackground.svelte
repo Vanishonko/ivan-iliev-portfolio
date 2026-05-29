@@ -82,6 +82,9 @@
 	let rafId: number | null = null;
 	let parallax = $state({ x: 0, y: 0 });
 	let parallaxTarget = $state({ x: 0, y: 0 });
+	let paused = $state(false);
+	let frameCount = 0;
+	let prefersReducedMotion = false;
 
 	const rand = (min: number, max: number) => min + Math.random() * (max - min);
 	const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
@@ -322,15 +325,19 @@
 	};
 
 	const tick = () => {
-		if (!container) return;
+		if (!container || paused) {
+			rafId = requestAnimationFrame(tick);
+			return;
+		}
 
 		updateParallax();
 		const now = performance.now();
 		const { w, h } = getBounds();
+		frameCount++;
 
 		if (enableStars) {
 			updateStars(w, h, now);
-			updateConnections(now);
+			if (frameCount % 3 === 0) updateConnections(now);
 		}
 
 		if (enableParticles) updateParticles(w, h);
@@ -342,6 +349,10 @@
 	onMount(() => {
 		if (!browser) return;
 
+		const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+		prefersReducedMotion = mq.matches;
+		if (prefersReducedMotion) return;
+
 		const t = window.setTimeout(() => {
 			initScene();
 			tick();
@@ -350,9 +361,15 @@
 		const onResize = () => initScene();
 		window.addEventListener('resize', onResize, { passive: true });
 
+		const onVisibility = () => {
+			paused = document.hidden;
+		};
+		document.addEventListener('visibilitychange', onVisibility);
+
 		return () => {
 			clearTimeout(t);
 			window.removeEventListener('resize', onResize);
+			document.removeEventListener('visibilitychange', onVisibility);
 			if (rafId !== null) cancelAnimationFrame(rafId);
 		};
 	});
@@ -533,8 +550,7 @@
 		transition:
 			stroke-dasharray 0.1s ease,
 			opacity 0.2s ease;
-		filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.4))
-			drop-shadow(0 0 4px rgba(219, 39, 119, 0.3)) drop-shadow(0 0 6px rgba(168, 85, 247, 0.2));
+		filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.35));
 	}
 
 	.star {
@@ -548,10 +564,7 @@
 		border-radius: 50%;
 		transform: translate(-50%, -50%);
 		transition: opacity 0.3s ease;
-		box-shadow:
-			0 0 8px rgba(255, 255, 255, 0.9),
-			0 0 16px rgba(219, 39, 119, 0.3),
-			0 0 24px rgba(168, 85, 247, 0.2);
+		box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
 		pointer-events: none;
 	}
 
@@ -596,7 +609,6 @@
 		border-radius: 50%;
 		transform: translate(-50%, -50%);
 		pointer-events: none;
-		will-change: opacity, transform;
 		filter: blur(var(--p-blur, 2.5px));
 		background: radial-gradient(
 			circle,
@@ -605,8 +617,6 @@
 			var(--p-tint, rgba(168, 85, 247, 0.25)) 38%,
 			transparent 78%
 		);
-		box-shadow:
-			0 0 18px var(--p-tint, rgba(168, 85, 247, 0.25)),
-			0 0 32px var(--p-tint, rgba(168, 85, 247, 0.25));
+		box-shadow: 0 0 18px var(--p-tint, rgba(168, 85, 247, 0.25));
 	}
 </style>
