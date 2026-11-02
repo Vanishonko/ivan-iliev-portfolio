@@ -1,0 +1,120 @@
+{
+  "name": "Dewdrop Bend flora sprites",
+  "version": 1,
+  "artDirection": "docs/ART_DIRECTION.md",
+  "format": {
+    "type": "horizontal-sprite-sheet",
+    "scale": 1,
+    "background": "transparent, alpha 0 (no matte, no checker)",
+    "frameOrder": "left to right, frame 0 is the leftmost cell",
+    "lighting": "warm key from upper-right; leaf-dark / grass-deep shadows lean teal",
+    "paletteRule": "<=14 opaque colours per sheet, all from docs/ART_DIRECTION.md#world-palette"
+  },
+  "anchors": {
+    "bottom-centre": "place the cell so (x, y) sits on the ground line; the engine adds the contact shadow",
+    "centre": "top-view prop; (x, y) is the pad centre used for frog-hop targeting and ripples"
+  },
+  "sprites": {
+    "flowers": {
+      "file": "flowers.png",
+      "sidecar": "flowers.pixelart.json",
+      "cell": { "width": 15, "height": 25 },
+      "frameCount": 9,
+      "sheet": { "width": 135, "height": 25 },
+      "anchor": { "x": 7, "y": 24, "mode": "bottom-centre" },
+      "order": [
+        { "index": 0, "species": "poppy", "stage": "seed" },
+        { "index": 1, "species": "poppy", "stage": "sprout" },
+        { "index": 2, "species": "poppy", "stage": "bloom", "note": "blush-lit upper-right rim, poppy-shade lower-left, 1px top/bottom notches, ink capsule with amber seed-ring and gold anther specks" },
+        { "index": 3, "species": "cornflower", "stage": "seed" },
+        { "index": 4, "species": "cornflower", "stage": "sprout" },
+        { "index": 5, "species": "cornflower", "stage": "bloom", "note": "ragged floret rim, corn-shade core with cream floret tips on the lit side" },
+        { "index": 6, "species": "marsh-marigold", "stage": "seed" },
+        { "index": 7, "species": "marsh-marigold", "stage": "sprout" },
+        { "index": 8, "species": "marsh-marigold", "stage": "bloom", "note": "amber petal seams from the top notches, cream rim speculars, compact amber stamen cluster in a warm gold cup" }
+      ],
+      "colourCount": 14,
+      "palette": {
+        "#d9554d": "poppy",
+        "#a93b40": "poppy-shade",
+        "#e8a39d": "blush (poppy lit petal rim)",
+        "#7891db": "cornflower",
+        "#4e63a9": "corn-shade",
+        "#f1c75a": "gold",
+        "#d39140": "amber",
+        "#87b06a": "leaf",
+        "#b5d387": "leaf-high",
+        "#5f8953": "leaf-mid",
+        "#3e6447": "leaf-dark",
+        "#8b5d45": "shadow-warm",
+        "#f7eccf": "cream",
+        "#1c2928": "ink"
+      }
+    },
+    "lilypad": {
+      "file": "lilypad.png",
+      "sidecar": "lilypad.pixelart.json",
+      "cell": { "width": 30, "height": 15 },
+      "frameCount": 3,
+      "sheet": { "width": 90, "height": 15 },
+      "anchor": { "x": 15, "y": 7, "mode": "centre" },
+      "order": [
+        { "index": 0, "variant": "broad pad with a radial slit opening right, 3 veins" },
+        { "index": 1, "variant": "round pad, soft heart notch, two-petal cream lily bud with a blush seam over a leaf-dark calyx, 2 veins" },
+        { "index": 2, "variant": "heart pad with a narrow top slit, 1 vein" }
+      ],
+      "colourCount": 6,
+      "palette": {
+        "#5b9661": "lily",
+        "#8ebd71": "lily-light (rim and veins)",
+        "#5f8953": "leaf-mid (shaded rim)",
+        "#3e6447": "leaf-dark (underside rim)",
+        "#f7eccf": "cream",
+        "#e8a39d": "blush (bud petal seams)"
+      }
+    },
+    "reeds": {
+      "file": "reeds.png",
+      "sidecar": "reeds.pixelart.json",
+      "cell": { "width": 30, "height": 50 },
+      "frameCount": 2,
+      "sheet": { "width": 60, "height": 50 },
+      "anchor": { "x": 15, "y": 49, "mode": "bottom-centre" },
+      "order": [
+        { "index": 0, "wind": "calm" },
+        { "index": 1, "wind": "gust, cluster leaning right" }
+      ],
+      "colourCount": 7,
+      "palette": {
+        "#87b06a": "leaf",
+        "#b5d387": "leaf-high",
+        "#5f8953": "leaf-mid",
+        "#3e6447": "leaf-dark",
+        "#74513a": "bark",
+        "#a6764f": "bark-light",
+        "#4b362a": "bark-dark"
+      }
+    },
+    "grass": {
+      "file": "grass.png",
+      "sidecar": "grass.pixelart.json",
+      "cell": { "width": 20, "height": 15 },
+      "frameCount": 4,
+      "sheet": { "width": 80, "height": 15 },
+      "anchor": { "x": 10, "y": 14, "mode": "bottom-centre" },
+      "order": [
+        { "index": 0, "pose": "neutral" },
+        { "index": 1, "pose": "breeze, tips +1px right" },
+        { "index": 2, "pose": "gust, tips +2px right" },
+        { "index": 3, "pose": "return, tips -1px left" }
+      ],
+      "colourCount": 4,
+      "palette": {
+        "#87b06a": "leaf",
+        "#b5d387": "leaf-high",
+        "#5f8953": "leaf-mid",
+        "#3e6447": "leaf-dark"
+      }
+    }
+  }
+}

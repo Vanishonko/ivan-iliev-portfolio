@@ -6,7 +6,7 @@
 </script>
 
 <svelte:head>
-	<title>{$page.status === 404 ? 'Page Not Found' : 'Error'} | Ivan Iliev</title>
+	<title>{$page.status === 404 ? 'page not found' : 'error'} | ivan iliev</title>
 	<meta name="description" content="The page you are looking for does not exist." />
 </svelte:head>
 

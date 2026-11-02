@@ -11,6 +11,7 @@ export type Project = {
 	tags: string[];
 	description: string[];
 	links?: ProjectLink[];
+	poster?: string;
 	galleryImages?: string[];
 	galleryAspect?: 'portrait' | 'wide';
 	galleryLabel?: string;

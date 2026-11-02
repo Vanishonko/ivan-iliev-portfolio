@@ -1,0 +1,114 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "group": "wingsfry",
+  "sheetLayout": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 14,
+  "facingNote": "Mixed by design: the butterfly is a top view facing UP (rotate to heading); the tadpole is a side view facing RIGHT (flip horizontally).",
+  "sprites": {
+    "butterfly": {
+      "file": "butterfly.png",
+      "sidecar": "butterfly.pixelart.json",
+      "cell": {
+        "w": 14,
+        "h": 11
+      },
+      "sheet": {
+        "w": 56,
+        "h": 11
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "wings-open",
+        "wings-mid-closing",
+        "wings-closed",
+        "wings-mid-opening"
+      ],
+      "order": [0, 1, 2, 3],
+      "loop": "0 -> 1 -> 2 -> 3 -> 0",
+      "fps": 8,
+      "facing": "up",
+      "flip": "none",
+      "rotateToHeading": true,
+      "drawAnchor": "center",
+      "hoverAnchor": {
+        "x": 7,
+        "y": 5.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "bodyCentre": {
+        "x": 7,
+        "y": 5.5
+      },
+      "bodyStable": true,
+      "wingSpans": [12, 10, 8, 10],
+      "opaqueColourCount": 4,
+      "paletteNames": [
+        "ink",
+        "butterfly-orange",
+        "butterfly-cream",
+        "poppy-shade"
+      ],
+      "litEdge": "upper-right",
+      "notes": "Top view facing up. Body, head, eyes and antennae are mirror-symmetric about x=6.5 and byte-identical in all four frames; the wing rims are deliberately asymmetric for the upper-right key light: the right wing's lit top/outer edges are unrimmed so butterfly-cream meets the background on the forewing and orange meets it on the hindwing, while the shadow-side left wing keeps the full ink rim (outline coverage 0.65, was 0.84). Thin ink body on columns 6-7 from the head (row 2) to the abdomen tip (row 8); two 2px antennae with clubs at rows 0-1; cream eye highlights at (5,2)/(8,2). Orange wings with a butterfly-cream crescent inside each forewing and a poppy-shade eyespot with a butterfly-cream centre on each hindwing. Wing spans 12 / 10 / 8 / 10 px make the open-close beat unmistakable. The antennae deliberately reach the top cell row (thin line art, not a clipped silhouette); there is 1px transparent padding left, right and below. No baked shadow."
+    },
+    "tadpole": {
+      "file": "tadpole.png",
+      "sidecar": "tadpole.pixelart.json",
+      "cell": {
+        "w": 6,
+        "h": 5
+      },
+      "sheet": {
+        "w": 24,
+        "h": 5
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "tail-down",
+        "tail-mid-rising",
+        "tail-up",
+        "tail-mid-falling"
+      ],
+      "order": [0, 1, 2, 3],
+      "loop": "0 -> 1 -> 2 -> 3 -> 0",
+      "fps": 6,
+      "facing": "right",
+      "flip": "horizontal",
+      "drawAnchor": "center",
+      "swimAnchor": {
+        "x": 4.5,
+        "y": 2.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.75,
+          "y": 0.5
+        }
+      },
+      "bodyCentre": {
+        "x": 4.5,
+        "y": 2.5
+      },
+      "bodyStable": true,
+      "opaqueColourCount": 5,
+      "paletteNames": [
+        "leaf-mid",
+        "leaf-dark",
+        "cream",
+        "water-mid",
+        "water-light"
+      ],
+      "notes": "Side view facing right. Green-teal head (leaf-mid) on x3-5 / y1-3 with a leaf-dark jaw shadow, a warm cream eye at (4,2) and a cream rim light on the lit top-right shoulder (5,1), so it reads against any pond tone instead of vanishing; the tail root is leaf-mid, fading to translucent water-mid and water-light toward the tip. The fin sweeps down / level / up / level-low; the head pixels are byte-identical in every frame, so the body centre never drifts. Tail trails to x0 (flip for leftward swims). 5 opaque colours. No baked shadow; it swims inside the water layer."
+    }
+  }
+}

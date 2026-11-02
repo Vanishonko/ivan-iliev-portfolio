@@ -1,0 +1,72 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "group": "odonates",
+  "sheetLayout": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 14,
+  "facingNote": "Side/three-quarter profile facing RIGHT; the engine flips horizontally for leftward travel.",
+  "sprites": {
+    "damselfly": {
+      "file": "damselfly.png",
+      "sidecar": "damselfly.pixelart.json",
+      "cell": {
+        "w": 17,
+        "h": 10
+      },
+      "sheet": {
+        "w": 68,
+        "h": 10
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "folded-spread",
+        "fold-lift",
+        "fold-press",
+        "fold-return"
+      ],
+      "order": [0, 1, 2, 3],
+      "loop": "0 -> 1 -> 2 -> 3 -> 0",
+      "fps": 10,
+      "facing": "right",
+      "flip": "horizontal",
+      "rotateToHeading": false,
+      "drawAnchor": "center",
+      "hoverAnchor": {
+        "x": 8.5,
+        "y": 5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "bodyCentre": {
+        "x": 9,
+        "y": 6
+      },
+      "bodyStable": true,
+      "animatedParts": [
+        "folded-wing-bundle"
+      ],
+      "wingSpans": [8, 9, 8, 7],
+      "opaqueColourCount": 9,
+      "paletteNames": [
+        "ink",
+        "water-deep",
+        "water-mid",
+        "sky-high",
+        "wing",
+        "foam",
+        "cream",
+        "cornflower",
+        "corn-shade"
+      ],
+      "notes": "Slimmer damselfly, 17x10 cell, teal-blue. Needle abdomen (water-mid/sky-high with cornflower flashes, ink/water-deep underside) ending in a 1px tip; compact thorax with corn-shade shadow; large sky-high eye with a cream glint and ink rim. Wings are held close and folded over the abdomen: a 2px pale near-wing blade (wing leading, foam membrane) with a 1px cornflower far-wing blade above it, tips tapering 1px and stopping short of the tail so the abdomen silhouette stays clear. Four-frame folded wingbeat: the whole bundle lifts 1px, presses 1px, and sweeps its tip 1px fore/aft (spans 8/9/8/7px). The body, head and tail are pixel-identical in all four frames (fully anchored, no tail flick); the only changed pixels are the folded wing bundle. No baked shadow."
+    }
+  }
+}

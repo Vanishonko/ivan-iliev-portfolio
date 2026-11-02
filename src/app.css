@@ -19,6 +19,14 @@
 }
 
 @layer base {
+	/* An explicit dark background on the root does two jobs: no white flash before
+	   hydration, and a resolvable background for contrast checks (the starfield is a
+	   canvas, which tools otherwise assume is white). */
+	html,
+	body {
+		background-color: #0a0e1a;
+	}
+
 	body {
 		@apply antialiased;
 	}

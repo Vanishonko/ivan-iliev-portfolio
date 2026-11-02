@@ -1,0 +1,37 @@
+{
+  "palette": {
+    "a": "#1c2928",
+    "b": "#d7483f",
+    "c": "#d9ecdd",
+    "d": "#3b3027",
+    "e": "#c4e5ce",
+    "f": "#f7eccf",
+    "g": "#a93b40"
+  },
+  "frames": [
+    [
+      ".ac..aa..ca.",
+      "aac.aaaa.caa",
+      "ecccaaaaccce",
+      "ecabbbbbbace",
+      ".abbbbbbbfa.",
+      ".abbbaabbba.",
+      ".agbbaabbba.",
+      ".abbddddbba.",
+      "..abddddba..",
+      "...d....d..."
+    ],
+    [
+      "aac..aa..caa",
+      "ecccaaaaccce",
+      "ec..aaaa..ce",
+      "..abbbbbba..",
+      ".abbbbbbbfa.",
+      ".abbbaabbba.",
+      ".agbbaabbba.",
+      ".abbddddbba.",
+      "..abddddba..",
+      "...d....d..."
+    ]
+  ]
+}

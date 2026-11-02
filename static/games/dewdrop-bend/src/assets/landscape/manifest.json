@@ -1,0 +1,221 @@
+{
+  "asset": "landscape/pond-base",
+  "version": 2,
+  "files": {
+    "image": "pond-base.png",
+    "sidecar": "pond-base.pixelart.json"
+  },
+  "dimensions": { "width": 352, "height": 198, "scale": 1 },
+  "opaque": true,
+  "coverage": "100% (no alpha holes)",
+  "colourCount": 30,
+  "maxColours": 32,
+  "palette": [
+    { "name": "sky-zenith", "hex": "#58a2b3", "role": "derived deeper zenith above sky-high; the only non-world-palette tone" },
+    { "name": "sky-high", "hex": "#79bfc7", "role": "upper sky" },
+    { "name": "sky-mid", "hex": "#a6d6d2", "role": "middle sky" },
+    { "name": "cloud-shade", "hex": "#cfdfd1", "role": "horizon haze; the same tone shades the separate cloud sheet" },
+    { "name": "hill-far", "hex": "#80a98d", "role": "hazy far hills" },
+    { "name": "hill", "hex": "#59866e", "role": "middle hills" },
+    { "name": "hill-dark", "hex": "#3a6455", "role": "distant wooded crests and near-hill folds" },
+    { "name": "leaf-dark", "hex": "#3e6447", "role": "far-bank woods, hedge shadows, fern beds" },
+    { "name": "grass-deep", "hex": "#2a4b3c", "role": "deepest grass, terrace shadows, HUD strip" },
+    { "name": "leaf-mid", "hex": "#5f8953", "role": "foliage mid" },
+    { "name": "leaf", "hex": "#87b06a", "role": "lit foliage and moss" },
+    { "name": "leaf-high", "hex": "#b5d387", "role": "grass tips, moss highlights" },
+    { "name": "water-deep", "hex": "#1d4c56", "role": "deep basin, bank reflections" },
+    { "name": "water", "hex": "#2d696f", "role": "open pond and shallow shelf" },
+    { "name": "water-mid", "hex": "#4a8e86", "role": "shore hem and lit shallows" },
+    { "name": "water-light", "hex": "#79b7a2", "role": "static ripple glints" },
+    { "name": "foam", "hex": "#c4e5ce", "role": "broken lap lines, log/boulder foam" },
+    { "name": "bark-dark", "hex": "#4b362a", "role": "wood shadow, cracks, skep entrance" },
+    { "name": "bark", "hex": "#74513a", "role": "skep coils, log body" },
+    { "name": "bark-light", "hex": "#a6764f", "role": "sunlit wood, log cut face" },
+    { "name": "stone", "hex": "#869689", "role": "lit boulder facets and garden step stones" },
+    { "name": "stone-dark", "hex": "#5a6b60", "role": "boulder shade, step shadows" },
+    { "name": "ink", "hex": "#1c2928", "role": "skep entrance, poppy centres" },
+    { "name": "shadow-warm", "hex": "#8b5d45", "role": "broken log end" },
+    { "name": "poppy", "hex": "#d9554d", "role": "poppy petals" },
+    { "name": "poppy-shade", "hex": "#a93b40", "role": "poppy shade" },
+    { "name": "cornflower", "hex": "#7891db", "role": "cornflower petals" },
+    { "name": "corn-shade", "hex": "#4e63a9", "role": "cornflower shade" },
+    { "name": "gold", "hex": "#f1c75a", "role": "marigold petals" },
+    { "name": "amber", "hex": "#d39140", "role": "marigold shade" }
+  ],
+  "paletteNotes": [
+    "30 colours are used in the base. cloud (#f6f0da) and cream (#f7eccf) are deliberately NOT in the base because the landscape is cloudless; they live in clouds.png for the engine layer.",
+    "sky-low (#d7ebd8) and blush (#e8a39d) are unused; cloud-shade carries the horizon haze.",
+    "cloud-shade/foam and hill-dark/leaf-dark are near pairs; they occupy separate zones (sky haze vs water foam, distant crests vs near hedge) and never stack as adjacent flat steps."
+  ],
+  "canvas": {
+    "width": 352,
+    "height": 198,
+    "aspect": "16:9",
+    "hudSafeZone": { "x": [0, 352], "y": [181, 197], "height": 17, "note": "plain dark grass; no painted plants below y181" }
+  },
+  "composition": {
+    "sky": {
+      "bounds": { "x": [0, 352], "y": [0, 86] },
+      "cloudless": true,
+      "bands": "four hand-shaped bands: zenith y0-~18, sky-high to ~40, sky-mid to ~80, horizon haze to ~86",
+      "note": "No sun, moon or clouds are painted. The base is a neutral late-morning sky; the engine supplies the celestial bodies, stars and drifting clouds."
+    },
+    "hills": {
+      "farRidge": { "y": [72, 86], "tone": "hill-far" },
+      "midRidge": { "y": [90, 110], "tone": "hill + hill-dark wooded fringe" },
+      "farBankWoods": { "y": [102, 126], "tone": "leaf-dark / hill-dark with leaf tips" },
+      "note": "One quiet cool fold on the near hill face at x190-226 y99-105; no warm clearing patch."
+    },
+    "water": {
+      "bounds": { "x": [78, 295], "y": [117, 180] },
+      "waterPolygon": [
+        [100, 126], [120, 120], [140, 118], [160, 117], [180, 118], [200, 118], [220, 119], [240, 120], [258, 121], [274, 123], [282, 126],
+        [280, 134], [280, 144], [283, 154], [287, 164], [291, 174], [295, 180],
+        [292, 178], [270, 176], [240, 177], [210, 176], [180, 177], [150, 176], [120, 177], [90, 177], [78, 179],
+        [80, 172], [84, 162], [88, 152], [92, 142], [96, 134]
+      ],
+      "farShoreline": [
+        [100, 126], [120, 120], [140, 118], [160, 117], [180, 118], [200, 118], [220, 119], [240, 120], [258, 121], [274, 123], [282, 126]
+      ],
+      "leftShoreline": [
+        [100, 126], [96, 134], [92, 142], [88, 152], [84, 162], [80, 172], [78, 180]
+      ],
+      "rightShoreline": [
+        [282, 126], [280, 134], [280, 144], [283, 154], [287, 164], [291, 174], [295, 180]
+      ],
+      "nearShoreline": [
+        [78, 179], [90, 177], [120, 177], [150, 176], [180, 177], [210, 176], [240, 177], [270, 176], [292, 178], [295, 180]
+      ],
+      "deepBasin": { "bounds": { "x": [148, 250], "y": [130, 178] }, "tone": "water-deep" },
+      "shallowShelf": "2-4 px water-mid shallow hem around the shores, a wide water shelf on the left and a shallow bar across the lower deep; water-mid patches lighten the shelf",
+      "farReflection": { "y": [118, 132], "note": "dark reflection of the far woods in the upper water; longer under the flanking trees, short in the open middle" },
+      "ripples": "11 clustered 3-5 px glint runs, none in the clear centre",
+      "clearCentre": {
+        "x": [125, 235],
+        "y": [132, 165],
+        "note": "kept free of bright highlights and painted lily pads so the engine reflections, ripples and pads read"
+      },
+      "lilyPadZone": { "x": [135, 235], "y": [135, 160], "note": "engine-owned pads; no pads painted into the base" },
+      "noSunPath": true
+    },
+    "leftBank": {
+      "visibleExtent": { "x": [0, 100], "y": [104, 180] },
+      "plantablePolygon": [
+        [0, 108], [24, 104], [48, 106], [72, 110], [94, 116], [100, 126], [96, 134], [92, 142], [88, 152], [84, 162], [80, 172], [78, 179], [0, 179]
+      ],
+      "terraces": "three levels: upper flat y120-136 (lit leaf), mid flat y140-158, lower flat y166-179; short stone garden steps and dense fern/moss beds at the edges; 15 open planting pockets",
+      "openGround": "15 pockets listed in plantingHints (left)",
+      "mossyBoulder": {
+        "bounds": { "x": [40, 70], "y": [142, 158] },
+        "note": "exclude from planting hit tests; sits on the left mid terrace with a soft lower-left shadow"
+      },
+      "reedBeds": "x78-100, y128-178, at the water edge"
+    },
+    "rightBank": {
+      "visibleExtent": { "x": [282, 352], "y": [102, 180] },
+      "plantablePolygon": [
+        [352, 102], [330, 102], [306, 106], [288, 112], [282, 126], [280, 134], [280, 144], [283, 154], [287, 164], [291, 174], [295, 180], [352, 180]
+      ],
+      "terraces": "three levels: upper flat y120-136 with the skep, mid flat y140-158, lower flat y166-179; short stone steps and edge fern beds; 15 open planting pockets",
+      "openGround": "15 pockets listed in plantingHints (right)",
+      "reedBeds": "x254-280, y130-178, at the water edge",
+      "farRightBush": { "bounds": { "x": [334, 352], "y": [100, 132] } }
+    },
+    "foregroundLip": {
+      "topEdgeY": [176, 180],
+      "bounds": { "x": [60, 300], "y": [176, 181] },
+      "note": "thin dark near lip above the HUD strip"
+    },
+    "props": {
+      "hive": {
+        "bounds": { "x": [300, 330], "y": [88, 120] },
+        "dome": { "y": [89, 107] },
+        "entrance": { "x": [311, 316], "y": [105, 106] },
+        "stump": { "y": [111, 118] },
+        "note": "weathered wooden skep on a cut stump, entirely on the right upper terrace; no bees painted"
+      },
+      "log": {
+        "bounds": { "x": [214, 288], "y": [156, 178] },
+        "topSurface": { "y": [156, 166] },
+        "cutFace": { "x": [270, 282], "y": [156, 174] },
+        "waterline": { "y": [168, 172] },
+        "note": "half-sunken, mossy; usable as a water-strider platform"
+      }
+    },
+    "plantingHints": [
+      { "x": 12, "y": 126, "bank": "left" }, { "x": 34, "y": 124, "bank": "left" }, { "x": 56, "y": 126, "bank": "left" },
+      { "x": 76, "y": 130, "bank": "left" }, { "x": 44, "y": 130, "bank": "left" },
+      { "x": 10, "y": 144, "bank": "left" }, { "x": 24, "y": 146, "bank": "left" }, { "x": 74, "y": 150, "bank": "left" },
+      { "x": 10, "y": 168, "bank": "left" }, { "x": 32, "y": 168, "bank": "left" }, { "x": 58, "y": 172, "bank": "left" },
+      { "x": 70, "y": 168, "bank": "left" }, { "x": 14, "y": 178, "bank": "left" }, { "x": 40, "y": 178, "bank": "left" },
+      { "x": 62, "y": 178, "bank": "left" },
+      { "x": 288, "y": 124, "bank": "right" }, { "x": 334, "y": 124, "bank": "right" }, { "x": 348, "y": 132, "bank": "right" },
+      { "x": 294, "y": 146, "bank": "right" }, { "x": 310, "y": 142, "bank": "right" }, { "x": 330, "y": 144, "bank": "right" },
+      { "x": 346, "y": 148, "bank": "right" }, { "x": 294, "y": 152, "bank": "right" },
+      { "x": 296, "y": 170, "bank": "right" }, { "x": 316, "y": 170, "bank": "right" }, { "x": 338, "y": 170, "bank": "right" },
+      { "x": 350, "y": 174, "bank": "right" }, { "x": 300, "y": 176, "bank": "right" }, { "x": 322, "y": 176, "bank": "right" },
+      { "x": 344, "y": 178, "bank": "right" }
+    ],
+    "hintCount": 30,
+    "hintValidation": "all 30 tested against waterPolygon, left/right plantablePolygon, boulder/hive/log bounds and the y<181 HUD limit; 0 failures"
+  },
+  "skylinePolygon": [
+    [0, 0], [352, 0], [352, 82], [340, 80], [320, 84], [300, 86], [280, 84], [260, 80], [240, 82], [220, 80],
+    [200, 78], [180, 80], [160, 84], [140, 86], [120, 84], [100, 80], [80, 76], [60, 72], [40, 74], [20, 78], [0, 82]
+  ],
+  "cloudLayer": {
+    "sheet": "../sprites/clouds.png",
+    "sidecar": "../sprites/clouds.pixelart.json",
+    "manifest": "../sprites/clouds-manifest.json",
+    "cell": { "w": 64, "h": 32 },
+    "frames": 3,
+    "frameOrder": ["cumulus", "stratus", "wisp"],
+    "anchor": "center",
+    "drawFps": 0,
+    "recommendedAnchors": [
+      { "id": "far", "y": 30, "scale": 0.8, "speed": 2.0, "parallax": 0.25, "alpha": 0.65 },
+      { "id": "mid", "y": 42, "scale": 1.0, "speed": 4.0, "parallax": 0.5, "alpha": 0.85 },
+      { "id": "near", "y": 54, "scale": 1.25, "speed": 6.0, "parallax": 0.8, "alpha": 1.0 }
+    ],
+    "note": "The base is cloudless. Drift and tint the transparent sheet above the painted tops, clipped to skylinePolygon; keep the sun/moon lane clear as the engine moves the celestial body."
+  },
+  "integration": {
+    "noCloudsInBase": true,
+    "noSun": true,
+    "noMoon": true,
+    "noCharacters": true,
+    "noLilyPads": true,
+    "noText": true,
+    "noUi": true,
+    "noSunReflection": true,
+    "hudSafeZone": { "x": [0, 352], "y": [181, 197], "height": 17 },
+    "dynamicOverlays": [
+      "sun and moon arcs, stars and cloud drift (engine, clipped to skylinePolygon)",
+      "time-of-day and rain grade over the whole base",
+      "bees and hive glow around the hive bounds",
+      "lily pads in lilyPadZone",
+      "reflections, ripples and splash particles clipped to waterPolygon",
+      "planted flowers at plantingHints and on the plantable bank polygons",
+      "HUD over y181-197"
+    ],
+    "rendering": [
+      "1x PNG, integer nearest-neighbour scaling only (4x = 1440x900 approx.)",
+      "fully opaque; no alpha, no anti-aliasing, no gradients or blur",
+      "dithering limited to sky-band edges and one-pixel deep-water softenings",
+      "warm key from the upper right; cool teal shadows; highlights face up/right"
+    ],
+    "hitTestNotes": [
+      "clip ripples/reflections to waterPolygon; the irregular near edge follows nearShoreline",
+      "do not plant inside the hive, log or boulder bounds, or the 17 px HUD strip",
+      "the skylinePolygon is the sky region above the painted hills; use it to clip stars, moon and clouds",
+      "the visible banks are wider than the old 320 crop: left 0-100, right 282-352; the pond is deliberately narrower to make the terraces"
+    ]
+  },
+  "authoringNotes": [
+    "Repainted at 352x198 for the 24-hour-cycle build. The pond is narrower than a direct scale-up so both banks become three-step terraces with 15 open planting pockets each.",
+    "Cloudless base: no painted clouds, sun, moon, star or sunlight path; the engine supplies those layers from clouds.png and the celestial pass.",
+    "The banks use lit upper flats, shaded lower flats, short stone garden steps, fern/moss beds and stepping stones; reeds and cattails hold the water edge.",
+    "All 30 planting hints were machine-checked against the water polygon, bank polygons, props and HUD limit before hand-off.",
+    "No photo, generator or external bitmap was used; every mass and cluster is hand-placed in the composition builder."
+  ]
+}

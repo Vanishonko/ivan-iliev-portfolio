@@ -1,0 +1,57 @@
+{
+  "palette": {
+    "a": "#c28456",
+    "b": "#5a6b60",
+    "c": "#8b5c42",
+    "d": "#869689",
+    "e": "#d39140",
+    "f": "#f7eccf",
+    "g": "#1c2928"
+  },
+  "frames": [
+    [
+      "...........",
+      "...aaf..g.g",
+      "..eccaf.b.b",
+      ".ecaaca.b.b",
+      "ecaacac.bd.",
+      "eaccaac.dd.",
+      ".eaaaacddb.",
+      ".bdddddbbb.",
+      "..bbbbbb..."
+    ],
+    [
+      "...........",
+      "...aaf.g..g",
+      "..eccaf.b.b",
+      ".ecaaca.b.b",
+      "ecaacac.bd.",
+      "eaccaac.dd.",
+      ".eaaaacddb.",
+      ".bdddbbddb.",
+      "..bbbb.bb.."
+    ],
+    [
+      "...........",
+      "...aaf.g...",
+      "..eccaf.b.g",
+      ".ecaaca.b.b",
+      "ecaacac.bd.",
+      "eaccaac.dd.",
+      ".eaaaacddb.",
+      ".bdbbddddb.",
+      "..bb.bbbb.."
+    ],
+    [
+      "...........",
+      "...aaf..g..",
+      "..eccaf.b.g",
+      ".ecaaca.b.b",
+      "ecaacac.bd.",
+      "eaccaac.dd.",
+      ".eaaaacddb.",
+      ".bbddddddb.",
+      "...bbbbbb.."
+    ]
+  ]
+}

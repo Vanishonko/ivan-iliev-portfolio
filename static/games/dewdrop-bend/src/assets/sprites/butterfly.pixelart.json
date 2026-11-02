@@ -1,0 +1,62 @@
+{
+  "palette": {
+    "a": "#1c2928",
+    "b": "#e59449",
+    "c": "#f2d9a6",
+    "d": "#a93b40"
+  },
+  "frames": [
+    [
+      "...a......a...",
+      "....a....a....",
+      ".....caac.....",
+      "...aabaabbc...",
+      ".acbbbaabbccc.",
+      ".accbbaabbccc.",
+      "..acbbaabbca..",
+      ".abdbbaabbdbb.",
+      ".adcdbaabdcdb.",
+      "..adba..abda..",
+      ".............."
+    ],
+    [
+      "...a......a...",
+      "....a....a....",
+      ".....caac.....",
+      "....abaabb....",
+      "..acbbaabbcc..",
+      "..accbaabccc..",
+      "...acbaabca...",
+      "..adbbaabbdb..",
+      "..acdbaabdcb..",
+      "...aba..aba...",
+      ".............."
+    ],
+    [
+      "...a......a...",
+      "....a....a....",
+      ".....caac.....",
+      "....aaaaac....",
+      "...aacaacac...",
+      "...accaaccc...",
+      "....abaaba....",
+      "...adbaabdb...",
+      "...acbaabcb...",
+      "....aa..aa....",
+      ".............."
+    ],
+    [
+      "...a......a...",
+      "....a....a....",
+      ".....caac.....",
+      "...aabaabbc...",
+      "..acbbaabbcc..",
+      "..accbaabccc..",
+      "...acbaabca...",
+      "..adbbaabbdb..",
+      "..acdbaabdcb..",
+      "...aba..aba...",
+      ".............."
+    ]
+  ]
+}

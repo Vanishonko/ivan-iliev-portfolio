@@ -1,0 +1,109 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "sheetLayout": "horizontal",
+  "cellGap": 0,
+  "facing": "right",
+  "flip": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": false,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 8,
+  "sprites": {
+    "firefly": {
+      "file": "firefly.png",
+      "sidecar": "firefly.pixelart.json",
+      "cell": {
+        "w": 5,
+        "h": 5
+      },
+      "sheetSize": {
+        "w": 20,
+        "h": 5
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "glow-dim",
+        "glow-rise",
+        "glow-peak",
+        "glow-fall"
+      ],
+      "fps": 5,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "hoverAnchor": {
+        "x": 2.5,
+        "y": 2.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "lightAnchor": {
+        "x": 1.5,
+        "y": 3,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.3,
+          "y": 0.6
+        }
+      },
+      "opaqueColourCount": 8,
+      "paletteNames": [
+        "ink",
+        "ink-warm",
+        "bee-brown",
+        "amber",
+        "gold",
+        "firefly",
+        "wing",
+        "sky-mid"
+      ],
+      "notes": "Side profile facing right, 5x5. Ink head and antenna, ink-warm elytra, one bee-brown pronotum highlight, pale wing (sky-mid root, wing tip) raised above the thorax. The six-pixel abdomen wraps under the rear and pulses amber to gold to a two-pixel cream firefly core and back. Hover anchor at body centre; engine light origin at the glowing abdomen. No baked halo or shadow."
+    },
+    "gnat": {
+      "file": "gnat.png",
+      "sidecar": "gnat.pixelart.json",
+      "cell": {
+        "w": 5,
+        "h": 4
+      },
+      "sheetSize": {
+        "w": 10,
+        "h": 4
+      },
+      "frameCount": 2,
+      "frameOrder": [
+        "wings-up",
+        "wings-level"
+      ],
+      "fps": 12,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "hoverAnchor": {
+        "x": 2.5,
+        "y": 2.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.625
+        }
+      },
+      "opaqueColourCount": 4,
+      "paletteNames": [
+        "ink",
+        "ink-warm",
+        "wing",
+        "sky-mid"
+      ],
+      "notes": "Side profile facing right, 5x4. Ink abdomen, head and 1px snout with a warm ink-warm thorax column. A two-pixel pale wing smudge (sky-mid root, wing tip) sits above the thorax and drops one pixel between frames for a two-frame wing blur. Hover anchor at body centre. No baked shadow."
+    }
+  }
+}

@@ -2,6 +2,25 @@ import type { Project } from '$lib/types';
 
 export const projects = [
 	{
+		id: 'dewdrop-bend',
+		title: 'Dewdrop Bend',
+		subtitle: 'Pixel-art pond • Canvas 2D • No dependencies',
+		tags: ['Canvas 2D', 'Vanilla JS', 'Procedural audio', 'Pixel art'],
+		description: [
+			'A small, living pixel-art pond with a full 24-hour sky. Drag the clock hands through dawn, golden hour, dusk and a firefly-lit night; the sun and moon rise behind the painted ridge, the light and the stars follow, and the moon keeps its real phase.',
+			'Thirteen creatures each have a hand-authored sprite, a behaviour and a field note: bees work the flowers you plant, frogs hop between lily pads, striders and tadpoles leave wakes on the water, and a single cloud button brings rain that samples the pond’s real uneven shoreline. Vanilla JavaScript and Canvas 2D — no frameworks, no runtime dependencies, no external image or sound files.'
+		],
+		galleryImages: ['/images/dewdrop-day.png'],
+		galleryAspect: 'wide',
+		galleryLabel: 'Dewdrop Bend',
+		links: [
+			{
+				label: 'Visit the pond',
+				href: '/play/dewdrop-bend'
+			}
+		]
+	},
+	{
 		id: 'driftblock',
 		title: 'driftblock',
 		subtitle: '3D drift racing • WebGL • No build step',
@@ -10,7 +29,7 @@ export const projects = [
 			'A 3D drift racing game that runs in the browser with no build step. Four circuits generated from radial harmonics, an engine synthesised entirely in Web Audio, and skid marks, smoke and sparks produced at runtime — the only imported geometry is the car body, a blocky portrait of a graphite-black Mercedes SLK with Dutch plates and a BRABUS badge.',
 			'The handling is not a rigid-body simulation. Velocity is split into the car’s own forward and lateral axes, so steering rotates the car away from the direction it is actually travelling, and the slide falls out of the maths instead of being faked. On top of that sit a gearbox with real gear ratios, an engine whose revs answer the throttle rather than the tarmac, and optional force feedback through a native HID bridge, so a real wheel pushes back with a tyre model rather than a rumble.'
 		],
-		galleryImages: ['/images/driftblock-gameplay.png'],
+		galleryImages: ['/images/driftblock-gameplay.webp'],
 		galleryAspect: 'wide',
 		galleryLabel: 'driftblock gameplay',
 		links: [
@@ -53,14 +72,15 @@ export const projects = [
 			'BeaverWize was an application developed using SvelteKit with an Express.js–based microservices architecture. It was designed to encourage people to conserve water and reduce waste by using gamification to build better habits while keeping users informed about their personal impact.',
 			'The concept also focused on cooperation with sustainable brands, allowing users to exchange in-game currency for real discounts and promotions. The application featured multiple water-measuring activities, statistics, and data visualizations, as well as an achievement system that rewarded users with items to equip on their in-game character. In addition, it included a community feature that allowed users to collectively track and contribute to water-saving goals. On the backend, the system was built around individual microservices that communicated with the front end through an API gateway.'
 		],
+		poster: '/images/shower.webp',
 		galleryImages: [
-			'/images/questionnaire.png',
+			'/images/questionnaire.webp',
 			'/images/sink.webm',
-			'/images/shower.png',
-			'/images/showerstat.png',
-			'/images/gardening.png',
-			'/images/inventory.png',
-			'/images/rewards.png',
+			'/images/shower.webp',
+			'/images/showerstat.webp',
+			'/images/gardening.webp',
+			'/images/inventory.webp',
+			'/images/rewards.webp',
 		],
 		galleryLabel: 'BeaverWize screenshot gallery'
 	},

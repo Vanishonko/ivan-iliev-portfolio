@@ -65,7 +65,7 @@ export const INTERACTIVE_BACKGROUND = {
 	},
 
 	stars: {
-		count: 50,
+		count: 80,
 		activationRadius: 100,
 		activationMs: 3000,
 
@@ -94,7 +94,7 @@ export const INTERACTIVE_BACKGROUND = {
 		driftMax: 0.02,
 		floatAmpMin: 0.03,
 		floatAmpMax: 0.09,
-		floatSpeedMin: 0.0005,	
+		floatSpeedMin: 0.0005,
 		floatSpeedMax: 0.0013,
 		opacityMin: 0.33,
 		opacityMax: 0.67,
@@ -134,5 +134,73 @@ export const INTERACTIVE_BACKGROUND = {
 		fadeMultiplier: 0.96,
 		minFade: 0.2,
 		keepThreshold: 0.01
+	},
+
+	/**
+	 * Canvas renderer tuning. Everything above describes *what* the scene is; these
+	 * values describe how it is rasterised. The old DOM version got them from CSS.
+	 */
+	render: {
+		// A DPR 3 phone gets 2x: the sprites are soft, the extra pixels are not visible
+		// and they double the fill cost.
+		maxDpr: 2,
+
+		// The aurora is a 60px-blurred wash under everything, painted once. At half
+		// resolution the 2x magnification made the gradient's banding visible, so it is
+		// rendered at full CSS-pixel resolution and dithered instead.
+		auroraResolutionScale: 1,
+		cloudResolutionScale: 1,
+
+		// Star glow is a pre-rendered sprite per size bucket.
+		starSpriteBuckets: 8,
+
+		// `animation: aurora-wave 20s ease-in-out infinite` + `opacity: 0.8`, recreated
+		// in canvas coordinates instead of the compositor.
+		auroraOpacity: 0.72,
+		auroraWaveMs: 20000,
+		auroraWaveOffsetPx: 30,
+		auroraWaveScaleY: 1.1,
+
+		// Banding in a huge, very low-alpha gradient is 8-bit quantisation, not blur
+		// radius. A 4x4 ordered dither of this amplitude (in 8-bit levels) breaks the
+		// bands up without reading as grain.
+		auroraDither: 1.15,
+
+		// `@keyframes cloud-float`: 20s, translateY(-20px) at the halfway point.
+		cloudBobMs: 20000,
+		cloudBobPx: 20,
+
+		// Constellation lines were a 0.5px stroke with `drop-shadow(0 0 3px …)`. On canvas
+		// the glow is a second, wider pass over the same path.
+		lineWidth: 0.5,
+		lineGlowWidth: 2.4,
+		lineGlowOpacity: 0.28,
+		lineAlphaBands: 6
+	},
+
+	/**
+	 * Frame-time governor. Tiers are ordered from richest to calmest; the renderer
+	 * eases a subsystem's weight to zero rather than switching it off, so a drop
+	 * never pops.
+	 */
+	quality: {
+		degradeAboveMs: 20,
+		sampleFrames: 60,
+		settleFrames: 120,
+		// A single stall (GC, tab restore, hydration) is not steady load: ignore it.
+		ignoreFrameAboveMs: 120,
+		fadePerFrame: 0.05,
+		tiers: [
+			{ particles: 1, lines: 1, stars: 1 },
+			{ particles: 0, lines: 1, stars: 1 },
+			{ particles: 0, lines: 0, stars: 1 },
+			{ particles: 0, lines: 0, stars: 0 }
+		]
+	},
+
+	lifecycle: {
+		// ResizeObserver fires on every step of a window drag; re-rasterising the aurora
+		// on each one is wasted work, so coalesce them.
+		resizeDebounceMs: 150
 	}
 } as const;

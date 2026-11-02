@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b1d1b">
+  <meta name="description" content="Dewdrop Bend — a living, hand-drawn pixel-art pond you can touch.">
+  <title>Dewdrop Bend</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="src/styles.css">
+</head>
+<body>
+  <main class="page" aria-label="Dewdrop Bend interactive pixel-art pond">
+    <section class="stage" id="stage">
+      <canvas id="scene" width="352" height="198" tabindex="0"
+        aria-keyshortcuts="K N M P R 1 2 3 0 Escape ArrowLeft ArrowRight ArrowUp ArrowDown"
+        aria-label="An interactive pixel-art pond with a 24-hour day and night cycle. Turn the clock hands to change the light. Click or use the keyboard cursor to meet the creatures; drag the clock, plant flowers, and open field notes. Keyboard: K toggles the pond cursor, arrows move it, Enter acts, 1 to 3 select seeds, 0 explores, N opens field notes, M toggles sound, P toggles rain, R twice resets, and the bracket keys move time by fifteen minutes."></canvas>
+      <div class="boot" id="boot" aria-hidden="true">
+        <span class="boot-title">WAKING THE POND</span>
+        <span class="boot-detail">A SMALL WORLD IS GATHERING ITS WINGS</span>
+      </div>
+      <div class="sr-only" id="live" role="status" aria-live="polite"></div>
+      <div class="a11y-panel" id="a11y-controls" role="group" aria-label="Pond controls">
+        <p><strong>Pond controls</strong></p>
+        <p>Use the buttons here, the visible field-note summary, or the keyboard cursor on the canvas. Press K for the cursor, arrows to move it, Enter to act, K again to leave. The clock changes the hour; [ and ] move time by 15 minutes, and P turns the rain on or off.</p>
+        <button id="a11y-explore" type="button">Explore, no seed selected</button>
+        <button id="a11y-poppy" type="button">Choose poppy seed</button>
+        <button id="a11y-cornflower" type="button">Choose cornflower seed</button>
+        <button id="a11y-marigold" type="button">Choose marsh marigold seed</button>
+        <button id="a11y-keyboard" type="button">Toggle keyboard pond cursor</button>
+        <button id="a11y-notes" type="button">Open field notes</button>
+        <button id="a11y-sound" type="button">Toggle sound</button>
+        <button id="a11y-rain" type="button" aria-pressed="false">Toggle rain</button>
+        <button id="a11y-reset" type="button">Reset the pond</button>
+        <p><label for="a11y-time">Time of day</label> <span id="a11y-time-readout">12:00</span></p>
+        <input id="a11y-time" type="range" min="0" max="1439" step="1" value="720" aria-label="Time of day">
+        <button id="a11y-time-earlier" type="button">15 minutes earlier</button>
+        <button id="a11y-time-later" type="button">15 minutes later</button>
+        <p class="a11y-notes" id="a11y-notes-content" aria-label="Field notes summary"></p>
+      </div>
+    </section>
+  </main>
+  <noscript>Dewdrop Bend needs JavaScript to bring the pond to life.</noscript>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
