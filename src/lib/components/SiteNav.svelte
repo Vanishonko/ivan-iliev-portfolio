@@ -30,13 +30,18 @@
 		class="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6"
 		aria-label="Main"
 	>
-		<a href="/" class="group flex items-center gap-2" aria-label="Ivan Iliev — home">
+		<a href="/" class="group flex items-center gap-2.5" aria-label="Ivan Iliev — home">
 			<span
-				class="h-1.5 w-1.5 rounded-full bg-violet-300/80 shadow-[0_0_8px_2px_rgba(196,181,253,0.35)] transition group-hover:bg-violet-200"
-				aria-hidden="true"
-			></span>
-			<span class="font-typewriter text-sm tracking-pixel text-muted-50 transition-colors group-hover:text-white sm:text-base">
-				[ivan iliev]
+				class="flex h-7 w-7 items-center justify-center rounded-md border border-violet-300/25 bg-violet-400/10 font-typewriter text-[11px] leading-none text-violet-100 shadow-[0_0_16px_-6px_rgba(167,139,250,0.9)] transition group-hover:border-violet-300/40 group-hover:bg-violet-400/15"
+				aria-hidden="true">ii</span
+			>
+			<span class="flex items-baseline gap-1">
+				<span
+					class="font-typewriter text-[15px] tracking-[-0.01em] text-muted-50 transition-colors group-hover:text-white sm:text-base"
+				>
+					ivan iliev
+				</span>
+				<span class="caret mb-[3px] inline-block h-3.5 w-[3px] bg-amber-300/90" aria-hidden="true"></span>
 			</span>
 		</a>
 
@@ -58,7 +63,7 @@
 				download="IlievIvanCV.pdf"
 				class="ml-1 hidden rounded-full border border-white/15 bg-white/5 px-4 py-1.5 text-center text-xs text-muted-50 transition-colors hover:border-violet-300/30 hover:bg-white/10 hover:text-white sm:inline-block sm:text-sm"
 			>
-				cv
+				download cv
 			</a>
 		</div>
 	</nav>
@@ -68,3 +73,27 @@
 		aria-hidden="true"
 	></div>
 </header>
+
+<style>
+	.caret {
+		animation: caret-blink 1.2s steps(1, end) infinite;
+	}
+
+	@keyframes caret-blink {
+		0%,
+		49% {
+			opacity: 1;
+		}
+		50%,
+		100% {
+			opacity: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.caret {
+			animation: none;
+			opacity: 1;
+		}
+	}
+</style>

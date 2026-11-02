@@ -28,9 +28,9 @@ export const milestones: Milestone[] = [
 		kind: 'school'
 	},
 	{
-		year: '2021',
+		year: '2022',
 		title: 'Mentor at MindHub',
-		body: 'Teaching five- to twelve-year-olds Scratch, logic and problem solving — using games to make algorithmic thinking feel like play. The first time I had to explain something I only half understood.',
+		body: 'Teaching five- to twelve-year-olds Scratch, logic and problem solving — games as the way into algorithmic thinking. I got hooked on this by teenagers who were paid to put up with me; getting to hook a room of kids the same way closed the loop, and it is still the most accomplished I have felt about a job.',
 		kind: 'teach'
 	},
 	{

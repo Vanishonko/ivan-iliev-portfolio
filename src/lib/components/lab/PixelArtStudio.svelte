@@ -518,250 +518,265 @@
 </script>
 
 <section
-	class={`pixel-art-studio w-full max-w-[27rem] rounded-2xl border border-white/10 bg-white/5 text-[#f5f4f1] shadow-[0_24px_90px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md ${className}`}
+	class={`pixel-art-studio mx-auto w-full max-w-[48rem] rounded-2xl border border-white/10 bg-white/5 text-[#f5f4f1] shadow-[0_24px_90px_-40px_rgba(0,0,0,0.9)] backdrop-blur-md ${className}`}
 	aria-label="Pixel Art Studio"
 >
-	<header class="studio-header">
-		<div class="eyebrow-row">
-			<span class="eyebrow mono">
-				<span class="pulse-dot" aria-hidden="true"></span>
-				private plugin / live surface
-			</span>
-			<span class="lock-badge mono">
-				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-					<rect x="5" y="10" width="14" height="10" rx="2"></rect>
-					<path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"></path>
-				</svg>
-				AI loop closed
-			</span>
-		</div>
-		<h2>Pixel Art Studio</h2>
-		<p class="lede">
-			The model draws, reviews its own pixels, and redraws. Visitors get the exact same surface — no
-			prompt required.
-		</p>
-	</header>
-
-	<div class="board-section">
-		<div class="board-meta mono">
-			<span class="board-size">32 × 32</span>
-			<span aria-hidden="true">/</span>
-			<span>transparent</span>
-			<span class="coord-readout" class:is-active={canvasFocused} aria-hidden="true">
-				{cursorLabel}
-			</span>
-		</div>
-
-		<div class="canvas-frame">
-			<canvas
-				bind:this={canvasEl}
-				width={SIZE}
-				height={SIZE}
-				tabindex="0"
-				aria-label="32 by 32 pixel drawing canvas. Drag with a mouse or finger to paint. Arrow keys move the cursor and Space paints. Right click samples a colour."
-				aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Space"
-				onpointerdown={startStroke}
-				onpointermove={moveStroke}
-				onpointerup={finishStroke}
-				onpointercancel={finishStroke}
-				oncontextmenu={(event) => event.preventDefault()}
-				onkeydown={handleCanvasKeyDown}
-				onfocus={focusCanvas}
-				onblur={blurCanvas}
-			>
-				A 32 by 32 pixel drawing canvas.
-			</canvas>
-			<div class="pixel-grid" aria-hidden="true"></div>
-			{#if canvasFocused}
-				<span
-					class="cell-cursor"
-					style:left={`${(cursor.x / SIZE) * 100}%`}
-					style:top={`${(cursor.y / SIZE) * 100}%`}
-					aria-hidden="true"
-				></span>
-			{/if}
-		</div>
-
-		<p class="canvas-hint">
-			Drag to paint · Right-click to sample · Keyboard: arrows move, Space paints
-		</p>
-	</div>
-
-	<div class="controls">
-		<div class="toolbar" role="toolbar" aria-label="Drawing tools">
-			{#each TOOLS as entry (entry.id)}
-				<button
-					type="button"
-					class="tool-button"
-					class:is-active={tool === entry.id}
-					aria-label={`${entry.label} tool — ${entry.hint}`}
-					aria-pressed={tool === entry.id}
-					onclick={() => selectTool(entry.id)}
-				>
-					{#if entry.id === 'pen'}
-						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<path d="m14.5 4.5 5 5L8 21H3v-5L14.5 4.5Z"></path>
-							<path d="m12.5 6.5 5 5"></path>
-						</svg>
-					{:else if entry.id === 'eraser'}
-						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<path d="m14 4 6 6-8 8H6l-2-2 10-12Z"></path>
-							<path d="m8 14 6 6"></path>
-							<path d="M10 20h10"></path>
-						</svg>
-					{:else}
-						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-							<path d="m19 5 3 3-9 9-4 1 1-4 9-9Z"></path>
-							<path d="M4 21h4"></path>
-						</svg>
-					{/if}
-					<span>{entry.label}</span>
-				</button>
-			{/each}
-		</div>
-
-		<div class="color-block">
-			<div class="color-header mono">
-				<span>palette</span>
-				<span class="current-color">
-					{selectedPalette.name}
-					<span>{selectedPalette.hex}</span>
+	<div class="studio-inner">
+		<header class="studio-header">
+			<div class="eyebrow-row">
+				<span class="eyebrow mono">
+					<span class="pulse-dot" aria-hidden="true"></span>
+					private plugin / live surface
+				</span>
+				<span class="lock-badge mono">
+					<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+						<rect x="5" y="10" width="14" height="10" rx="2"></rect>
+						<path d="M8.5 10V7.5a3.5 3.5 0 0 1 7 0V10"></path>
+					</svg>
+					AI loop closed
 				</span>
 			</div>
-			<div class="palette" role="group" aria-label="Colour palette">
-				{#each PALETTE as entry (entry.hex)}
+			<div class="title-row">
+				<h2>Pixel Art Studio</h2>
+				<div class="board-meta mono">
+					<span class="board-size">32 × 32</span>
+					<span aria-hidden="true">/</span>
+					<span>transparent</span>
+					<span class="coord-readout" class:is-active={canvasFocused} aria-hidden="true">
+						{cursorLabel}
+					</span>
+				</div>
+			</div>
+			<p class="lede">
+				The model draws, reviews its own pixels, and redraws. Visitors get the exact same surface —
+				no prompt required.
+			</p>
+		</header>
+
+		<div class="studio-body">
+			<div class="board-section">
+				<div class="canvas-frame">
+					<canvas
+						bind:this={canvasEl}
+						width={SIZE}
+						height={SIZE}
+						tabindex="0"
+						aria-label="32 by 32 pixel drawing canvas. Drag with a mouse or finger to paint. Arrow keys move the cursor and Space paints. Right click samples a colour."
+						aria-keyshortcuts="ArrowUp ArrowDown ArrowLeft ArrowRight Space"
+						onpointerdown={startStroke}
+						onpointermove={moveStroke}
+						onpointerup={finishStroke}
+						onpointercancel={finishStroke}
+						oncontextmenu={(event) => event.preventDefault()}
+						onkeydown={handleCanvasKeyDown}
+						onfocus={focusCanvas}
+						onblur={blurCanvas}
+					>
+						A 32 by 32 pixel drawing canvas.
+					</canvas>
+					<div class="pixel-grid" aria-hidden="true"></div>
+					{#if canvasFocused}
+						<span
+							class="cell-cursor"
+							style:left={`${(cursor.x / SIZE) * 100}%`}
+							style:top={`${(cursor.y / SIZE) * 100}%`}
+							aria-hidden="true"
+						></span>
+					{/if}
+				</div>
+
+				<p class="canvas-hint">
+					Drag to paint · Right-click to sample · Keyboard: arrows move, Space paints
+				</p>
+			</div>
+
+			<div class="controls">
+				<div class="toolbar" role="toolbar" aria-label="Drawing tools">
+					{#each TOOLS as entry (entry.id)}
+						<button
+							type="button"
+							class="tool-button"
+							class:is-active={tool === entry.id}
+							aria-label={`${entry.label} tool — ${entry.hint}`}
+							aria-pressed={tool === entry.id}
+							onclick={() => selectTool(entry.id)}
+						>
+							{#if entry.id === 'pen'}
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="m14.5 4.5 5 5L8 21H3v-5L14.5 4.5Z"></path>
+									<path d="m12.5 6.5 5 5"></path>
+								</svg>
+							{:else if entry.id === 'eraser'}
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="m14 4 6 6-8 8H6l-2-2 10-12Z"></path>
+									<path d="m8 14 6 6"></path>
+									<path d="M10 20h10"></path>
+								</svg>
+							{:else}
+								<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+									<path d="m19 5 3 3-9 9-4 1 1-4 9-9Z"></path>
+									<path d="M4 21h4"></path>
+								</svg>
+							{/if}
+							<span>{entry.label}</span>
+						</button>
+					{/each}
+				</div>
+
+				<div class="color-block">
+					<div class="color-header mono">
+						<span>palette</span>
+						<span class="current-color">
+							{selectedPalette.name}
+							<span>{selectedPalette.hex}</span>
+						</span>
+					</div>
+					<div class="palette" role="group" aria-label="Colour palette">
+						{#each PALETTE as entry (entry.hex)}
+							<button
+								type="button"
+								class="swatch"
+								class:is-selected={selectedColor === entry.hex}
+								style={`--swatch:${entry.hex};--swatch-ink:${entry.ink};`}
+								aria-label={`${entry.name} ${entry.hex}`}
+								aria-pressed={selectedColor === entry.hex}
+								title={`${entry.name} ${entry.hex}`}
+								onclick={() => chooseColor(entry)}
+							>
+								{#if selectedColor === entry.hex}
+									<svg
+										class="swatch-check"
+										viewBox="0 0 24 24"
+										aria-hidden="true"
+										focusable="false"
+									>
+										<path d="m5 12 4 4L19 6"></path>
+									</svg>
+								{/if}
+							</button>
+						{/each}
+					</div>
+				</div>
+
+				<div class="actions">
 					<button
 						type="button"
-						class="swatch"
-						class:is-selected={selectedColor === entry.hex}
-						style={`--swatch:${entry.hex};--swatch-ink:${entry.ink};`}
-						aria-label={`${entry.name} ${entry.hex}`}
-						aria-pressed={selectedColor === entry.hex}
-						title={`${entry.name} ${entry.hex}`}
-						onclick={() => chooseColor(entry)}
+						class="secondary-button"
+						onclick={undo}
+						disabled={undoStack.length === 0}
+						aria-label="Undo last action"
 					>
-						{#if selectedColor === entry.hex}
-							<svg class="swatch-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-								<path d="m5 12 4 4L19 6"></path>
-							</svg>
-						{/if}
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path d="M9 7 4 12l5 5"></path>
+							<path d="M4 12h10a6 6 0 0 1 0 12"></path>
+						</svg>
+						Undo
 					</button>
-				{/each}
+					<button
+						type="button"
+						class="secondary-button"
+						onclick={clearCanvas}
+						disabled={!hasArtwork}
+						aria-label="Clear canvas"
+					>
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path d="M4 7h16"></path>
+							<path d="M9 7V4h6v3"></path>
+							<path d="m7 7 1 13h8l1-13"></path>
+						</svg>
+						Clear
+					</button>
+					<button
+						type="button"
+						class="download-button"
+						onclick={downloadPng}
+						aria-label="Download PNG — the current 32 by 32 drawing"
+					>
+						<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+							<path d="M12 3v12"></path>
+							<path d="m7 10 5 5 5-5"></path>
+							<path d="M4 19h16"></path>
+						</svg>
+						Download PNG
+					</button>
+				</div>
 			</div>
 		</div>
 
-		<div class="actions">
-			<button
-				type="button"
-				class="secondary-button"
-				onclick={undo}
-				disabled={undoStack.length === 0}
-				aria-label="Undo last action"
-			>
-				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-					<path d="M9 7 4 12l5 5"></path>
-					<path d="M4 12h10a6 6 0 0 1 0 12"></path>
-				</svg>
-				Undo
-			</button>
-			<button
-				type="button"
-				class="secondary-button"
-				onclick={clearCanvas}
-				disabled={!hasArtwork}
-				aria-label="Clear canvas"
-			>
-				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-					<path d="M4 7h16"></path>
-					<path d="M9 7V4h6v3"></path>
-					<path d="m7 7 1 13h8l1-13"></path>
-				</svg>
-				Clear
-			</button>
-			<button
-				type="button"
-				class="download-button"
-				onclick={downloadPng}
-				aria-label="Download PNG — the current 32 by 32 drawing"
-			>
-				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-					<path d="M12 3v12"></path>
-					<path d="m7 10 5 5 5-5"></path>
-					<path d="M4 19h16"></path>
-				</svg>
-				Download PNG
-			</button>
-		</div>
-	</div>
-
-	<section class="gallery" aria-label="Example sprites drawn by the plugin">
-		<div class="gallery-header">
-			<h3 class="mono">plugin output</h3>
-			<span class="mono">click to load →</span>
-		</div>
-		<div class="gallery-strip">
-			{#each GALLERY as item (item.id)}
-				<button
-					type="button"
-					class="gallery-item"
-					class:is-loaded={loadedGalleryId === item.id}
-					class:gallery-item--wide={item.id === 'review'}
-					data-gallery={item.id}
-					aria-label={`Load ${item.label}, ${item.meta}, into the editor`}
-					aria-pressed={loadedGalleryId === item.id}
-					aria-busy={galleryBusy === item.id}
-					disabled={galleryBusy !== null && galleryBusy !== item.id}
-					onclick={() => loadGalleryArt(item)}
-				>
-					<span class="gallery-thumb">
-						{#if item.motion?.kind === 'strip'}
-							<span class="sprite-window" aria-hidden="true">
+		<section class="gallery" aria-label="Example sprites drawn by the plugin">
+			<div class="gallery-header">
+				<h3 class="mono">plugin output</h3>
+				<span class="mono">click to load →</span>
+			</div>
+			<div class="gallery-strip">
+				{#each GALLERY as item (item.id)}
+					<button
+						type="button"
+						class="gallery-item"
+						class:is-loaded={loadedGalleryId === item.id}
+						class:gallery-item--wide={item.id === 'review'}
+						data-gallery={item.id}
+						aria-label={`Load ${item.label}, ${item.meta}, into the editor`}
+						aria-pressed={loadedGalleryId === item.id}
+						aria-busy={galleryBusy === item.id}
+						disabled={galleryBusy !== null && galleryBusy !== item.id}
+						onclick={() => loadGalleryArt(item)}
+					>
+						<span class="gallery-thumb">
+							{#if item.motion?.kind === 'strip'}
+								<span class="sprite-window" aria-hidden="true">
+									<img
+										class="sprite-strip"
+										class:sprite-even={item.motion.preset === 'even'}
+										class:sprite-blink={item.motion.preset === 'blink'}
+										class:is-paused={!pageVisible}
+										src={item.src}
+										alt=""
+										draggable="false"
+										decoding="async"
+										style={`--frames:${item.motion.frames};--duration:${motionDuration(
+											item.motion.durations
+										)}ms;`}
+									/>
+								</span>
+							{:else if item.motion?.kind === 'bob'}
 								<img
-									class="sprite-strip"
-									class:sprite-even={item.motion.preset === 'even'}
-									class:sprite-blink={item.motion.preset === 'blink'}
+									class="sprite-bob"
 									class:is-paused={!pageVisible}
 									src={item.src}
 									alt=""
 									draggable="false"
 									decoding="async"
-									style={`--frames:${item.motion.frames};--duration:${motionDuration(
-										item.motion.durations
-									)}ms;`}
+									style={`--duration:${item.motion.duration}ms;`}
 								/>
-							</span>
-						{:else if item.motion?.kind === 'bob'}
-							<img
-								class="sprite-bob"
-								class:is-paused={!pageVisible}
-								src={item.src}
-								alt=""
-								draggable="false"
-								decoding="async"
-								style={`--duration:${item.motion.duration}ms;`}
-							/>
-						{:else}
-							<img src={item.src} alt="" draggable="false" decoding="async" />
-						{/if}
-					</span>
-					<span class="gallery-label">{item.label}</span>
-					<span class="gallery-meta mono">{galleryBusy === item.id ? 'loading…' : item.meta}</span>
-				</button>
-			{/each}
-		</div>
-	</section>
+							{:else}
+								<img src={item.src} alt="" draggable="false" decoding="async" />
+							{/if}
+						</span>
+						<span class="gallery-copy">
+							<span class="gallery-label">{item.label}</span>
+							<span class="gallery-meta mono"
+								>{galleryBusy === item.id ? 'loading…' : item.meta}</span
+							>
+						</span>
+					</button>
+				{/each}
+			</div>
+		</section>
 
-	<footer class="studio-footer">
-		<p class="status-line" aria-live="polite">{status}</p>
-		<p class="privacy-line mono">surface only · local state</p>
-	</footer>
+		<footer class="studio-footer">
+			<p class="status-line" aria-live="polite">{status}</p>
+			<p class="privacy-line mono">surface only · local state</p>
+		</footer>
+	</div>
 </section>
 
 <style>
 	.pixel-art-studio {
 		position: relative;
 		isolation: isolate;
-		padding: clamp(1rem, 4vw, 1.5rem);
+		container-type: inline-size;
+		container-name: studio;
 		background-image:
 			radial-gradient(90% 50% at 50% -10%, rgba(167, 139, 250, 0.14), transparent 70%),
 			radial-gradient(50% 40% at 100% 20%, rgba(245, 184, 75, 0.07), transparent 75%);
@@ -770,8 +785,24 @@
 			inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
+	.studio-inner {
+		padding: clamp(0.9rem, 3.5vw, 1.35rem);
+	}
+
 	.studio-header {
 		margin-bottom: 1rem;
+	}
+
+	.title-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 0.35rem 0.9rem;
+	}
+
+	.title-row h2 {
+		min-width: 0;
 	}
 
 	.eyebrow-row {
@@ -856,11 +887,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0.38rem;
-		margin: 0 0 0.4rem;
+		margin: 0;
 		color: rgba(245, 244, 241, 0.46);
 		font-size: 0.62rem;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
 	.board-size {
@@ -1328,6 +1360,11 @@
 		}
 	}
 
+	.gallery-copy {
+		display: block;
+		min-width: 0;
+	}
+
 	.gallery-label {
 		display: block;
 		padding: 0.35rem 0.45rem 0;
@@ -1374,6 +1411,154 @@
 		letter-spacing: 0.04em;
 		text-transform: uppercase;
 		white-space: nowrap;
+	}
+
+	/*
+	 * Wide studio: once the card itself has room (not just the viewport), the
+	 * canvas sits on the left, the tools/palette/actions stack on the right and
+	 * the five examples share one row underneath. Container queries keep the
+	 * vertical stack when the card is placed in a narrow column.
+	 */
+	@container studio (min-width: 718px) {
+		/* 718px is a 720px card minus the 2px border: the query box is the content box. */
+		.studio-header {
+			margin-bottom: 0.8rem;
+		}
+
+		.eyebrow-row {
+			margin-bottom: 0.45rem;
+		}
+
+		.lede {
+			margin-top: 0.3rem;
+			font-size: 0.72rem;
+			line-height: 1.45;
+		}
+
+		.studio-body {
+			display: grid;
+			grid-template-columns: minmax(0, 258px) minmax(0, 1fr);
+			gap: 1.25rem;
+			align-items: start;
+		}
+
+		.board-section {
+			margin: 0;
+		}
+
+		.canvas-frame {
+			/* 16rem = 8× the 32px bitmap, plus the two 1px borders. */
+			width: 100%;
+			max-width: calc(16rem + 2px);
+			margin-inline: 0;
+		}
+
+		.canvas-hint {
+			margin-top: 0.4rem;
+			font-size: 0.6rem;
+			line-height: 1.35;
+			text-align: left;
+		}
+
+		.controls {
+			padding-top: 0;
+			border-top: 0;
+		}
+
+		.tool-button {
+			min-height: 2.25rem;
+		}
+
+		.color-block {
+			margin-top: 0.7rem;
+		}
+
+		.color-header {
+			margin-bottom: 0.3rem;
+		}
+
+		.swatch {
+			height: 1.9rem;
+		}
+
+		.actions {
+			margin-top: 0.7rem;
+		}
+
+		.secondary-button,
+		.download-button {
+			min-height: 2.25rem;
+		}
+
+		.gallery {
+			margin-top: 0.8rem;
+			padding-top: 0.6rem;
+		}
+
+		.gallery-header {
+			margin-bottom: 0.4rem;
+		}
+
+		.gallery-strip {
+			display: flex;
+			gap: 0.35rem;
+		}
+
+		.gallery-item {
+			flex: 1 1 0;
+			flex-direction: row;
+			align-items: center;
+			gap: 0.45rem;
+			padding: 0.25rem 0.3rem;
+		}
+
+		.gallery-item--wide {
+			flex: 1.55 1 0;
+			grid-column: auto;
+		}
+
+		.gallery-thumb {
+			--thumb: 2rem;
+			flex: none;
+			width: auto;
+			min-height: 0;
+			padding: 0.15rem;
+		}
+
+		.gallery-thumb img {
+			max-height: 2rem;
+		}
+
+		.gallery-item--wide .gallery-thumb img {
+			max-height: 2rem;
+		}
+
+		.gallery-copy {
+			flex: 1 1 auto;
+		}
+
+		.gallery-label {
+			padding: 0;
+			font-size: 0.6rem;
+			line-height: 1.15;
+			white-space: normal;
+			overflow: visible;
+			text-overflow: clip;
+		}
+
+		.gallery-meta {
+			padding: 0.05rem 0 0;
+			font-size: 0.46rem;
+			line-height: 1.2;
+			white-space: normal;
+			overflow: visible;
+			text-overflow: clip;
+		}
+
+		.studio-footer {
+			margin-top: 0.7rem;
+			padding-top: 0.6rem;
+		}
 	}
 
 	@media (max-width: 24rem) {

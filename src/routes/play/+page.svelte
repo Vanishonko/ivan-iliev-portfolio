@@ -19,6 +19,15 @@
 			alt: 'A blocky car drifting through a purple-lit street circuit',
 			line: 'A blocky 3D drift racer: procedural circuits, a synthesised engine, force feedback on a real wheel.',
 			stack: 'three.js · Web Audio · no build step'
+		},
+		{
+			href: '/play/dragons',
+			title: 'Dragons',
+			year: '2015',
+			poster: '/images/dragons.webp',
+			alt: 'Two green dragons and a brown enemy dragon over a photographic sky, painted by an eleven-year-old',
+			line: 'The first game I still have. Built at eleven, unedited, with a warning label.',
+			stack: 'JavaScript · one canvas · no idea what delta time was'
 		}
 	];
 </script>
@@ -27,7 +36,7 @@
 	<title>Play | Ivan Iliev</title>
 	<meta
 		name="description"
-		content="Two things to play with: Dewdrop Bend, a living pixel-art pond, and driftblock, a blocky 3D drift racer."
+		content="Three things to play: Dewdrop Bend, a living pixel-art pond; driftblock, a blocky 3D drift racer; and Dragons, the 2015 game that started it all."
 	/>
 	<meta property="og:title" content="Play | Ivan Iliev" />
 	<meta property="og:description" content="A living pixel-art pond and a blocky 3D drift racer, both in the browser." />
@@ -41,23 +50,23 @@
 			<AnimatedSection delay={80}>
 				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/64">play</p>
 				<h1 class="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-muted-50 sm:text-4xl">
-					Two small worlds, running in the browser.
+					Two small worlds and one relic.
 				</h1>
 				<p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted-50/70 sm:text-base">
-					No installs, no accounts. Both are hand-built, both load only when you ask them to — one is a pond that
-					keeps time, the other is a car that refuses to go straight.
+					No installs, no accounts. One is a pond that keeps time, one is a car that refuses to go straight, and
+					one is a dragon game from 2015 that I am keeping on purpose.
 				</p>
 			</AnimatedSection>
 		</div>
 	</section>
 
 	<section class="px-4 pb-20 sm:px-6">
-		<div class="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-2">
+		<div class="mx-auto grid w-full max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
 			{#each games as game, i (game.href)}
 				<AnimatedSection delay={140 + i * 80}>
 					<a
 						href={game.href}
-						class="group block overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-white/20"
+						class="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-white/20"
 					>
 						<div class="relative aspect-[16/10] overflow-hidden">
 							<img
@@ -76,7 +85,7 @@
 								<span class="font-typewriter text-xs text-muted-50/64">{game.year}</span>
 							</div>
 							<p class="mt-2 text-sm leading-relaxed text-muted-50/62">{game.line}</p>
-							<div class="mt-4 flex items-center justify-between">
+							<div class="mt-auto flex items-center justify-between pt-4">
 								<span class="text-xs text-muted-50/62">{game.stack}</span>
 								<span class="text-sm text-muted-50/70 transition group-hover:text-white">play →</span>
 							</div>

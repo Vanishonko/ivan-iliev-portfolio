@@ -66,26 +66,24 @@
 	<!-- Pixel art -->
 	<section class="px-4 pb-14 sm:px-6" aria-labelledby="art-heading">
 		<div class="mx-auto w-full max-w-4xl">
-			<div class="grid gap-6 lg:grid-cols-[1fr_1.1fr] lg:items-center">
-				<AnimatedSection delay={120} class="order-2 lg:order-1">
-					<PixelArtStudio />
-				</AnimatedSection>
+			<AnimatedSection delay={80} class="max-w-2xl">
+				<h2 id="art-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/60">02 — pixel art</h2>
+				<h3 class="mt-2 text-xl text-muted-50 sm:text-2xl">Draw, look, draw again</h3>
+				<p class="mt-3 text-sm leading-relaxed text-muted-50/70">
+					The model writes a character grid — letters standing in for pixels. The plugin renders it, hands the
+					image back with a critique, and the model draws a second time. There is no image model anywhere in
+					the loop: it is a text model, a canvas and a feedback channel.
+				</p>
+				<p class="mt-3 text-sm leading-relaxed text-muted-50/62">
+					The editor is the same 32×32 surface, with the same palette and the same PNG encoder — 200 lines of
+					<code class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">node:</code> and nothing else. Draw
+					something and take it with you.
+				</p>
+			</AnimatedSection>
 
-				<AnimatedSection delay={80} class="order-1 lg:order-2">
-					<h2 id="art-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/60">02 — pixel art</h2>
-					<h3 class="mt-2 text-xl text-muted-50 sm:text-2xl">Draw, look, draw again</h3>
-					<p class="mt-3 text-sm leading-relaxed text-muted-50/70">
-						The model writes a character grid — letters standing in for pixels. The plugin renders it, hands the
-						image back with a critique, and the model draws a second time. There is no image model anywhere in
-						the loop: it is a text model, a canvas and a feedback channel.
-					</p>
-					<p class="mt-3 text-sm leading-relaxed text-muted-50/62">
-						The editor is the same 32×32 surface, with the same palette and the same PNG encoder — 200 lines of
-						<code class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">node:</code> and nothing else. Draw
-						something and take it with you.
-					</p>
-				</AnimatedSection>
-			</div>
+			<AnimatedSection delay={140} class="mt-6">
+				<PixelArtStudio />
+			</AnimatedSection>
 		</div>
 	</section>
 
@@ -152,6 +150,17 @@
 					class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">node:</code
 				>
 				and nothing else.
+			</p>
+
+			<p class="mt-4 text-sm leading-relaxed text-muted-50/70">
+				The repositories stay private, but the plugins do not have to. If you use DeepSeek Harness and any of
+				this looks useful — Pip, the pixel-art surface, the alerts bell — <a
+					class="underline underline-offset-4 hover:text-white"
+					href="mailto:vanishonko@gmail.com">email me</a
+				> or find me on <a
+					class="underline underline-offset-4 hover:text-white"
+					href="https://github.com/Vanishonko">GitHub</a
+				>. I am more than happy to share them with anyone who would actually use them.
 			</p>
 		</div>
 	</section>

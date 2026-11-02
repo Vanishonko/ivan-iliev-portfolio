@@ -12,6 +12,7 @@
 		type AntennaPoint,
 		type AntennaState
 	} from '$lib/pip/antenna';
+	import { pickLine, type LineKind } from '$lib/pip/lines';
 
 	/* ------------------------------------------------------------------ */
 	/* Sprite data: 32×32 frames laid out horizontally, at 3× (96px).      */
@@ -35,6 +36,26 @@
 	const SIT_TO_SLEEP_MS = 7500;
 	const TOKE_CHANCE = 0.55;
 
+	/* Speech. One line at a time: a new line replaces the current one, and the
+	   bubble hides itself after {@link SPEECH_MS} whether or not he spoke again. */
+	const SPEECH_MS = 2800;
+	/* The bubble is clamped inside the stage, never the card. */
+	const SPEECH_EDGE = 8;
+	const SPEECH_MAX_WIDTH = 224;
+	/* Only user-initiated lines (tug/pat) reach the polite live region, and no
+	   more often than this: a screen reader should not repeat every pat. */
+	const SPEECH_ANNOUNCE_GAP_MS = 1400;
+	/* Idle chatter: the first chance comes after this long alone, then at most
+	   one line per 25-30s. Failed rolls retry a few seconds later. */
+	const IDLE_LINE_FIRST_MS = 9000;
+	const IDLE_LINE_QUIET_MS = 7000;
+	const IDLE_LINE_MIN_GAP_MS = 25000;
+	const IDLE_LINE_MAX_GAP_MS = 30000;
+	const IDLE_LINE_RETRY_MS = 3000;
+	const IDLE_LINE_CHANCE = 0.5;
+	/* A press that moves less than this many cell pixels is not a tug. */
+	const TUG_PULL_CELLS = 1.5;
+
 	type Pose =
 		| 'idle'
 		| 'walk'
@@ -49,6 +70,11 @@
 		| 'toke';
 
 	type Reaction = Extract<Pose, 'happy' | 'giggle' | 'jump' | 'startle' | 'aha'>;
+
+	type Speech = {
+		kind: LineKind;
+		text: string;
+	};
 
 	type Sheet = {
 		url: string;
@@ -166,6 +192,14 @@
 	let announcement = $state('');
 	let offDuty = $state(false);
 
+	/* The visual bubble is always mounted (so its width can be measured and a
+	   line can replace another with no DOM churn) and is only shown while
+	   `speechShowing` is true. The spoken announcement is separate. */
+	let speech = $state<Speech | null>(null);
+	let speechShowing = $state(false);
+	let speechWidth = $state(0);
+	let spokenLine = $state('');
+
 	const currentSheet = $derived(SHEETS[pose]);
 	const caption = $derived(CAPTIONS[pose]);
 	const spriteStyle = $derived(
@@ -175,6 +209,24 @@
 			`background-position:-${frame * SIZE}px 0`
 		].join(';')
 	);
+
+	/* The bubble is anchored above Pip's head and clamped to the stage: it
+	   follows him while walking, but stops at the card's edge instead of
+	   overflowing it. The tail keeps pointing at him when it does. */
+	const speechMaxWidth = $derived(Math.min(SPEECH_MAX_WIDTH, Math.max(140, stageWidth - 16)));
+	const speechPlacement = $derived.by(() => {
+		const width = speechWidth;
+		const half = (width > 0 ? width : speechMaxWidth) / 2;
+		const pipCenter = (x ?? EDGE) + SIZE / 2;
+		const min = SPEECH_EDGE + half;
+		const max = Math.max(min, stageWidth - SPEECH_EDGE - half);
+		const center = clamp(pipCenter, min, max);
+		const shift = center - pipCenter;
+		return {
+			left: `calc(50% + ${Math.round(shift)}px)`,
+			tail: width > 0 ? `${Math.round(clamp(width / 2 - shift, 10, width - 10))}px` : '50%'
+		};
+	});
 
 	/* ------------------------------------------------------------------ */
 	/* Internal, non-reactive state                                        */
@@ -191,9 +243,11 @@
 	/* The pointer currently holding the bulb, in unmirrored cell coordinates. */
 	let antennaPull: AntennaPoint | null = null;
 	let antennaPointerId: number | null = null;
-	let antennaGrabTip: AntennaPoint = { x: 16, y: 2 };
-	let antennaMoved = false;
 	let suppressClick = false;
+	/* Where this drag started, in cell pixels: the tug line fires once, on the
+	   first real movement, and not again for the rest of the drag. */
+	let antennaGrab: AntennaPoint | null = null;
+	let antennaTugSaid = false;
 
 	/* Pip's previous position, for the rig's body-velocity lag. */
 	let lastBodyX: number | null = null;
@@ -215,6 +269,11 @@
 
 	let lastReaction: Reaction | null = null;
 	let staticReactionTimer: ReturnType<typeof setTimeout> | null = null;
+
+	/* Speech timers and bookkeeping. */
+	let speechTimer: ReturnType<typeof setTimeout> | null = null;
+	let lastSpokenAt = Number.NEGATIVE_INFINITY;
+	let nextIdleLineCheckAt = 0;
 
 	let rafId: number | null = null;
 	let lastTimestamp = 0;
@@ -248,6 +307,68 @@
 
 	function announce(message: string): void {
 		announcement = message;
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* Speech                                                              */
+	/* ------------------------------------------------------------------ */
+
+	/**
+	 * Say one line, replacing whatever he was saying.
+	 *
+	 * The bubble hides itself after {@link SPEECH_MS}. Only `tug` and `pat` are
+	 * announced through the polite live region: idle chatter, sleep and the
+	 * off-duty lines are ambient, and reading them aloud would be noise. The
+	 * announcement is throttled separately from the bubble, so rapid pats still
+	 * change the words on screen without re-reading them every time.
+	 */
+	function say(kind: LineKind, options: { announce?: boolean } = {}): void {
+		if (!browser) return;
+		const text = pickLine(kind);
+		if (!text) return;
+
+		speech = { kind, text };
+		speechShowing = true;
+		if (speechTimer !== null) clearTimeout(speechTimer);
+		speechTimer = setTimeout(() => {
+			speechTimer = null;
+			speechShowing = false;
+			/* Clearing lets an identical line announce again later; the removal
+			   itself is not announced. */
+			spokenLine = '';
+		}, SPEECH_MS);
+
+		if (options.announce) {
+			const now = performance.now();
+			if (now - lastSpokenAt < SPEECH_ANNOUNCE_GAP_MS) return;
+			lastSpokenAt = now;
+			spokenLine = `Pip says: ${text}`;
+		}
+	}
+
+	function nextIdleGap(): number {
+		return IDLE_LINE_MIN_GAP_MS + Math.random() * (IDLE_LINE_MAX_GAP_MS - IDLE_LINE_MIN_GAP_MS);
+	}
+
+	/**
+	 * Rare idle chatter.
+	 *
+	 * The scheduler is a check time, not a per-frame chance: a failed roll costs
+	 * {@link IDLE_LINE_RETRY_MS}, a line costs a full 25-30s, so one line per
+	 * quiet spell is the ceiling. He only talks while idling or sitting, and
+	 * only after {@link IDLE_LINE_QUIET_MS} without interaction.
+	 */
+	function maybeIdleLine(now: number): void {
+		if (!browser) return;
+		if (pose !== 'idle' && pose !== 'sit') return;
+		if (now - lastActivity < IDLE_LINE_QUIET_MS) return;
+		if (now < nextIdleLineCheckAt) return;
+		if (speechShowing || Math.random() > IDLE_LINE_CHANCE) {
+			nextIdleLineCheckAt = now + IDLE_LINE_RETRY_MS;
+			return;
+		}
+		nextIdleLineCheckAt = now + nextIdleGap();
+		say('idle');
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -291,12 +412,14 @@
 	function startSleep(): void {
 		setPose('sleep');
 		announce('Pip fell asleep.');
+		say('slept');
 	}
 
 	function startToke(): void {
 		if (reducedMotion) return;
 		setPose('toke');
 		announce('Pip is taking a break.');
+		say('toke');
 		syncLoop();
 	}
 
@@ -336,6 +459,10 @@
 		const reaction = options[Math.floor(Math.random() * options.length)] ?? 'happy';
 		lastReaction = reaction;
 		announce(ANNOUNCEMENTS[reaction]);
+		/* A click, Space or Enter is a pat. Pat lines always win over the
+		   optional laugh line for the giggle pose: a click should read as a
+		   greeting, not as him laughing at something else. */
+		say('pat', { announce: true });
 
 		if (reducedMotion) {
 			setPose(reaction, Math.min(1, SHEETS[reaction].frames - 1));
@@ -463,6 +590,7 @@
 		advanceSheet(dt);
 		if (pose === 'walk') updateWalk(dt);
 		updateMood(now);
+		maybeIdleLine(now);
 	}
 
 	function tick(timestamp: number): void {
@@ -488,6 +616,7 @@
 			if (lastActivity > 0) lastActivity += pausedFor;
 			if (sitStartedAt > 0) sitStartedAt += pausedFor;
 			if (lookStartedAt > 0) lookStartedAt += pausedFor;
+			if (nextIdleLineCheckAt > 0) nextIdleLineCheckAt += pausedFor;
 			pausedAt = 0;
 		}
 
@@ -636,6 +765,17 @@
 		antennaPull = point;
 		pullAntenna(ensureAntenna(), point, { now: performance.now() });
 		drawAntenna();
+
+		/* One tug line per drag: the first real movement, not every pointermove
+		   frame. A press that never moves the bulb is not a pull. */
+		if (!antennaTugSaid && antennaGrab !== null) {
+			const dx = point.x - antennaGrab.x;
+			const dy = point.y - antennaGrab.y;
+			if (Math.hypot(dx, dy) > TUG_PULL_CELLS) {
+				antennaTugSaid = true;
+				say('tug', { announce: true });
+			}
+		}
 	}
 
 	/**
@@ -660,6 +800,8 @@
 		suppressClick = true;
 		antennaPointerId = event.pointerId;
 		antennaPull = point;
+		antennaGrab = point;
+		antennaTugSaid = false;
 		try {
 			stageEl?.setPointerCapture(event.pointerId);
 		} catch {
@@ -675,6 +817,8 @@
 		if (antennaPointerId === null) return;
 		antennaPointerId = null;
 		antennaPull = null;
+		antennaGrab = null;
+		antennaTugSaid = false;
 		if (event !== null) {
 			try {
 				if (stageEl?.hasPointerCapture(event.pointerId)) {
@@ -847,6 +991,7 @@
 		drawAntenna();
 
 		lastActivity = performance.now();
+		nextIdleLineCheckAt = lastActivity + IDLE_LINE_FIRST_MS;
 
 		const measure = (): void => {
 			stageWidth = stage.clientWidth;
@@ -889,6 +1034,10 @@
 			if (staticReactionTimer !== null) {
 				clearTimeout(staticReactionTimer);
 				staticReactionTimer = null;
+			}
+			if (speechTimer !== null) {
+				clearTimeout(speechTimer);
+				speechTimer = null;
 			}
 		};
 	});
@@ -943,6 +1092,23 @@
 					aria-hidden="true"
 				></canvas>
 			</div>
+
+			<!-- The visual bubble is decorative: its words are announced from the
+			     live region below, and only for user-initiated lines. It stays
+			     mounted so a new line replaces the old one without DOM churn and
+			     its width can be measured for the edge clamp. -->
+			<div
+				class="pip-speech"
+				data-showing={speechShowing ? 'true' : 'false'}
+				data-kind={speech?.kind ?? 'idle'}
+				style:left={speechPlacement.left}
+				style:max-width={`${speechMaxWidth}px`}
+				bind:offsetWidth={speechWidth}
+				aria-hidden="true"
+			>
+				<span class="pip-speech-text">{speech?.text ?? ''}</span>
+				<span class="pip-speech-tail" style:left={speechPlacement.tail}></span>
+			</div>
 		</div>
 	</div>
 
@@ -965,6 +1131,7 @@
 	</footer>
 
 	<p class="sr-only" aria-live="polite" aria-atomic="true">{announcement}</p>
+	<p class="sr-only" aria-live="polite" aria-atomic="true">{spokenLine}</p>
 </section>
 
 <style>
@@ -1225,6 +1392,73 @@
 		image-rendering: pixelated;
 	}
 
+	/* Speech bubble. Anchored above the head inside `.pip-mover`, so it travels
+	   with him; the `left` offset (and the tail) are clamped in script against
+	   the stage so the panel never leaves the card. The element is always
+	   mounted and only its visibility changes: no layout shift, no stacking, and
+	   a replacement line swaps text without the panel moving. */
+	.pip-speech {
+		position: absolute;
+		bottom: calc(100% + 10px);
+		z-index: 3;
+		width: max-content;
+		max-width: 224px; /* clamped inline by speechMaxWidth */
+		padding: 5px 8px 6px;
+		border: 1px solid rgba(196, 181, 253, 0.36);
+		border-radius: 3px;
+		background: rgba(9, 11, 20, 0.93);
+		color: rgba(245, 244, 241, 0.94);
+		font-size: 10.5px;
+		font-weight: 400;
+		line-height: 1.35;
+		letter-spacing: 0.01em;
+		text-align: center;
+		text-wrap: balance;
+		overflow-wrap: break-word;
+		pointer-events: none;
+		opacity: 0;
+		visibility: hidden;
+		transform: translateX(-50%);
+		box-shadow:
+			0 12px 26px -18px rgba(0, 0, 0, 0.95),
+			inset 0 1px 0 rgba(255, 255, 255, 0.05);
+	}
+
+	.pip-speech[data-showing='true'] {
+		opacity: 1;
+		visibility: visible;
+		animation: pip-speech-pop 150ms steps(2, end);
+	}
+
+	.pip-speech-text {
+		display: block;
+	}
+
+	/* A little square turned 45°: a pointer that costs two borders, and reads
+	   as pixel art at this size. */
+	.pip-speech-tail {
+		position: absolute;
+		bottom: -4px;
+		width: 6px;
+		height: 6px;
+		margin-left: -3px;
+		background: rgba(9, 11, 20, 0.93);
+		border-right: 1px solid rgba(196, 181, 253, 0.36);
+		border-bottom: 1px solid rgba(196, 181, 253, 0.36);
+		transform: rotate(45deg);
+	}
+
+	@keyframes pip-speech-pop {
+		from {
+			opacity: 0;
+			translate: 0 4px;
+		}
+		to {
+			opacity: 1;
+			translate: 0 0;
+		}
+	}
+
 	.pip-foot {
 		display: flex;
 		align-items: center;
@@ -1371,6 +1605,11 @@
 	@media (prefers-reduced-motion: reduce) {
 		.pip-aura,
 		.pip-dot {
+			animation: none !important;
+		}
+
+		/* Still show the words; just no pop. */
+		.pip-speech[data-showing='true'] {
 			animation: none !important;
 		}
 
