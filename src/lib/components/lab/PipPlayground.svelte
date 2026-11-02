@@ -48,8 +48,9 @@
 	/* The bubble is clamped inside the stage, never the card. */
 	const SPEECH_EDGE = 8;
 	const SPEECH_MAX_WIDTH = 224;
-	/* Only user-initiated lines (tug/pat) reach the polite live region, and no
-	   more often than this: a screen reader should not repeat every pat. */
+	/* Only user-initiated lines (tug/pat/tipOver) reach the polite live region,
+	   and no more often than this: a screen reader should not repeat every pat.
+	   The tip-over line opts out because it is the payoff, not another pat. */
 	const SPEECH_ANNOUNCE_GAP_MS = 1400;
 	/* Idle chatter: the first chance comes after this long alone, then at most
 	   one line per 25-30s. Failed rolls retry a few seconds later. */
@@ -67,8 +68,8 @@
 	const POKE_LIMIT = 3;
 	/* The tipped sheet runs 900 + 900 + 700 + 900 ms, then he lies there for a
 	   beat before getting up (the sheet's last frame is held). */
-	const TIP_DOWN_MS = 2700;
-	const TIP_STATIC_MS = 2800;
+	const TIP_DOWN_MS = 1100;
+	const TIP_STATIC_MS = 1600;
 
 	type Pose =
 		| 'idle'
@@ -512,8 +513,10 @@
 	 * sleep and the off-duty lines are ambient, and reading them aloud would be
 	 * noise. The announcement is throttled separately from the bubble, so rapid
 	 * pats still change the words on screen without re-reading them every time.
+	 * A tipping line bypasses the throttle: it is the payoff of three pokes, not
+	 * another pat.
 	 */
-	function say(kind: LineKind, options: { announce?: boolean } = {}): void {
+	function say(kind: LineKind, options: { announce?: boolean; force?: boolean } = {}): void {
 		if (!browser) return;
 		const text = pickLine(kind);
 		if (!text) return;
@@ -531,7 +534,7 @@
 
 		if (options.announce) {
 			const now = performance.now();
-			if (now - lastSpokenAt < SPEECH_ANNOUNCE_GAP_MS) return;
+			if (!options.force && now - lastSpokenAt < SPEECH_ANNOUNCE_GAP_MS) return;
 			lastSpokenAt = now;
 			spokenLine = `Pip says: ${text}`;
 		}
@@ -665,7 +668,7 @@
 		lastActivity = now;
 		setPose('tipped');
 		announce('Pip tips over.');
-		say('tipOver', { announce: true });
+		say('tipOver', { announce: true, force: true });
 		spawnParticle('smoke', floorOrigin());
 
 		if (reducedMotion) {
