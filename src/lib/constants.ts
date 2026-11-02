@@ -65,7 +65,7 @@ export const INTERACTIVE_BACKGROUND = {
 	},
 
 	stars: {
-		count: 50,
+		count: 80,
 		activationRadius: 100,
 		activationMs: 3000,
 
@@ -145,9 +145,10 @@ export const INTERACTIVE_BACKGROUND = {
 		// and they double the fill cost.
 		maxDpr: 2,
 
-		// The aurora is a 60px-blurred wash under everything, so it is painted once at
-		// half resolution and magnified. The clouds likewise never need device pixels.
-		auroraResolutionScale: 0.5,
+		// The aurora is a 60px-blurred wash under everything, painted once. At half
+		// resolution the 2x magnification made the gradient's banding visible, so it is
+		// rendered at full CSS-pixel resolution and dithered instead.
+		auroraResolutionScale: 1,
 		cloudResolutionScale: 1,
 
 		// Star glow is a pre-rendered sprite per size bucket.
@@ -155,10 +156,15 @@ export const INTERACTIVE_BACKGROUND = {
 
 		// `animation: aurora-wave 20s ease-in-out infinite` + `opacity: 0.8`, recreated
 		// in canvas coordinates instead of the compositor.
-		auroraOpacity: 0.8,
+		auroraOpacity: 0.72,
 		auroraWaveMs: 20000,
 		auroraWaveOffsetPx: 30,
 		auroraWaveScaleY: 1.1,
+
+		// Banding in a huge, very low-alpha gradient is 8-bit quantisation, not blur
+		// radius. A 4x4 ordered dither of this amplitude (in 8-bit levels) breaks the
+		// bands up without reading as grain.
+		auroraDither: 1.15,
 
 		// `@keyframes cloud-float`: 20s, translateY(-20px) at the halfway point.
 		cloudBobMs: 20000,

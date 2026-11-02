@@ -129,6 +129,55 @@ function blurSurface(surface: Surface, blurPx: number) {
 }
 
 /**
+ * Break up 8-bit banding with a 4x4 ordered dither.
+ *
+ * A full-viewport gradient at 8-12% alpha spans only a handful of 8-bit steps, so it
+ * quantises into visible contours no matter how large the blur is. Offsetting each pixel
+ * by a fraction of a level in a Bayer pattern moves the contour boundaries below the eye's
+ * threshold and costs one pass at sprite-build time. The alpha channel gets half the
+ * amplitude; dithering it as hard as colour reads as speckle in a translucent wash.
+ */
+const BAYER_4 = [
+	0, 8, 2, 10,
+	12, 4, 14, 6,
+	3, 11, 1, 9,
+	15, 7, 13, 5
+] as const;
+
+function ditherSurface(surface: Surface, amplitude: number) {
+	const { canvas, ctx } = surface;
+	if (!(amplitude > 0) || canvas.width < 2 || canvas.height < 2) return;
+
+	const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	const data = image.data;
+
+	for (let y = 0; y < canvas.height; y++) {
+		const rowBase = (y & 3) * 4;
+		for (let x = 0; x < canvas.width; x++) {
+			const i = (y * canvas.width + x) * 4;
+			const alpha = data[i + 3];
+			if (alpha === 0) continue;
+
+			// -0.5 .. +0.5 in units of `amplitude`
+			const t = BAYER_4[rowBase + (x & 3)] / 16 - 0.5;
+			const offset = t * 2 * amplitude;
+			const alphaOffset = offset * 0.5;
+
+			data[i] = clampByte(data[i] + offset);
+			data[i + 1] = clampByte(data[i + 1] + offset);
+			data[i + 2] = clampByte(data[i + 2] + offset);
+			data[i + 3] = clampByte(alpha + alphaOffset);
+		}
+	}
+
+	ctx.putImageData(image, 0, 0);
+}
+
+function clampByte(value: number) {
+	return value < 0 ? 0 : value > 255 ? 255 : value;
+}
+
+/**
  * Fill an elliptical radial gradient. Canvas only has circular gradients, so the
  * context is scaled into the ellipse's coordinate space first.
  */
@@ -271,7 +320,7 @@ function createCloudSprite(cloud: Cloud, scale: number): Sprite {
 	return { source: surface.canvas, width: cssWidth, height: cssHeight };
 }
 
-/** The aurora wash: viewport-sized, blurred once, drawn as a single image. */
+/** The aurora wash: viewport-sized, blurred once, dithered once, drawn as a single image. */
 export function createAuroraSprite(width: number, height: number): Sprite {
 	const scale = BG.render.auroraResolutionScale;
 	const surface = createSurface(width * scale, height * scale);
@@ -294,6 +343,7 @@ export function createAuroraSprite(width: number, height: number): Sprite {
 	ctx.restore();
 
 	blurSurface(surface, AURORA_LOOK.blurPx * scale);
+	ditherSurface(surface, BG.render.auroraDither);
 
 	return { source: surface.canvas, width, height };
 }
