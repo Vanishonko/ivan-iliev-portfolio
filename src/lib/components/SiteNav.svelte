@@ -37,7 +37,7 @@
 			>
 			<span class="flex items-baseline gap-[3px]">
 				<span
-					class="font-typewriter text-[15px] uppercase tracking-[0.06em] text-[#f3f0ff] transition-all duration-300 group-hover:text-white group-hover:[text-shadow:0_0_22px_rgba(167,139,250,0.45)] sm:text-base"
+					class="font-typewriter text-[15px] lowercase tracking-[0.01em] text-[#f3f0ff] transition-all duration-300 group-hover:text-white group-hover:[text-shadow:0_0_22px_rgba(167,139,250,0.45)] sm:text-base"
 				>
 					ivan iliev
 				</span>
