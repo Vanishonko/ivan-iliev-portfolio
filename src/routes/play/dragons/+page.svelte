@@ -148,6 +148,18 @@
 					<p class="mt-1 text-xs leading-relaxed text-muted-50/55">Same kid, better tooling.</p>
 				</div>
 			</div>
+
+			<div class="mt-6 rounded-2xl border border-white/10 bg-white/[0.02] p-5 sm:p-6">
+				<p class="font-typewriter text-xs uppercase tracking-[0.18em] text-muted-50/55">the rest of the shelf</p>
+				<p class="mt-2 max-w-2xl text-sm leading-relaxed text-muted-50/70">
+					Dragons used to live on <a
+						class="underline underline-offset-4 hover:text-white"
+						href="http://feckliga.free.bg">feckliga.free.bg</a
+					> — a page I made in 2016 to stop losing things, which still links the other survivors: a Voronoi sketch,
+					a work-in-progress RPG, a game called <em>Dodge the Wurst</em>, and a Game of Life. Most of them are as
+					broken as they are old, which is rather the point.
+				</p>
+			</div>
 		</div>
 	</section>
 </main>

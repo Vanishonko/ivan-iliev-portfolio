@@ -32,16 +32,19 @@
 	>
 		<a href="/" class="group flex items-center gap-2.5">
 			<span
-				class="flex h-7 w-7 items-center justify-center rounded-md border border-violet-300/25 bg-violet-400/10 font-typewriter text-[11px] leading-none text-violet-100 shadow-[0_0_16px_-6px_rgba(167,139,250,0.9)] transition group-hover:border-violet-300/40 group-hover:bg-violet-400/15"
+				class="relative flex h-7 w-7 items-center justify-center rounded-md border border-violet-300/30 bg-gradient-to-br from-violet-400/20 to-violet-500/5 font-typewriter text-[11px] leading-none text-violet-100 shadow-[0_0_18px_-6px_rgba(167,139,250,0.9)] transition group-hover:border-violet-300/50 group-hover:from-violet-400/30 sm:h-8 sm:w-8 sm:text-xs"
 				aria-hidden="true">ii</span
 			>
-			<span class="flex items-baseline gap-1">
+			<span class="flex items-baseline gap-[3px]">
 				<span
-					class="font-typewriter text-[15px] tracking-[-0.01em] text-muted-50 transition-colors group-hover:text-white sm:text-base"
+					class="font-typewriter text-[15px] uppercase tracking-[0.06em] text-[#f3f0ff] transition-all duration-300 group-hover:text-white group-hover:[text-shadow:0_0_22px_rgba(167,139,250,0.45)] sm:text-base"
 				>
 					ivan iliev
 				</span>
-				<span class="caret mb-[3px] inline-block h-3.5 w-[3px] bg-amber-300/90" aria-hidden="true"></span>
+				<span
+					class="caret mb-[3px] inline-block h-3.5 w-[3px] rounded-[1px] bg-violet-300 shadow-[0_0_9px_rgba(167,139,250,0.95)]"
+					aria-hidden="true"
+				></span>
 			</span>
 		</a>
 

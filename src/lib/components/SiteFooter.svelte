@@ -8,9 +8,12 @@
 	<div class="mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-10 sm:px-6 sm:py-12">
 		<div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
 			<div class="space-y-2">
-				<p class="font-typewriter text-sm text-muted-50">[ivan iliev]</p>
+				<p class="flex items-baseline gap-1.5 font-typewriter text-sm uppercase tracking-[0.06em] text-[#f3f0ff]">
+					ivan iliev
+					<span class="inline-block h-3 w-[3px] rounded-[1px] bg-violet-300/90" aria-hidden="true"></span>
+				</p>
 				<p class="max-w-sm text-sm text-muted-50/70">
-					ICT student at HZ University of Applied Sciences, Vlissingen. Open to internships.
+					ICT student at HZ University of Applied Sciences, Vlissingen. Open to work.
 				</p>
 			</div>
 

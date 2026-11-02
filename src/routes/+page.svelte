@@ -72,7 +72,7 @@
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE}>
 				<p class="mb-6 inline-flex items-center gap-2 rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1 text-xs text-emerald-200/90">
 					<span class="h-1.5 w-1.5 rounded-full bg-emerald-300"></span>
-					Vlissingen, NL · open to internships
+					Vlissingen, NL · open to work
 				</p>
 			</AnimatedSection>
 
@@ -222,10 +222,10 @@
 			<div
 				class="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/10 via-transparent to-amber-400/5 p-6 sm:p-8"
 			>
-				<h2 id="contact-heading" class="text-lg text-muted-50">Looking for an intern who ships?</h2>
+				<h2 id="contact-heading" class="text-lg text-muted-50">Looking for someone who ships?</h2>
 				<p class="mt-2 max-w-lg text-sm leading-relaxed text-muted-50/70">
-					I'm in my final stretch at HZ and open to an internship or a junior role where I can build things people
-					actually open. The CV is above; the rest is one click away.
+					I'm in my final stretch at HZ and open to work — an internship, a junior role, or a project that needs a pair of
+					hands. The CV is above; the rest is one click away.
 				</p>
 				<div class="mt-5 flex flex-wrap gap-3">
 					<a
