@@ -13,6 +13,14 @@
 		<priority>0.8</priority>
 	</url>
 	<url>
+		<loc>https://www.ivaniliev.online/play</loc>
+		<priority>0.8</priority>
+	</url>
+	<url>
+		<loc>https://www.ivaniliev.online/play/dewdrop-bend</loc>
+		<priority>0.7</priority>
+	</url>
+	<url>
 		<loc>https://www.ivaniliev.online/play/driftblock</loc>
 		<priority>0.7</priority>
 	</url>

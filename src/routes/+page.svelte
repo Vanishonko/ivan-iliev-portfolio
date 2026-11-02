@@ -8,6 +8,13 @@
 
 	const selected = [
 		{
+			href: '/play/dewdrop-bend',
+			title: 'Dewdrop Bend',
+			year: '2026',
+			stack: 'vanilla JS · Canvas 2D · no dependencies',
+			line: 'A living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag.'
+		},
+		{
 			href: '/projects#driftblock',
 			title: 'driftblock',
 			year: '2026',
@@ -38,6 +45,7 @@
 	];
 
 	const kindColour: Record<string, string> = {
+		start: 'bg-violet-400/15 text-violet-200/90',
 		school: 'bg-white/10 text-muted-50/78',
 		team: 'bg-sky-400/10 text-sky-200/80',
 		work: 'bg-amber-400/10 text-amber-200/80',
@@ -83,8 +91,9 @@
 
 			<AnimatedSection delay={ANIMATION_DELAY.SUBTITLE} class="mt-5">
 				<p class="max-w-xl text-base leading-relaxed text-muted-50/82 sm:text-lg">
-					{PAGE_SUBTITLE}. I build things that run in a browser and do something you can watch — a drift racer
-					with no assets, a racing AI that trains itself, and a workshop of tools for an agent I use every day.
+					{PAGE_SUBTITLE}. I build things that run in a browser and do something you can watch — a pond that keeps
+					time, a drift racer with no assets, a racing AI that trains itself, and a workshop of tools for an agent
+					I use every day.
 				</p>
 			</AnimatedSection>
 

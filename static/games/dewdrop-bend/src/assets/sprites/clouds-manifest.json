@@ -1,0 +1,52 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "asset": "clouds",
+  "sheetLayout": "horizontal",
+  "facing": "none",
+  "flip": "none",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": false,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 8,
+  "sprites": {
+    "clouds": {
+      "file": "clouds.png",
+      "sidecar": "clouds.pixelart.json",
+      "cell": { "w": 64, "h": 32 },
+      "frameCount": 3,
+      "frameOrder": ["cumulus", "stratus", "wisp"],
+      "sheet": { "width": 192, "height": 32 },
+      "anchor": {
+        "x": 32,
+        "y": 16,
+        "mode": "center",
+        "normalized": { "x": 0.5, "y": 0.5 },
+        "origin": "top-left"
+      },
+      "drawFps": 0,
+      "loop": false,
+      "colourCount": 5,
+      "opaqueColourCount": 5,
+      "palette": {
+        "#f7eccf": "cream (lit top rim)",
+        "#f6f0da": "cloud (body)",
+        "#cfdfd1": "cloud-shade (pale grey-green underside)",
+        "#a6d6d2": "sky-mid (pale blue-grey underside)",
+        "#79bfc7": "sky-high (deepest blue-grey base)"
+      },
+      "frameNotes": [
+        { "index": 0, "id": "cumulus", "note": "broad three-lobed cumulus with a flat, scalloped base; 3-4 px pale blue-grey underside and a cream sunward top" },
+        { "index": 1, "id": "stratus", "note": "long layered band with an attached upper layer, hanging lower tendrils and torn ends" },
+        { "index": 2, "id": "wisp", "note": "two continuous thin curls plus two detached high wisps; sparse and airy" }
+      ],
+      "notes": "Transparent 192x32 sheet, three 64x32 cells left to right. Neutral cream and pale blue-grey so the engine can tint the same sheet for day, golden hour, night and rain. No baked shadow. drawFps 0: the engine owns drift, wrapping and depth tinting; anchors are the cell centres.",
+      "recommendedAnchors": [
+        { "id": "far", "y": 30, "scale": 0.8, "speed": 2.0, "parallax": 0.25, "alpha": 0.65 },
+        { "id": "mid", "y": 42, "scale": 1.0, "speed": 4.0, "parallax": 0.5, "alpha": 0.85 },
+        { "id": "near", "y": 54, "scale": 1.25, "speed": 6.0, "parallax": 0.8, "alpha": 1.0 }
+      ]
+    }
+  }
+}

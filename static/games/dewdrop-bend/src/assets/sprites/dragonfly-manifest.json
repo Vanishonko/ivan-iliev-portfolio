@@ -1,0 +1,72 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "group": "odonates",
+  "sheetLayout": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 14,
+  "facingNote": "Side/three-quarter profile facing RIGHT; the engine flips horizontally for leftward travel.",
+  "sprites": {
+    "dragonfly": {
+      "file": "dragonfly.png",
+      "sidecar": "dragonfly.pixelart.json",
+      "cell": {
+        "w": 22,
+        "h": 12
+      },
+      "sheet": {
+        "w": 88,
+        "h": 12
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "glide-spread",
+        "downstroke",
+        "wing-tuck",
+        "recovery"
+      ],
+      "order": [0, 1, 2, 3],
+      "loop": "0 -> 1 -> 2 -> 3 -> 0",
+      "fps": 8,
+      "facing": "right",
+      "flip": "horizontal",
+      "rotateToHeading": false,
+      "drawAnchor": "center",
+      "hoverAnchor": {
+        "x": 11,
+        "y": 6,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "bodyCentre": {
+        "x": 12,
+        "y": 6
+      },
+      "bodyStable": true,
+      "animatedParts": [
+        "near-wing-pair",
+        "far-wing-pair"
+      ],
+      "wingSpans": [14, 13, 12, 15],
+      "opaqueColourCount": 8,
+      "paletteNames": [
+        "ink",
+        "water-deep",
+        "water-mid",
+        "sky-high",
+        "wing",
+        "foam",
+        "cream",
+        "leaf"
+      ],
+      "notes": "Side/three-quarter dragonfly facing right, 22x12 cell. Long segmented teal-green abdomen (ink/water-deep underside, water-mid and sky-high segments) with a leaf-green thorax; large pale-cyan eye with one cream glint and a selective ink rim. Four long translucent wings radiate around the thorax: two near wings are 2px pale blades (wing leading + foam membrane) and two far wings are 1px teal leading edges over foam; pale tips catch the light. The upper pair opens a 1px transparent gap, the lower pair tucks tight to the abdomen, and the gaps plus the alternating wing/foam tones give the translucency. Four-frame glide beat: wing tips sweep back/forward and up/down by 1-2px per frame (spans 14/13/12/15px). The body, head and tail are pixel-identical in all four frames (fully anchored, no tail flick); the only changed pixels are wings. No baked shadow."
+    }
+  }
+}

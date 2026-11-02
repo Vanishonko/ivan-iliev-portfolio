@@ -2,6 +2,25 @@ import type { Project } from '$lib/types';
 
 export const projects = [
 	{
+		id: 'dewdrop-bend',
+		title: 'Dewdrop Bend',
+		subtitle: 'Pixel-art pond • Canvas 2D • No dependencies',
+		tags: ['Canvas 2D', 'Vanilla JS', 'Procedural audio', 'Pixel art'],
+		description: [
+			'A small, living pixel-art pond with a full 24-hour sky. Drag the clock hands through dawn, golden hour, dusk and a firefly-lit night; the sun and moon rise behind the painted ridge, the light and the stars follow, and the moon keeps its real phase.',
+			'Thirteen creatures each have a hand-authored sprite, a behaviour and a field note: bees work the flowers you plant, frogs hop between lily pads, striders and tadpoles leave wakes on the water, and a single cloud button brings rain that samples the pond’s real uneven shoreline. Vanilla JavaScript and Canvas 2D — no frameworks, no runtime dependencies, no external image or sound files.'
+		],
+		galleryImages: ['/images/dewdrop-day.png'],
+		galleryAspect: 'wide',
+		galleryLabel: 'Dewdrop Bend',
+		links: [
+			{
+				label: 'Visit the pond',
+				href: '/play/dewdrop-bend'
+			}
+		]
+	},
+	{
 		id: 'driftblock',
 		title: 'driftblock',
 		subtitle: '3D drift racing • WebGL • No build step',

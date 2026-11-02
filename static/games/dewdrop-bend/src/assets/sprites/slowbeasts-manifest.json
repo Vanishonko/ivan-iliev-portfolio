@@ -1,0 +1,107 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "sheetLayout": "horizontal",
+  "facing": "right",
+  "flip": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 14,
+  "sprites": {
+    "snail": {
+      "file": "snail.png",
+      "sidecar": "snail.pixelart.json",
+      "cell": {
+        "w": 11,
+        "h": 9
+      },
+      "sheet": {
+        "w": 44,
+        "h": 9
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "wave-toe",
+        "wave-front",
+        "wave-mid",
+        "wave-tail"
+      ],
+      "fps": 3,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "drawAnchor": "bottom",
+      "groundAnchor": {
+        "x": 5.5,
+        "y": 9,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 1
+        }
+      },
+      "contactRow": 8,
+      "engineShadow": true,
+      "opaqueColourCount": 7,
+      "paletteNames": [
+        "shell",
+        "shell-dark",
+        "amber",
+        "cream",
+        "stone",
+        "stone-dark",
+        "ink"
+      ],
+      "notes": "Side view facing right. Warm ochre shell with a dark shell-dark seam spiralling from the lower-right aperture into a 1px apex, an amber growth band along the shadow-side outer whorl and a cream rim light on the upper-right shoulder; the shell is pixel-identical on all four frames. Soft stone/stone-dark foot and head, two eyestalks with ink tips. 4-frame slow glide, shell held stable: a 2px foot crease and a 1px sole-arch gap travel 2px per frame from the toe (frame 0) to the tail (frame 3), and the stalks act against it - rear tip sways 1px left while the front tip lifts and dips 1px. Contact row 8 stays planted except the travelling arch. No baked shadow; the engine adds the 1px ground shadow at the sole."
+    },
+    "waterstrider": {
+      "file": "waterstrider.png",
+      "sidecar": "waterstrider.pixelart.json",
+      "cell": {
+        "w": 13,
+        "h": 7
+      },
+      "sheet": {
+        "w": 52,
+        "h": 7
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "middle-out",
+        "middle-back",
+        "middle-lift",
+        "middle-swing"
+      ],
+      "fps": 9,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "drawAnchor": "center",
+      "surfaceAnchor": {
+        "x": 6.5,
+        "y": 3.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "footRows": [
+        0,
+        6
+      ],
+      "engineShadow": false,
+      "opaqueColourCount": 3,
+      "paletteNames": [
+        "ink",
+        "ink-warm",
+        "foam"
+      ],
+      "notes": "Top view facing right. Segmented 1px body on row 3: a clear 3px ink abdomen (x3-x5), a 3px ink-warm thorax (x6-x8) and a 2px ink head (x9-x10). Six visibly connected legs: the two short forelegs lie forward along y2/y4 from the head flanks; the long surface legs are the middle pair (root x7, knee at x8/y1, tarsus lying along surface row 0/6 to the front corners x12) and the trailing hind pair (root x6, foot at x1). Only the four surface feet carry a 1px foam dimple; the lifted middle feet and the held forelegs carry none, and no ripple trails exist. 4-frame rowing loop: middle-out (feet at x12) -> middle-back (dimples slide to x11) -> middle-lift (middle legs tuck, no dimples) -> middle-swing (middle legs reach forward airborne) -> loop. No ground shadow; the dimples are the only contact evidence."
+    }
+  }
+}

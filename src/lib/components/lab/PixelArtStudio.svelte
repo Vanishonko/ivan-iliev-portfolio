@@ -11,11 +11,15 @@
 	type Tool = 'pen' | 'eraser' | 'eyedropper';
 	type Cell = { x: number; y: number };
 	type PaletteEntry = { name: string; hex: string; ink: string };
+	type GalleryMotion =
+		| { kind: 'bob'; duration: number }
+		| { kind: 'strip'; frames: number; durations: number[]; preset: 'even' | 'blink' };
 	type GalleryItem = {
 		id: string;
 		src: string;
 		label: string;
 		meta: string;
+		motion?: GalleryMotion;
 		decode:
 			| { kind: 'pixels'; x: number; y: number }
 			| { kind: 'sample'; x: number; y: number; step: number };
@@ -48,6 +52,7 @@
 			src: '/pixelart/slime-idle.png',
 			label: 'Slime idle',
 			meta: 'idle · 32×32',
+			motion: { kind: 'bob', duration: 2000 },
 			decode: { kind: 'pixels', x: 0, y: 0 }
 		},
 		{
@@ -55,6 +60,24 @@
 			src: '/pixelart/slime-blink.png',
 			label: 'Slime blink',
 			meta: 'blink · frame 1/3',
+			// Percentages below match 900 / 120 / 140 ms out of 1160 ms.
+			motion: { kind: 'strip', frames: 3, durations: [900, 120, 140], preset: 'blink' },
+			decode: { kind: 'pixels', x: 0, y: 0 }
+		},
+		{
+			id: 'hop',
+			src: '/pixelart/blob-hop.png',
+			label: 'Blob hop',
+			meta: 'hop · 4 frames',
+			motion: { kind: 'strip', frames: 4, durations: [180, 180, 180, 180], preset: 'even' },
+			decode: { kind: 'pixels', x: 0, y: 0 }
+		},
+		{
+			id: 'candle',
+			src: '/pixelart/candle-flicker.png',
+			label: 'Candle flicker',
+			meta: 'flicker · 4 frames',
+			motion: { kind: 'strip', frames: 4, durations: [220, 220, 220, 220], preset: 'even' },
 			decode: { kind: 'pixels', x: 0, y: 0 }
 		},
 		{
@@ -89,6 +112,7 @@
 	let canvasFocused = $state(false);
 	let loadedGalleryId = $state<string | null>(null);
 	let galleryBusy = $state<string | null>(null);
+	let pageVisible = $state(true);
 	let status = $state('Blank canvas — draw something, or load a plugin sprite.');
 
 	let strokeActive = false;
@@ -143,6 +167,19 @@
 		context.imageSmoothingEnabled = false;
 		drawPixels(context, currentPixels);
 	});
+
+	// Gallery sprites are pure CSS animation; stop the clock while the tab is hidden.
+	$effect(() => {
+		const syncVisibility = () => {
+			pageVisible = !document.hidden;
+		};
+		syncVisibility();
+		document.addEventListener('visibilitychange', syncVisibility);
+		return () => document.removeEventListener('visibilitychange', syncVisibility);
+	});
+
+	const motionDuration = (durations: number[]) =>
+		durations.reduce((total, duration) => total + duration, 0);
 
 	function pushUndo() {
 		const next = [...undoStack, pixels.slice()];
@@ -668,6 +705,8 @@
 					type="button"
 					class="gallery-item"
 					class:is-loaded={loadedGalleryId === item.id}
+					class:gallery-item--wide={item.id === 'review'}
+					data-gallery={item.id}
 					aria-label={`Load ${item.label}, ${item.meta}, into the editor`}
 					aria-pressed={loadedGalleryId === item.id}
 					aria-busy={galleryBusy === item.id}
@@ -675,7 +714,35 @@
 					onclick={() => loadGalleryArt(item)}
 				>
 					<span class="gallery-thumb">
-						<img src={item.src} alt="" draggable="false" decoding="async" />
+						{#if item.motion?.kind === 'strip'}
+							<span class="sprite-window" aria-hidden="true">
+								<img
+									class="sprite-strip"
+									class:sprite-even={item.motion.preset === 'even'}
+									class:sprite-blink={item.motion.preset === 'blink'}
+									class:is-paused={!pageVisible}
+									src={item.src}
+									alt=""
+									draggable="false"
+									decoding="async"
+									style={`--frames:${item.motion.frames};--duration:${motionDuration(
+										item.motion.durations
+									)}ms;`}
+								/>
+							</span>
+						{:else if item.motion?.kind === 'bob'}
+							<img
+								class="sprite-bob"
+								class:is-paused={!pageVisible}
+								src={item.src}
+								alt=""
+								draggable="false"
+								decoding="async"
+								style={`--duration:${item.motion.duration}ms;`}
+							/>
+						{:else}
+							<img src={item.src} alt="" draggable="false" decoding="async" />
+						{/if}
 					</span>
 					<span class="gallery-label">{item.label}</span>
 					<span class="gallery-meta mono">{galleryBusy === item.id ? 'loading…' : item.meta}</span>
@@ -1109,6 +1176,10 @@
 		gap: 0.4rem;
 	}
 
+	.gallery-item--wide {
+		grid-column: span 2;
+	}
+
 	.gallery-item {
 		display: flex;
 		flex-direction: column;
@@ -1145,10 +1216,11 @@
 	}
 
 	.gallery-thumb {
+		--thumb: 4rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		min-height: 3.5rem;
+		min-height: 4.75rem;
 		padding: 0.4rem;
 		background-image:
 			linear-gradient(45deg, rgba(255, 255, 255, 0.028) 25%, transparent 25%),
@@ -1170,6 +1242,90 @@
 		height: auto;
 		width: auto;
 		image-rendering: pixelated;
+	}
+
+	.gallery-item--wide .gallery-thumb img {
+		max-height: 3.25rem;
+	}
+
+	/* Animated examples: 32px frames shown at exactly 2x (64px). */
+	.sprite-window {
+		display: block;
+		width: var(--thumb);
+		height: var(--thumb);
+		overflow: hidden;
+		image-rendering: pixelated;
+	}
+
+	.gallery-thumb .sprite-strip {
+		display: block;
+		width: calc(var(--thumb) * var(--frames));
+		height: var(--thumb);
+		max-width: none;
+		max-height: none;
+		image-rendering: pixelated;
+		animation-duration: var(--duration);
+		animation-iteration-count: infinite;
+	}
+
+	.gallery-thumb .sprite-strip.sprite-even {
+		animation-name: sprite-even;
+		animation-timing-function: steps(4);
+	}
+
+	.gallery-thumb .sprite-strip.sprite-blink {
+		animation-name: sprite-blink;
+		animation-timing-function: step-end;
+	}
+
+	.gallery-thumb .sprite-bob {
+		width: var(--thumb);
+		height: var(--thumb);
+		max-width: none;
+		max-height: none;
+		image-rendering: pixelated;
+		animation: sprite-bob var(--duration) step-end infinite;
+	}
+
+	.gallery-thumb .sprite-strip.is-paused,
+	.gallery-thumb .sprite-bob.is-paused {
+		animation-play-state: paused;
+	}
+
+	@keyframes sprite-even {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(calc(var(--thumb) * -4));
+		}
+	}
+
+	@keyframes sprite-blink {
+		0% {
+			transform: translateX(0);
+		}
+		77.59% {
+			transform: translateX(calc(var(--thumb) * -1));
+		}
+		87.94% {
+			transform: translateX(calc(var(--thumb) * -2));
+		}
+		100% {
+			transform: translateX(calc(var(--thumb) * -2));
+		}
+	}
+
+	@keyframes sprite-bob {
+		0% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(calc(var(--thumb) * -1 / 32));
+		}
+		100% {
+			transform: translateY(calc(var(--thumb) * -1 / 32));
+		}
 	}
 
 	.gallery-label {
@@ -1241,6 +1397,16 @@
 		}
 	}
 
+	@media (max-width: 20rem) {
+		.gallery-strip {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		.gallery-item--wide {
+			grid-column: 1 / -1;
+		}
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		.pixel-art-studio *,
 		.pixel-art-studio *::before,
@@ -1249,6 +1415,13 @@
 			transition-duration: 0.001ms !important;
 			animation-duration: 0.001ms !important;
 			animation-iteration-count: 1 !important;
+		}
+
+		/* Show the first frame, no loop. */
+		.gallery-thumb .sprite-strip,
+		.gallery-thumb .sprite-bob {
+			animation: none !important;
+			transform: none !important;
 		}
 
 		.swatch:hover {

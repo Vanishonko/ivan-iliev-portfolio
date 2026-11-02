@@ -1,0 +1,108 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "sheetLayout": "horizontal",
+  "facing": "right",
+  "flip": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 16,
+  "sprites": {
+    "honeybee": {
+      "file": "bee-honey.png",
+      "sidecar": "bee-honey.pixelart.json",
+      "cell": {
+        "w": 10,
+        "h": 8
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "wings-up",
+        "wings-level",
+        "wings-forward",
+        "wings-mid"
+      ],
+      "bodyPhases": [
+        "low",
+        "high",
+        "low",
+        "high"
+      ],
+      "fps": 12,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "hoverAnchor": {
+        "x": 5,
+        "y": 4,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "opaqueColourCount": 8,
+      "paletteNames": [
+        "bee-gold",
+        "amber",
+        "bee-brown",
+        "ink-warm",
+        "ink",
+        "wing",
+        "sky-mid",
+        "cream"
+      ],
+      "notes": "Side profile facing right. Warm gold abdomen with dark ink-warm bands, separate brown thorax and ink head with cream eye, 1px stinger at the tail and two tiny legs. Pale 1px wings with a sky-mid root; four-frame hover loop with a 1px body bob. No baked shadow."
+    },
+    "bumblebee": {
+      "file": "bee-bumble.png",
+      "sidecar": "bee-bumble.pixelart.json",
+      "cell": {
+        "w": 12,
+        "h": 9
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "wings-up",
+        "wings-level",
+        "wings-forward",
+        "wings-mid"
+      ],
+      "bodyPhases": [
+        "low",
+        "low",
+        "high",
+        "high"
+      ],
+      "fps": 7,
+      "loop": true,
+      "facing": "right",
+      "flip": "horizontal",
+      "hoverAnchor": {
+        "x": 6,
+        "y": 4.5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "opaqueColourCount": 8,
+      "paletteNames": [
+        "bee-gold",
+        "amber",
+        "bee-brown",
+        "ink-warm",
+        "ink",
+        "wing",
+        "sky-mid",
+        "cream"
+      ],
+      "notes": "Rounder, heavier side profile facing right: a big fuzzy oval of ink-warm and bee-brown with a small ink head, cream eye and three tiny legs. Two warm gold bands (bee-gold centres edged in amber) crown in 1px fur tufts, so the outline reads chipped rather than elliptical. Short, narrow 1px wings with a sky-mid root, clearly smaller than the honeybee's; slower four-frame hover loop with the 1px body bob held two frames low and two high. No baked shadow."
+    }
+  }
+}

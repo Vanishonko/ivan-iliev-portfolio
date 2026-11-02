@@ -1,0 +1,47 @@
+{
+  "name": "frog",
+  "image": "frog.png",
+  "sidecar": "frog.pixelart.json",
+  "cell": { "width": 20, "height": 15 },
+  "frameCount": 8,
+  "layout": "horizontal-strip",
+  "frameOrder": [
+    "0 idle",
+    "1 idle-blink",
+    "2 croak-inflate",
+    "3 croak-full",
+    "4 crouch",
+    "5 push-off",
+    "6 airborne",
+    "7 landing"
+  ],
+  "facing": "right",
+  "flipXForLeftFacing": true,
+  "groundRow": 14,
+  "groundRowNote": "0-based bottom cell row. Every frame's lowest opaque pixel is on row 14 - all eight are bottom-aligned, with no baked vertical lift. The engine supplies the whole hop arc.",
+  "pivot": { "x": 10, "y": 14 },
+  "pivotNote": "Draw the cell so this pixel sits on the ground line the frog hops along. x=10 is the body centre between the feet. Add the hop's vertical translation in engine code only.",
+  "frames": [
+    { "index": 0, "name": "idle",           "offset": { "x": 0, "y": 0 }, "heightPx": 12, "groundContact": true,  "note": "neutral sit" },
+    { "index": 1, "name": "idle-blink",     "offset": { "x": 0, "y": 0 }, "heightPx": 12, "groundContact": true,  "note": "eyes closed, throat puffs 1px; pairs with 0" },
+    { "index": 2, "name": "croak-inflate",  "offset": { "x": 0, "y": 0 }, "heightPx": 12, "groundContact": true,  "note": "jaw drops, cream sac 4px" },
+    { "index": 3, "name": "croak-full",     "offset": { "x": 0, "y": 0 }, "heightPx": 12, "groundContact": true,  "note": "widest mouth, sac 5px" },
+    { "index": 4, "name": "crouch",         "offset": { "x": 0, "y": 0 }, "heightPx": 10, "groundContact": true,  "note": "anticipation: body compressed 2px, head tucked, feet pulled in under the belly" },
+    { "index": 5, "name": "push-off",       "offset": { "x": 0, "y": 0 }, "heightPx": 12, "groundContact": true,  "note": "hind leg straightened and driven back to the ground line, front legs lifted, body pitched nose-up" },
+    { "index": 6, "name": "airborne",       "offset": { "x": 0, "y": 0 }, "heightPx": 10, "groundContact": false, "note": "body elongated to 18px wide and flattened, all four limbs stretched to the cell corners" },
+    { "index": 7, "name": "landing",        "offset": { "x": 0, "y": 0 }, "heightPx": 8,  "groundContact": true,  "note": "hard squash: lowest and widest frame, feet splayed, head down" }
+  ],
+  "paletteCount": 8,
+  "palette": {
+    "ink": "#1c2928",
+    "frog-dark": "#4b7b41",
+    "frog": "#78b259",
+    "frog-light": "#aed57b",
+    "belly": "#e8ddab",
+    "cream": "#f7eccf",
+    "gold": "#f1c75a",
+    "leaf-dark": "#3e6447"
+  },
+  "paletteNote": "All eight are documented Dewdrop Bend world-palette colours. ink = selective outline + pupil, leaf-dark = mouth line, cream = eye glint, throat sac and belly highlight.",
+  "transparency": "alpha 0 in every unused cell pixel; no matte colour, no baked shadow."
+}

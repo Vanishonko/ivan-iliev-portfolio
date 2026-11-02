@@ -1,0 +1,152 @@
+{
+  "schema": "dewdrop-bend.sprite-sheets.v1",
+  "area": "sprites",
+  "sheetLayout": "horizontal",
+  "facing": "per-sprite",
+  "flip": "horizontal",
+  "transparentBackground": true,
+  "bakedShadow": false,
+  "engineShadow": true,
+  "palette": "docs/ART_DIRECTION.md#world-palette",
+  "maxOpaqueColoursPerSheet": 14,
+  "sprites": {
+    "ladybug": {
+      "file": "ladybug.png",
+      "sidecar": "ladybug.pixelart.json",
+      "cell": {
+        "w": 9,
+        "h": 7
+      },
+      "sheet": {
+        "w": 36,
+        "h": 7
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "walk-out",
+        "walk-lift",
+        "walk-gather",
+        "walk-plant"
+      ],
+      "fps": 8,
+      "loop": true,
+      "facing": "up",
+      "view": "top",
+      "flip": "horizontal",
+      "drawAnchor": "bottom",
+      "groundAnchor": {
+        "x": 4.5,
+        "y": 7,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 1
+        }
+      },
+      "contactRow": 6,
+      "engineShadow": true,
+      "opaqueColourCount": 6,
+      "paletteNames": [
+        "lady-red",
+        "poppy-shade",
+        "ink",
+        "cream",
+        "blush",
+        "ink-warm"
+      ],
+      "notes": "Top view facing up. Seven-pixel-wide domed shell: lady-red base, poppy-shade shadow crescent on the lower-left arc (rows 3-5) and a cream+blush specular cluster on the upper-right shoulder (rows 1-2) so the shell reads as a lit dome rather than a flat disc. Black ink head is a 3px nub at the top with the outline stepping out to a 5px pronotum; two ink spots sit off the mirror line (upper-left and lower-right) so they never read as eyes. Four 1px ink-warm legs at rows 2 and 4 plus two ink-warm rear feet on contact row 6; the four-frame scuttle lifts the front pair (frame 1), gathers the mid pair (frame 2) and steps the rear feet inboard (frame 3). No baked shadow."
+    },
+    "ladybugFly": {
+      "file": "ladybug-fly.png",
+      "sidecar": "ladybug-fly.pixelart.json",
+      "cell": {
+        "w": 12,
+        "h": 10
+      },
+      "sheet": {
+        "w": 24,
+        "h": 10
+      },
+      "frameCount": 2,
+      "frameOrder": [
+        "wings-out",
+        "wings-raised"
+      ],
+      "fps": 14,
+      "loop": true,
+      "facing": "up",
+      "view": "top-side",
+      "flip": "horizontal",
+      "drawAnchor": "bottom",
+      "groundAnchor": {
+        "x": 6,
+        "y": 10,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 1
+        }
+      },
+      "contactRow": 9,
+      "engineShadow": true,
+      "opaqueColourCount": 7,
+      "paletteNames": [
+        "lady-red",
+        "poppy-shade",
+        "ink",
+        "cream",
+        "ink-warm",
+        "wing",
+        "foam"
+      ],
+      "notes": "Take-off pose, top-side, facing up. The elytra are parted: the lady-red shell reads as two domes split by the exposed ink-warm abdomen (2px seam widening to 4px at the rear), which is what sells the lifted shell. Wings are translucent pale membranes in wing (#d9ecdd) with foam (#c4e5ce) on the outer edge, so they stay legible over both the blue pond and the green banks; their leading edge is a broken ink line - dark only along the outer corner, with the rest of the edge left foam-pale so the wing never turns into a dark shape against the water. Wings sweep from the shoulders out to the cell corners (rows 0-3) and lift one row in the raised frame. The cream is a single specular on the shell's upper-right dome. Black head nub (2px at row 0, 4px at row 1) over the ink thorax; ink-warm legs on contact row 9. Airborne sprite: the engine may blend the last 1px of lift as a hover offset. No baked shadow."
+    },
+    "ant": {
+      "file": "ant.png",
+      "sidecar": "ant.pixelart.json",
+      "cell": {
+        "w": 7,
+        "h": 5
+      },
+      "sheet": {
+        "w": 28,
+        "h": 5
+      },
+      "frameCount": 4,
+      "frameOrder": [
+        "step-out",
+        "step-in",
+        "step-shift",
+        "step-closed"
+      ],
+      "fps": 10,
+      "loop": true,
+      "facing": "right",
+      "view": "side",
+      "flip": "horizontal",
+      "drawAnchor": "bottom",
+      "groundAnchor": {
+        "x": 3.5,
+        "y": 5,
+        "units": "cell-px",
+        "origin": "top-left",
+        "normalized": {
+          "x": 0.5,
+          "y": 1
+        }
+      },
+      "contactRow": 4,
+      "engineShadow": true,
+      "opaqueColourCount": 4,
+      "paletteNames": [
+        "ink-warm",
+        "shadow-warm",
+        "ink",
+        "cream"
+      ],
+      "notes": "Side view facing right. Three-part body reads by value and silhouette: ink-warm gaster at the left with a shadow-warm lit crown, a 2px notch at cols 2-3 above the single waist pixel at (3,2) and a shadow-warm 1x2 thorax, then the ink head at cols 5-6 with a single cream eye and two shadow-warm antennae on row 0. Legs are ink on rows 3-4 so the dark body still separates from them; the four frames alternate the leg diagonals (out, in, shifted, closed) for a quick scuttle. Antennae, waist pinch and the eye are the read-at-6x cues. No baked shadow."
+    }
+  }
+}

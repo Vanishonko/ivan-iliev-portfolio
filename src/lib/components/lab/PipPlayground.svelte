@@ -12,11 +12,26 @@
 	const SIZE = ART * SCALE;
 	const EDGE = 14;
 
+	/* The antenna is drawn separately, like the plugin: an overlay on the same
+	   32×32 grid, with 12 extra art rows above the frame so the tip never clips. */
+	const ANT_EX = 12;
+	const ANT_H = ART + ANT_EX;
+	const ANT_STEM = 6;
+	const ANT_STIFFNESS = 0.2;
+	const ANT_DAMPING = 0.75;
+	const ANT_LEAN = 2.4;
+
+	const ANT_INK = '#0e1228';
+	const ANT_STEM_COLOR = '#b8c8ff';
+	const ANT_BALL_COLOR = '#d2e2ff';
+	const ANT_GLINT_COLOR = '#f6f8ff';
+
 	const WALK_SPEED = 58; // CSS px per second
 	const LOOK_FRAME_MS = 360;
 	const LOOK_NOTICE_MS = 420;
 	const IDLE_TO_SIT_MS = 6500;
 	const SIT_TO_SLEEP_MS = 7500;
+	const TOKE_CHANCE = 0.55;
 
 	type Pose =
 		| 'idle'
@@ -28,7 +43,8 @@
 		| 'giggle'
 		| 'jump'
 		| 'startle'
-		| 'aha';
+		| 'aha'
+		| 'toke';
 
 	type Reaction = Extract<Pose, 'happy' | 'giggle' | 'jump' | 'startle' | 'aha'>;
 
@@ -101,10 +117,33 @@
 			frames: 5,
 			ms: [110, 110, 130, 150, 200],
 			loop: false
+		},
+		toke: {
+			url: '/pip/toke.png',
+			frames: 8,
+			ms: [420, 460, 620, 320, 650, 520, 650, 700],
+			loop: false
 		}
 	};
 
 	const REACTIONS: Reaction[] = ['happy', 'giggle', 'jump', 'startle', 'aha'];
+
+	type HeadAnchor = { x: number; y: number };
+
+	/* Used only until the sheets have loaded and the real head rows are read. */
+	const HEAD_FALLBACK: Record<Pose, number> = {
+		idle: 5,
+		walk: 5,
+		look: 5,
+		sit: 9,
+		sleep: 10,
+		happy: 6,
+		giggle: 5,
+		jump: 8,
+		startle: 8,
+		aha: 7,
+		toke: 5
+	};
 
 	const CAPTIONS: Record<Pose, string> = {
 		idle: 'click him',
@@ -116,7 +155,8 @@
 		giggle: 'hehehe',
 		jump: 'boing!',
 		startle: '!',
-		aha: 'aha!'
+		aha: 'aha!',
+		toke: 'on a break'
 	};
 
 	const ANNOUNCEMENTS: Record<Reaction, string> = {
@@ -139,6 +179,7 @@
 	let x = $state<number | null>(null);
 	let stageWidth = $state(0);
 	let announcement = $state('');
+	let offDuty = $state(false);
 
 	const currentSheet = $derived(SHEETS[pose]);
 	const caption = $derived(CAPTIONS[pose]);
@@ -158,6 +199,18 @@
 	let rootEl = $state<HTMLElement | null>(null);
 	let stageEl = $state<HTMLDivElement | null>(null);
 	let spriteEl = $state<HTMLDivElement | null>(null);
+	let antennaEl = $state<HTMLCanvasElement | null>(null);
+
+	let antennaCtx: CanvasRenderingContext2D | null = null;
+	let anchorCanvas: HTMLCanvasElement | null = null;
+
+	/* Tip offset from the head mount, in art pixels, and its velocity. */
+	let tipOffsetX = 0;
+	let tipOffsetY = 0;
+	let tipVelocityX = 0;
+	let tipVelocityY = 0;
+
+	const headAnchors: Partial<Record<Pose, HeadAnchor[]>> = {};
 
 	let frameElapsed = 0;
 	let holding = false;
@@ -253,6 +306,31 @@
 		announce('Pip fell asleep.');
 	}
 
+	function startToke(): void {
+		if (reducedMotion) return;
+		setPose('toke');
+		announce('Pip is taking a break.');
+		syncLoop();
+	}
+
+	function endToke(): void {
+		lastActivity = performance.now();
+		setPose('idle');
+		announce('Pip is back from his break.');
+	}
+
+	function toggleMood(): void {
+		offDuty = !offDuty;
+		lastActivity = performance.now();
+
+		if (!offDuty && pose === 'toke') {
+			setPose('idle');
+			announce('Pip is back on duty.');
+		}
+
+		if (!reducedMotion) syncLoop();
+	}
+
 	function endReaction(): void {
 		lastActivity = performance.now();
 		if (pointerInside && targetX !== null) {
@@ -324,6 +402,9 @@
 
 			if (frame < sheet.frames - 1) {
 				frame += 1;
+				if (pose === 'jump' && frame === sheet.frames - 1) {
+					kickAntenna(-facing * 0.6, 2.4);
+				}
 				continue;
 			}
 
@@ -339,6 +420,7 @@
 			}
 
 			if (isReaction(pose)) endReaction();
+			else if (pose === 'toke') endToke();
 			else setPose('idle');
 			return;
 		}
@@ -367,14 +449,16 @@
 	function updateMood(now: number): void {
 		if (pose === 'idle') {
 			if (!pointerInside && now - lastActivity >= IDLE_TO_SIT_MS) {
-				startSit(now);
+				if (offDuty && Math.random() < TOKE_CHANCE) startToke();
+				else startSit(now);
 			}
 			return;
 		}
 
 		if (pose === 'sit') {
 			if (!pointerInside && now - sitStartedAt >= SIT_TO_SLEEP_MS) {
-				startSleep();
+				if (offDuty && Math.random() < TOKE_CHANCE) startToke();
+				else startSleep();
 			}
 			return;
 		}
@@ -404,6 +488,8 @@
 		lastTimestamp = timestamp;
 
 		if (x !== null) update(dt, timestamp);
+		updateAntenna(dt);
+		drawAntenna();
 
 		if (browser && !reducedMotion && documentVisible && inView) {
 			rafId = requestAnimationFrame(tick);
@@ -436,6 +522,149 @@
 	function syncLoop(): void {
 		if (browser && !reducedMotion && documentVisible && inView) startLoop();
 		else stopLoop();
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* Antenna — a separate overlay sprite on the same 32×32 art grid      */
+	/* ------------------------------------------------------------------ */
+
+	function pixel(context: CanvasRenderingContext2D, x: number, y: number, color: string): void {
+		if (x < 0 || y < 0 || x >= ART || y >= ANT_H) return;
+		context.fillStyle = color;
+		context.fillRect(x, y, 1, 1);
+	}
+
+	function headAnchorFor(): HeadAnchor {
+		const anchor = headAnchors[pose]?.[frame] ?? headAnchors[pose]?.[0];
+		if (anchor) {
+			// The body is flipped with CSS when Pip turns; the overlay is not.
+			return { x: facing === 1 ? anchor.x : ART - 1 - anchor.x, y: anchor.y };
+		}
+		return { x: ART / 2, y: HEAD_FALLBACK[pose] };
+	}
+
+	function computeHeadAnchors(name: Pose, image: HTMLImageElement): void {
+		if (!browser) return;
+
+		if (!anchorCanvas) {
+			anchorCanvas = document.createElement('canvas');
+			anchorCanvas.width = ART;
+			anchorCanvas.height = ART;
+		}
+
+		const context = anchorCanvas.getContext('2d', { willReadFrequently: true });
+		if (!context) return;
+
+		const anchors: HeadAnchor[] = [];
+
+		for (let index = 0; index < SHEETS[name].frames; index += 1) {
+			context.clearRect(0, 0, ART, ART);
+			context.drawImage(image, index * ART, 0, ART, ART, 0, 0, ART, ART);
+			const data = context.getImageData(0, 0, ART, ART).data;
+			const solid = (x: number, y: number): boolean => data[(y * ART + x) * 4 + 3] > 8;
+
+			let headY = -1;
+			for (let y = 0; y < ART && headY < 0; y += 1) {
+				for (let x = 10; x <= 21; x += 1) {
+					if (solid(x, y)) {
+						headY = y;
+						break;
+					}
+				}
+			}
+
+			if (headY < 0) {
+				anchors.push({ x: ART / 2, y: HEAD_FALLBACK[name] });
+				continue;
+			}
+
+			// Only the head: raised hands and smoke sit outside the middle band.
+			let left = 16;
+			let right = 16;
+			while (left > 10 && solid(left - 1, headY)) left -= 1;
+			while (right < 21 && solid(right + 1, headY)) right += 1;
+
+			anchors.push({ x: (left + right) / 2, y: headY });
+		}
+
+		headAnchors[name] = anchors;
+		if (name === pose) drawAntenna();
+	}
+
+	function drawAntenna(): void {
+		if (!browser) return;
+		const canvas = antennaEl;
+		if (!canvas) return;
+		if (!antennaCtx) antennaCtx = canvas.getContext('2d');
+		const context = antennaCtx;
+		if (!context) return;
+
+		context.clearRect(0, 0, ART, ANT_H);
+
+		const anchor = headAnchorFor();
+		const baseX = Math.round(anchor.x);
+		const baseY = anchor.y + ANT_EX;
+		const tipColumn = Math.round(baseX + clamp(tipOffsetX, -3.5, 3.5));
+		const tipRow = Math.round(baseY - ANT_STEM + clamp(tipOffsetY, -2.5, 2.5));
+		const stemRows = Math.max(2, baseY - tipRow);
+
+		for (let row = 1; row <= stemRows; row += 1) {
+			const t = row / stemRows;
+			pixel(context, Math.round(baseX + (tipColumn - baseX) * t * t), baseY - row, ANT_STEM_COLOR);
+		}
+
+		const ballY = tipRow;
+
+		for (let dx = -1; dx <= 1; dx += 1) {
+			pixel(context, tipColumn + dx, ballY - 4, ANT_INK);
+			pixel(context, tipColumn + dx, ballY, ANT_INK);
+		}
+		for (let dy = -3; dy <= -1; dy += 1) {
+			pixel(context, tipColumn - 2, ballY + dy, ANT_INK);
+			pixel(context, tipColumn + 2, ballY + dy, ANT_INK);
+		}
+		for (let dy = -3; dy <= -1; dy += 1) {
+			for (let dx = -1; dx <= 1; dx += 1) {
+				pixel(
+					context,
+					tipColumn + dx,
+					ballY + dy,
+					dx === -1 && dy === -3 ? ANT_GLINT_COLOR : ANT_BALL_COLOR
+				);
+			}
+		}
+	}
+
+	function updateAntenna(dt: number): void {
+		let targetX = 0;
+		let targetY = 0;
+
+		if (pose === 'walk') targetX = -facing * ANT_LEAN;
+		else if (pose === 'jump') targetY = frame >= 1 && frame <= 2 ? -1 : 0;
+		else if (pose === 'sit' || pose === 'sleep') targetY = 0.8;
+
+		let remaining = Math.min(3, Math.max(0, dt / (1000 / 60)));
+
+		while (remaining > 0) {
+			const step = Math.min(remaining, 1);
+			tipVelocityX += -ANT_STIFFNESS * (tipOffsetX - targetX) * step;
+			tipVelocityY += -ANT_STIFFNESS * (tipOffsetY - targetY) * step;
+			tipOffsetX += tipVelocityX * step;
+			tipOffsetY += tipVelocityY * step;
+
+			const decay = Math.pow(ANT_DAMPING, step);
+			tipVelocityX *= decay;
+			tipVelocityY *= decay;
+			remaining -= step;
+		}
+
+		tipOffsetX = clamp(tipOffsetX, -3.5, 3.5);
+		tipOffsetY = clamp(tipOffsetY, -2.5, 2.5);
+	}
+
+	function kickAntenna(vx: number, vy: number): void {
+		tipVelocityX = clamp(tipVelocityX + vx, -4, 4);
+		tipVelocityY = clamp(tipVelocityY + vy, -4, 4);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -540,12 +769,22 @@
 				clearTimeout(staticReactionTimer);
 				staticReactionTimer = null;
 			}
+			tipOffsetX = 0;
+			tipOffsetY = 0;
+			tipVelocityX = 0;
+			tipVelocityY = 0;
 			setPose('idle', 0);
 			stopLoop();
 		} else {
 			syncLoop();
 		}
 	}
+
+	/* Redraw outside the loop too: reduced motion and hidden tabs still get
+	   a correct static antenna. */
+	$effect(() => {
+		if (browser) drawAntenna();
+	});
 
 	/* ------------------------------------------------------------------ */
 	/* Lifecycle                                                           */
@@ -556,8 +795,11 @@
 		const stage = stageEl;
 		if (!root || !stage) return;
 
-		for (const sheet of Object.values(SHEETS)) {
+		antennaCtx = antennaEl?.getContext('2d') ?? null;
+
+		for (const [name, sheet] of Object.entries(SHEETS) as [Pose, Sheet][]) {
 			const image = new Image();
+			image.onload = () => computeHeadAnchors(name, image);
 			image.src = sheet.url;
 		}
 
@@ -645,12 +887,32 @@
 			<div class="pip-aura" aria-hidden="true"></div>
 			<div class="pip-shadow" aria-hidden="true"></div>
 			<div class="pip-sprite" bind:this={spriteEl} style={spriteStyle} aria-hidden="true"></div>
+			<canvas
+				class="pip-antenna"
+				bind:this={antennaEl}
+				width={ART}
+				height={ANT_H}
+				aria-hidden="true"
+			></canvas>
 		</div>
 	</div>
 
 	<footer class="pip-foot">
 		<p class="pip-caption" aria-hidden="true">{caption}</p>
-		<span class="pip-key" aria-hidden="true"><kbd>space</kbd> / <kbd>enter</kbd></span>
+		<div class="pip-controls">
+			<button
+				type="button"
+				class="pip-mood"
+				data-mood={offDuty ? 'off' : 'on'}
+				aria-pressed={offDuty}
+				title="toggle on duty / off duty"
+				onclick={toggleMood}
+			>
+				<span class="pip-mood-dot" aria-hidden="true"></span>
+				{offDuty ? 'off duty' : 'on duty'}
+			</button>
+			<span class="pip-key" aria-hidden="true"><kbd>space</kbd> / <kbd>enter</kbd></span>
+		</div>
 	</footer>
 
 	<p class="sr-only" aria-live="polite" aria-atomic="true">{announcement}</p>
@@ -725,8 +987,18 @@
 		border-top: 1px solid rgba(255, 255, 255, 0.06);
 		border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 		background:
-			radial-gradient(90% 85% at 50% 102%, rgba(124, 58, 237, 0.2) 0%, rgba(124, 58, 237, 0.05) 48%, transparent 74%),
-			linear-gradient(180deg, rgba(7, 9, 18, 0.28) 0%, rgba(7, 9, 18, 0.08) 58%, rgba(7, 9, 18, 0.34) 100%);
+			radial-gradient(
+				90% 85% at 50% 102%,
+				rgba(124, 58, 237, 0.2) 0%,
+				rgba(124, 58, 237, 0.05) 48%,
+				transparent 74%
+			),
+			linear-gradient(
+				180deg,
+				rgba(7, 9, 18, 0.28) 0%,
+				rgba(7, 9, 18, 0.08) 58%,
+				rgba(7, 9, 18, 0.34) 100%
+			);
 		cursor: pointer;
 		touch-action: manipulation;
 		user-select: none;
@@ -758,8 +1030,18 @@
 
 	.pip-stage[data-pose='sleep'] {
 		background:
-			radial-gradient(85% 80% at 50% 102%, rgba(76, 29, 149, 0.24) 0%, rgba(76, 29, 149, 0.06) 50%, transparent 74%),
-			linear-gradient(180deg, rgba(4, 6, 14, 0.42) 0%, rgba(7, 9, 18, 0.16) 58%, rgba(4, 6, 14, 0.46) 100%);
+			radial-gradient(
+				85% 80% at 50% 102%,
+				rgba(76, 29, 149, 0.24) 0%,
+				rgba(76, 29, 149, 0.06) 50%,
+				transparent 74%
+			),
+			linear-gradient(
+				180deg,
+				rgba(4, 6, 14, 0.42) 0%,
+				rgba(7, 9, 18, 0.16) 58%,
+				rgba(4, 6, 14, 0.46) 100%
+			);
 	}
 
 	.pip-ground {
@@ -844,7 +1126,12 @@
 		width: 64px;
 		height: 8px;
 		transform: translateX(-50%);
-		background: radial-gradient(ellipse at center, rgba(3, 4, 10, 0.8) 0%, rgba(3, 4, 10, 0.3) 56%, transparent 76%);
+		background: radial-gradient(
+			ellipse at center,
+			rgba(3, 4, 10, 0.8) 0%,
+			rgba(3, 4, 10, 0.3) 56%,
+			transparent 76%
+		);
 		filter: blur(1px);
 	}
 
@@ -867,6 +1154,17 @@
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;
 		transform-origin: 50% 50%;
+	}
+
+	.pip-antenna {
+		position: absolute;
+		left: 0;
+		bottom: 0;
+		width: 96px;
+		height: 132px;
+		pointer-events: none;
+		image-rendering: crisp-edges;
+		image-rendering: pixelated;
 	}
 
 	.pip-foot {
@@ -897,6 +1195,63 @@
 		height: 4px;
 		background: rgba(196, 181, 253, 0.65);
 		box-shadow: 0 0 6px rgba(167, 139, 250, 0.55);
+	}
+
+	.pip-controls {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		flex: 0 0 auto;
+	}
+
+	.pip-mood {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.35rem;
+		min-height: 1.5rem;
+		padding: 0 0.5rem;
+		border: 1px solid rgba(255, 255, 255, 0.12);
+		border-radius: 4px;
+		background: rgba(255, 255, 255, 0.035);
+		color: rgba(245, 244, 241, 0.55);
+		font: inherit;
+		font-size: 0.625rem;
+		line-height: 1;
+		letter-spacing: 0.08em;
+		cursor: pointer;
+		transition:
+			color 0.2s ease,
+			border-color 0.2s ease,
+			background 0.2s ease;
+	}
+
+	.pip-mood:hover {
+		color: rgba(245, 244, 241, 0.82);
+		border-color: rgba(196, 181, 253, 0.32);
+		background: rgba(139, 92, 246, 0.1);
+	}
+
+	.pip-mood:focus-visible {
+		outline: 2px solid rgba(196, 181, 253, 0.7);
+		outline-offset: 2px;
+	}
+
+	.pip-mood-dot {
+		width: 4px;
+		height: 4px;
+		border-radius: 1px;
+		background: #c4b5fd;
+		box-shadow: 0 0 6px rgba(167, 139, 250, 0.85);
+	}
+
+	.pip-mood[data-mood='off'] {
+		color: rgba(245, 244, 241, 0.42);
+	}
+
+	.pip-mood[data-mood='off'] .pip-mood-dot {
+		background: #64748b;
+		box-shadow: none;
 	}
 
 	.pip-key {
@@ -962,7 +1317,8 @@
 		}
 
 		.pip-mover,
-		.pip-caption {
+		.pip-caption,
+		.pip-mood {
 			transition: none !important;
 		}
 	}

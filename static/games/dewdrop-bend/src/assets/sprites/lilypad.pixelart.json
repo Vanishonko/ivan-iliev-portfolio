@@ -1,0 +1,63 @@
+{
+  "palette": {
+    "a": "#5b9661",
+    "b": "#8ebd71",
+    "c": "#3e6447",
+    "d": "#5f8953",
+    "e": "#f7eccf",
+    "f": "#e8a39d"
+  },
+  "frames": [
+    [
+      "..............................",
+      "..........bbbbbbbbbb..........",
+      ".......bbaaaaaaaaaaaabb.......",
+      ".....bbaaaaaaaaaaaaaaaabb.....",
+      "...bbaaaaaaaaaaaaaaaaaaaaab...",
+      "..baaaaaaaabbaaaaaaaaaaaaaab..",
+      "..baaaaaaaaaaaaaaaaaaaaaab....",
+      "..baaaaaabbbaaab..............",
+      "..baaaaaaaaaaaaaaaaaaaaaab....",
+      "...ddaaaaaaabbaaaaaaaaaaaaaab.",
+      ".....ddaaaaaaaaaaaaaaaaaab....",
+      ".......ddaaaaaaaaaaaaab.......",
+      "..........ddaaaaaaab..........",
+      "...........cccccccc...........",
+      ".............................."
+    ],
+    [
+      "....................e.........",
+      "....................e.e.......",
+      "....................eee.......",
+      "...................eefef......",
+      "...................ceeec......",
+      "....................ccc.......",
+      "...........bbbb..bbbbbbb......",
+      ".........bbbbb..bbbbbbbb......",
+      ".......baaaaaaaaaaaaaaaab.....",
+      "......daaaabbaaaaaaaaaaab.....",
+      "......daaaaaaaaaaaaaaaaab.....",
+      "......daaaaaaabbaaaaaaaab.....",
+      ".......ddaaaaaaaaaaaaaab......",
+      ".........ddaaaaaaaaaabb.......",
+      ".............ccccc............"
+    ],
+    [
+      "..............................",
+      "..............................",
+      "........bbbbbbb.bbbbbbb.......",
+      "......baaaaaaab.baaaaaab......",
+      ".....baaaaaaaaaaaaaaaaaab.....",
+      "....baaaabbaaaaaaaaaaaab......",
+      "....daaaaabbaaaaaaaaaaaaab....",
+      "....daaaaaaaaaaaaaaaaaaaab....",
+      ".....daaaaaaaaaaaaaaaaaab.....",
+      "......ddaaaaaaaaaaaaaaab......",
+      "........ddaaaaaaaaaaab........",
+      "...........cccccccc...........",
+      "..............................",
+      "..............................",
+      ".............................."
+    ]
+  ]
+}
