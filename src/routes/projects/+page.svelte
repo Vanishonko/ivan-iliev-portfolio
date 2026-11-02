@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>Work | Ivan Iliev</title>
+	<title>work | ivan iliev</title>
 	<meta
 		name="description"
 		content="Six projects: a pixel-art pond, a drift racing game, an evolutionary racing AI, a gamified water-conservation app, an NDA Laravel application and a private plugin workshop."

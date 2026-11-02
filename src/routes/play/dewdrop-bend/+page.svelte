@@ -23,7 +23,7 @@
 </script>
 
 <svelte:head>
-	<title>Dewdrop Bend — play | Ivan Iliev</title>
+	<title>dewdrop bend — play | ivan iliev</title>
 	<meta
 		name="description"
 		content="Dewdrop Bend — a living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag. Vanilla JavaScript and Canvas 2D."

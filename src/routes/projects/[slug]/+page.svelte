@@ -20,7 +20,7 @@
 </script>
 
 <svelte:head>
-	<title>{project.title} | Ivan Iliev</title>
+	<title>{project.title.toLowerCase()} | ivan iliev</title>
 	<meta name="description" content={project.description[0].slice(0, 180)} />
 	<meta property="og:title" content={`${project.title} | Ivan Iliev`} />
 	<meta property="og:description" content={project.subtitle} />

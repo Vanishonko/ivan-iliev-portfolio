@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Dragons (2015) — play | Ivan Iliev</title>
+	<title>dragons (2015) — play | ivan iliev</title>
 	<meta
 		name="description"
 		content="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here for the joke, exactly as it shipped."

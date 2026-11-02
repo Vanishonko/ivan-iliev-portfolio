@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>The lab | Ivan Iliev</title>
+	<title>the lab | ivan iliev</title>
 	<meta
 		name="description"
 		content="Private work, shown in public: Pip the pixel creature, a pixel-art surface for a coding agent, and the alerts bell that tells you what a turn cost."

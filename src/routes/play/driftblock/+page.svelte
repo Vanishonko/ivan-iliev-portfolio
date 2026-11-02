@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>driftblock — play | Ivan Iliev</title>
+	<title>driftblock — play | ivan iliev</title>
 	<meta
 		name="description"
 		content="Play driftblock in the browser: a blocky 3D drift racer with no build step, procedural circuits and a synthesised engine."

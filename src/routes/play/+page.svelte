@@ -33,7 +33,7 @@
 </script>
 
 <svelte:head>
-	<title>Play | Ivan Iliev</title>
+	<title>play | ivan iliev</title>
 	<meta
 		name="description"
 		content="Three things to play: Dewdrop Bend, a living pixel-art pond; driftblock, a blocky 3D drift racer; and Dragons, the 2015 game that started it all."

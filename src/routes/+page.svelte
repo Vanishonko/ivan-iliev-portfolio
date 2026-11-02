@@ -55,7 +55,7 @@
 </script>
 
 <svelte:head>
-	<title>Ivan Iliev</title>
+	<title>ivan iliev</title>
 	<meta property="og:title" content="Ivan Iliev" />
 	<meta
 		property="og:description"
