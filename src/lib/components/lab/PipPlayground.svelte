@@ -1,6 +1,17 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { ANTENNA_ANCHORS } from '$lib/pip/anchors';
+	import {
+		antennaTip,
+		createAntenna,
+		drawAntenna as paintAntenna,
+		pullAntenna,
+		releaseAntenna,
+		stepAntenna,
+		type AntennaPoint,
+		type AntennaState
+	} from '$lib/pip/antenna';
 
 	/* ------------------------------------------------------------------ */
 	/* Sprite data: 32×32 frames laid out horizontally, at 3× (96px).      */
@@ -12,19 +23,10 @@
 	const SIZE = ART * SCALE;
 	const EDGE = 14;
 
-	/* The antenna is drawn separately, like the plugin: an overlay on the same
-	   32×32 grid, with 12 extra art rows above the frame so the tip never clips. */
-	const ANT_EX = 12;
-	const ANT_H = ART + ANT_EX;
-	const ANT_STEM = 6;
-	const ANT_STIFFNESS = 0.2;
-	const ANT_DAMPING = 0.75;
-	const ANT_LEAN = 2.4;
-
-	const ANT_INK = '#0e1228';
-	const ANT_STEM_COLOR = '#b8c8ff';
-	const ANT_BALL_COLOR = '#d2e2ff';
-	const ANT_GLINT_COLOR = '#f6f8ff';
+	/* The bulb's grab target, in cell pixels: the plugin's 28px handle at the
+	   3× display scale (14px radius). The stem and the bulb are drawn by the
+	   plugin's rig; only the pointer target is ours. */
+	const ANTENNA_GRAB_CELLS = 14 / SCALE;
 
 	const WALK_SPEED = 58; // CSS px per second
 	const LOOK_FRAME_MS = 360;
@@ -128,23 +130,6 @@
 
 	const REACTIONS: Reaction[] = ['happy', 'giggle', 'jump', 'startle', 'aha'];
 
-	type HeadAnchor = { x: number; y: number };
-
-	/* Used only until the sheets have loaded and the real head rows are read. */
-	const HEAD_FALLBACK: Record<Pose, number> = {
-		idle: 5,
-		walk: 5,
-		look: 5,
-		sit: 9,
-		sleep: 10,
-		happy: 6,
-		giggle: 5,
-		jump: 8,
-		startle: 8,
-		aha: 7,
-		toke: 5
-	};
-
 	const CAPTIONS: Record<Pose, string> = {
 		idle: 'click him',
 		walk: 'waddling over',
@@ -187,8 +172,7 @@
 		[
 			`background-image:url(${currentSheet.url})`,
 			`background-size:${currentSheet.frames * SIZE}px ${SIZE}px`,
-			`background-position:-${frame * SIZE}px 0`,
-			`transform:scaleX(${facing})`
+			`background-position:-${frame * SIZE}px 0`
 		].join(';')
 	);
 
@@ -201,16 +185,19 @@
 	let spriteEl = $state<HTMLDivElement | null>(null);
 	let antennaEl = $state<HTMLCanvasElement | null>(null);
 
+	/* The plugin's rig: one state for the whole component. */
 	let antennaCtx: CanvasRenderingContext2D | null = null;
-	let anchorCanvas: HTMLCanvasElement | null = null;
+	let antennaState: AntennaState | null = null;
+	/* The pointer currently holding the bulb, in unmirrored cell coordinates. */
+	let antennaPull: AntennaPoint | null = null;
+	let antennaPointerId: number | null = null;
+	let antennaGrabTip: AntennaPoint = { x: 16, y: 2 };
+	let antennaMoved = false;
+	let suppressClick = false;
 
-	/* Tip offset from the head mount, in art pixels, and its velocity. */
-	let tipOffsetX = 0;
-	let tipOffsetY = 0;
-	let tipVelocityX = 0;
-	let tipVelocityY = 0;
-
-	const headAnchors: Partial<Record<Pose, HeadAnchor[]>> = {};
+	/* Pip's previous position, for the rig's body-velocity lag. */
+	let lastBodyX: number | null = null;
+	let lastBodyAt = 0;
 
 	let frameElapsed = 0;
 	let holding = false;
@@ -402,9 +389,6 @@
 
 			if (frame < sheet.frames - 1) {
 				frame += 1;
-				if (pose === 'jump' && frame === sheet.frames - 1) {
-					kickAntenna(-facing * 0.6, 2.4);
-				}
 				continue;
 			}
 
@@ -488,7 +472,7 @@
 		lastTimestamp = timestamp;
 
 		if (x !== null) update(dt, timestamp);
-		updateAntenna(dt);
+		stepAntennaFrame(dt, timestamp);
 		drawAntenna();
 
 		if (browser && !reducedMotion && documentVisible && inView) {
@@ -525,70 +509,85 @@
 	}
 
 	/* ------------------------------------------------------------------ */
-	/* Antenna — a separate overlay sprite on the same 32×32 art grid      */
+	/* Antenna — the plugin’s rig, on the same 32×32 art grid              */
 	/* ------------------------------------------------------------------ */
 
-	function pixel(context: CanvasRenderingContext2D, x: number, y: number, color: string): void {
-		if (x < 0 || y < 0 || x >= ART || y >= ANT_H) return;
-		context.fillStyle = color;
-		context.fillRect(x, y, 1, 1);
+	/**
+	 * The base of the stalk for the current pose and frame.
+	 *
+	 * `ANTENNA_ANCHORS` is authored in unmirrored cell pixels. The whole figure
+	 * is mirrored by CSS when Pip faces left, so these stay unmirrored here —
+	 * exactly the plugin’s split between the rig and its flip layer.
+	 */
+	function antennaAnchor(): AntennaPoint {
+		const anchors = ANTENNA_ANCHORS[pose] ?? ANTENNA_ANCHORS.idle;
+		const point = anchors?.[frame] ?? anchors?.[0] ?? [16, 5];
+		return { x: point[0], y: point[1] };
 	}
 
-	function headAnchorFor(): HeadAnchor {
-		const anchor = headAnchors[pose]?.[frame] ?? headAnchors[pose]?.[0];
-		if (anchor) {
-			// The body is flipped with CSS when Pip turns; the overlay is not.
-			return { x: facing === 1 ? anchor.x : ART - 1 - anchor.x, y: anchor.y };
+	function ensureAntenna(): AntennaState {
+		if (antennaState === null) {
+			antennaState = createAntenna({ anchor: antennaAnchor(), rest: pose });
 		}
-		return { x: ART / 2, y: HEAD_FALLBACK[pose] };
+		return antennaState;
 	}
 
-	function computeHeadAnchors(name: Pose, image: HTMLImageElement): void {
+	/**
+	 * Pip’s motion in local cell pixels per second.
+	 *
+	 * The rig works in 32-cell units, so a CSS movement is divided by the display
+	 * scale. The sign is negated while facing left because the body is mirrored
+	 * but the rig is not: the antenna must trail behind the art, not ahead of it.
+	 */
+	function antennaBodyVelocity(now: number): AntennaPoint {
+		if (x === null) return { x: 0, y: 0 };
+		if (lastBodyX === null) {
+			lastBodyX = x;
+			lastBodyAt = now;
+			return { x: 0, y: 0 };
+		}
+		const elapsed = (now - lastBodyAt) / 1000;
+		const moved = x - lastBodyX;
+		lastBodyX = x;
+		lastBodyAt = now;
+		if (!(elapsed > 0) || elapsed > 0.25) return { x: 0, y: 0 };
+		// A resize, a remount, or one absurd frame is a layout jump, not a walk.
+		if (Math.abs(moved) > SIZE * 2) return { x: 0, y: 0 };
+		const velocityX = moved / elapsed / SCALE;
+		return { x: facing === 1 ? velocityX : -velocityX, y: 0 };
+	}
+
+	function stepAntennaFrame(dt: number, now: number): void {
 		if (!browser) return;
-
-		if (!anchorCanvas) {
-			anchorCanvas = document.createElement('canvas');
-			anchorCanvas.width = ART;
-			anchorCanvas.height = ART;
+		const state = ensureAntenna();
+		stepAntenna(state, {
+			dt: dt / 1000,
+			anchor: antennaAnchor(),
+			rest: pose,
+			bodyVelocity: antennaBodyVelocity(now)
+		});
+		// The pointer owns the pose during a pull, but the crown can move under
+		// it; re-aim after the anchor update so the bulb stays with the pointer.
+		if (state.dragged && antennaPull !== null) {
+			pullAntenna(state, antennaPull, { now: performance.now() });
 		}
+	}
 
-		const context = anchorCanvas.getContext('2d', { willReadFrequently: true });
-		if (!context) return;
-
-		const anchors: HeadAnchor[] = [];
-
-		for (let index = 0; index < SHEETS[name].frames; index += 1) {
-			context.clearRect(0, 0, ART, ART);
-			context.drawImage(image, index * ART, 0, ART, ART, 0, 0, ART, ART);
-			const data = context.getImageData(0, 0, ART, ART).data;
-			const solid = (x: number, y: number): boolean => data[(y * ART + x) * 4 + 3] > 8;
-
-			let headY = -1;
-			for (let y = 0; y < ART && headY < 0; y += 1) {
-				for (let x = 10; x <= 21; x += 1) {
-					if (solid(x, y)) {
-						headY = y;
-						break;
-					}
-				}
-			}
-
-			if (headY < 0) {
-				anchors.push({ x: ART / 2, y: HEAD_FALLBACK[name] });
-				continue;
-			}
-
-			// Only the head: raised hands and smoke sit outside the middle band.
-			let left = 16;
-			let right = 16;
-			while (left > 10 && solid(left - 1, headY)) left -= 1;
-			while (right < 21 && solid(right + 1, headY)) right += 1;
-
-			anchors.push({ x: (left + right) / 2, y: headY });
-		}
-
-		headAnchors[name] = anchors;
-		if (name === pose) drawAntenna();
+	/**
+	 * Reduced motion: no oscillation, just the current pose’s rest. The rest is
+	 * applied by hand because the module’s spring would otherwise animate into
+	 * it; a final zero-velocity step applies the rig’s own cell clamp.
+	 */
+	function stepAntennaStatic(): void {
+		if (!browser) return;
+		const state = ensureAntenna();
+		const anchor = antennaAnchor();
+		stepAntenna(state, { dt: 1 / 240, anchor, rest: pose, bodyVelocity: { x: 0, y: 0 } });
+		state.angle = state.rest.angle;
+		state.length = state.rest.length;
+		state.angularVelocity = 0;
+		state.lengthVelocity = 0;
+		stepAntenna(state, { dt: 1 / 240, anchor, rest: pose, bodyVelocity: { x: 0, y: 0 } });
 	}
 
 	function drawAntenna(): void {
@@ -598,73 +597,107 @@
 		if (!antennaCtx) antennaCtx = canvas.getContext('2d');
 		const context = antennaCtx;
 		if (!context) return;
+		paintAntenna(context, ensureAntenna(), { cell: ART });
+	}
 
-		context.clearRect(0, 0, ART, ANT_H);
+	/**
+	 * A screen pointer in the rig’s unmirrored cell coordinates.
+	 *
+	 * The figure (sprite + antenna) is mirrored with `scaleX(-1)` while Pip
+	 * faces left, exactly like the plugin’s flip layer, so the pointer has to be
+	 * mirrored back before the rig sees it. On the 1px grid that is the familiar
+	 * `31 - x`; continuous coordinates use `ART - x` so the centre of the cell
+	 * maps to itself, matching the plugin’s `antennaPointFromEvent`.
+	 */
+	function antennaPointFromPointer(event: PointerEvent): AntennaPoint | null {
+		const rect = spriteEl?.getBoundingClientRect();
+		if (!rect || !(rect.width > 0) || !(rect.height > 0)) return null;
+		const pointerX = ((event.clientX - rect.left) / rect.width) * ART;
+		const pointerY = ((event.clientY - rect.top) / rect.height) * ART;
+		if (!Number.isFinite(pointerX) || !Number.isFinite(pointerY)) return null;
+		return { x: facing === 1 ? pointerX : ART - pointerX, y: pointerY };
+	}
 
-		const anchor = headAnchorFor();
-		const baseX = Math.round(anchor.x);
-		const baseY = anchor.y + ANT_EX;
-		const tipColumn = Math.round(baseX + clamp(tipOffsetX, -3.5, 3.5));
-		const tipRow = Math.round(baseY - ANT_STEM + clamp(tipOffsetY, -2.5, 2.5));
-		const stemRows = Math.max(2, baseY - tipRow);
+	function pointerInsideSprite(event: PointerEvent): boolean {
+		const rect = spriteEl?.getBoundingClientRect();
+		if (!rect) return false;
+		return (
+			event.clientX >= rect.left &&
+			event.clientX <= rect.right &&
+			event.clientY >= rect.top &&
+			event.clientY <= rect.bottom
+		);
+	}
 
-		for (let row = 1; row <= stemRows; row += 1) {
-			const t = row / stemRows;
-			pixel(context, Math.round(baseX + (tipColumn - baseX) * t * t), baseY - row, ANT_STEM_COLOR);
+	function updateAntennaPull(event: PointerEvent): void {
+		if (antennaPointerId === null || event.pointerId !== antennaPointerId) return;
+		const point = antennaPointFromPointer(event);
+		if (point === null) return;
+		antennaPull = point;
+		pullAntenna(ensureAntenna(), point, { now: performance.now() });
+		drawAntenna();
+	}
+
+	/**
+	 * A press on the bulb starts the plugin’s pointer drag. The target is the
+	 * same 28px handle the plugin uses (14px radius at 3×), measured around the
+	 * current tip in local cell space.
+	 */
+	function handleAntennaPointerDown(event: PointerEvent): void {
+		if (reducedMotion || event.button !== 0) return;
+		if (antennaPointerId !== null) return;
+		suppressClick = false;
+		if (!pointerInsideSprite(event)) return;
+
+		const point = antennaPointFromPointer(event);
+		if (point === null) return;
+		const state = ensureAntenna();
+		const tip = antennaTip(state);
+		if (Math.hypot(tip.x - point.x, tip.y - point.y) > ANTENNA_GRAB_CELLS) return;
+
+		event.preventDefault();
+		// A press on the bulb is not a pat; the plugin’s handle stops the click too.
+		suppressClick = true;
+		antennaPointerId = event.pointerId;
+		antennaPull = point;
+		try {
+			stageEl?.setPointerCapture(event.pointerId);
+		} catch {
+			/* Capture is a convenience; the pointer events still arrive. */
 		}
+		pullAntenna(state, point, { now: performance.now() });
+		lastActivity = performance.now();
+		syncLoop();
+		drawAntenna();
+	}
 
-		const ballY = tipRow;
-
-		for (let dx = -1; dx <= 1; dx += 1) {
-			pixel(context, tipColumn + dx, ballY - 4, ANT_INK);
-			pixel(context, tipColumn + dx, ballY, ANT_INK);
-		}
-		for (let dy = -3; dy <= -1; dy += 1) {
-			pixel(context, tipColumn - 2, ballY + dy, ANT_INK);
-			pixel(context, tipColumn + 2, ballY + dy, ANT_INK);
-		}
-		for (let dy = -3; dy <= -1; dy += 1) {
-			for (let dx = -1; dx <= 1; dx += 1) {
-				pixel(
-					context,
-					tipColumn + dx,
-					ballY + dy,
-					dx === -1 && dy === -3 ? ANT_GLINT_COLOR : ANT_BALL_COLOR
-				);
+	function endAntennaPull(event: PointerEvent | null): void {
+		if (antennaPointerId === null) return;
+		antennaPointerId = null;
+		antennaPull = null;
+		if (event !== null) {
+			try {
+				if (stageEl?.hasPointerCapture(event.pointerId)) {
+					stageEl.releasePointerCapture(event.pointerId);
+				}
+			} catch {
+				/* Already released, or the browser never granted capture. */
 			}
 		}
+		releaseAntenna(ensureAntenna(), { now: performance.now() });
+		drawAntenna();
 	}
 
-	function updateAntenna(dt: number): void {
-		let targetX = 0;
-		let targetY = 0;
-
-		if (pose === 'walk') targetX = -facing * ANT_LEAN;
-		else if (pose === 'jump') targetY = frame >= 1 && frame <= 2 ? -1 : 0;
-		else if (pose === 'sit' || pose === 'sleep') targetY = 0.8;
-
-		let remaining = Math.min(3, Math.max(0, dt / (1000 / 60)));
-
-		while (remaining > 0) {
-			const step = Math.min(remaining, 1);
-			tipVelocityX += -ANT_STIFFNESS * (tipOffsetX - targetX) * step;
-			tipVelocityY += -ANT_STIFFNESS * (tipOffsetY - targetY) * step;
-			tipOffsetX += tipVelocityX * step;
-			tipOffsetY += tipVelocityY * step;
-
-			const decay = Math.pow(ANT_DAMPING, step);
-			tipVelocityX *= decay;
-			tipVelocityY *= decay;
-			remaining -= step;
-		}
-
-		tipOffsetX = clamp(tipOffsetX, -3.5, 3.5);
-		tipOffsetY = clamp(tipOffsetY, -2.5, 2.5);
+	function handleAntennaPointerUp(event: PointerEvent): void {
+		if (antennaPointerId === null || event.pointerId !== antennaPointerId) return;
+		event.preventDefault();
+		endAntennaPull(event);
+		lastActivity = performance.now();
 	}
 
-	function kickAntenna(vx: number, vy: number): void {
-		tipVelocityX = clamp(tipVelocityX + vx, -4, 4);
-		tipVelocityY = clamp(tipVelocityY + vy, -4, 4);
+	function handleAntennaPointerCancel(event: PointerEvent): void {
+		if (antennaPointerId === null || event.pointerId !== antennaPointerId) return;
+		endAntennaPull(event);
 	}
 
 	/* ------------------------------------------------------------------ */
@@ -678,6 +711,12 @@
 	}
 
 	function handlePointer(event: PointerEvent): void {
+		// A held bulb owns the pointer: keep aiming the rig and leave the body
+		// alone, so the crown does not wander out from under the drag.
+		if (antennaPointerId !== null) {
+			if (event.pointerId === antennaPointerId) updateAntennaPull(event);
+			return;
+		}
 		if (reducedMotion || event.pointerType === 'touch') return;
 		if (!stageEl) return;
 
@@ -715,6 +754,12 @@
 
 	function handleStageClick(event: MouseEvent): void {
 		if (event.detail === 0) return;
+
+		// The press that started on the bulb is a pull, not a pat.
+		if (suppressClick) {
+			suppressClick = false;
+			return;
+		}
 
 		const pointerType = (event as PointerEvent).pointerType;
 		const onTouch = pointerType === 'touch';
@@ -769,13 +814,14 @@
 				clearTimeout(staticReactionTimer);
 				staticReactionTimer = null;
 			}
-			tipOffsetX = 0;
-			tipOffsetY = 0;
-			tipVelocityX = 0;
-			tipVelocityY = 0;
+			endAntennaPull(null);
 			setPose('idle', 0);
+			antennaState = null;
 			stopLoop();
+			stepAntennaStatic();
+			drawAntenna();
 		} else {
+			antennaState = null;
 			syncLoop();
 		}
 	}
@@ -783,7 +829,9 @@
 	/* Redraw outside the loop too: reduced motion and hidden tabs still get
 	   a correct static antenna. */
 	$effect(() => {
-		if (browser) drawAntenna();
+		if (!browser) return;
+		if (reducedMotion) stepAntennaStatic();
+		drawAntenna();
 	});
 
 	/* ------------------------------------------------------------------ */
@@ -796,12 +844,7 @@
 		if (!root || !stage) return;
 
 		antennaCtx = antennaEl?.getContext('2d') ?? null;
-
-		for (const [name, sheet] of Object.entries(SHEETS) as [Pose, Sheet][]) {
-			const image = new Image();
-			image.onload = () => computeHeadAnchors(name, image);
-			image.src = sheet.url;
-		}
+		drawAntenna();
 
 		lastActivity = performance.now();
 
@@ -872,6 +915,10 @@
 		aria-label="Pip the pixel creature. Click him, or press Enter or Space, for a reaction."
 		onpointerenter={handlePointer}
 		onpointermove={handlePointer}
+		onpointerdown={handleAntennaPointerDown}
+		onpointerup={handleAntennaPointerUp}
+		onpointercancel={handleAntennaPointerCancel}
+		onlostpointercapture={handleAntennaPointerCancel}
 		onpointerleave={handlePointerLeave}
 		onclick={handleStageClick}
 		onkeydown={handleKeyDown}
@@ -886,14 +933,16 @@
 		>
 			<div class="pip-aura" aria-hidden="true"></div>
 			<div class="pip-shadow" aria-hidden="true"></div>
-			<div class="pip-sprite" bind:this={spriteEl} style={spriteStyle} aria-hidden="true"></div>
-			<canvas
-				class="pip-antenna"
-				bind:this={antennaEl}
-				width={ART}
-				height={ANT_H}
-				aria-hidden="true"
-			></canvas>
+			<div class="pip-figure" style:transform={facing === 1 ? 'none' : 'scaleX(-1)'}>
+				<div class="pip-sprite" bind:this={spriteEl} style={spriteStyle} aria-hidden="true"></div>
+				<canvas
+					class="pip-antenna"
+					bind:this={antennaEl}
+					width={ART}
+					height={ART}
+					aria-hidden="true"
+				></canvas>
+			</div>
 		</div>
 	</div>
 
@@ -1146,6 +1195,15 @@
 		opacity: 0.55;
 	}
 
+	/* The flip layer mirrors the sprite and the antenna together, exactly like
+	   the plugin. The antenna rig stays in unmirrored cell coordinates. */
+	.pip-figure {
+		position: relative;
+		width: 96px;
+		height: 96px;
+		transform-origin: 50% 100%;
+	}
+
 	.pip-sprite {
 		position: relative;
 		width: 96px;
@@ -1153,15 +1211,15 @@
 		background-repeat: no-repeat;
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;
-		transform-origin: 50% 50%;
 	}
 
+	/* A fixed 32x32 backing store, stretched by CSS so its pixels line up with
+	   the cell at every integer scale. Decorative: never a pointer target. */
 	.pip-antenna {
 		position: absolute;
-		left: 0;
-		bottom: 0;
+		inset: 0;
 		width: 96px;
-		height: 132px;
+		height: 96px;
 		pointer-events: none;
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;

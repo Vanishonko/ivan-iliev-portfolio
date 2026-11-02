@@ -1,194 +1,97 @@
 <script lang="ts">
-	import { AnimatedSection, InteractiveBackground, Gallery } from '$lib/components';
+	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { projects } from '$lib/data/projects';
-	import type { ProjectLink } from '$lib/types';
-
-	let galleryOpen = $state(false);
-	let galleryImages: string[] = $state([]);
-	let galleryLabel = $state('Project gallery');
-
-	const openInNewTab = (link: ProjectLink) => link.external ?? link.href.startsWith('http');
 
 	const isVideo = (path: string) => path.endsWith('.webm');
-
-	const openGallery = (images: string[], label = 'Project gallery') => {
-		galleryImages = images;
-		galleryLabel = label;
-		galleryOpen = true;
-	};
-
-	const closeGallery = () => {
-		galleryOpen = false;
-	};
+	const posterOf = (p: (typeof projects)[number]) =>
+		p.poster ?? p.galleryImages?.find((i) => !isVideo(i)) ?? null;
 </script>
 
 <svelte:head>
-	<title>Projects | Ivan Iliev</title>
-	<meta name="description" content="A drift racing game in the browser, an evolutionary racing AI, a gamified water-conservation app, and the tooling around them." />
-	<meta property="og:title" content="Projects | Ivan Iliev" />
-	<meta property="og:description" content="A drift racing game in the browser, an evolutionary racing AI, a gamified water-conservation app, and the tooling around them." />
+	<title>Work | Ivan Iliev</title>
+	<meta
+		name="description"
+		content="Six projects: a pixel-art pond, a drift racing game, an evolutionary racing AI, a gamified water-conservation app, an NDA Laravel application and a private plugin workshop."
+	/>
+	<meta property="og:title" content="Work | Ivan Iliev" />
+	<meta
+		property="og:description"
+		content="A pixel-art pond, a drift racer, an evolutionary racing AI, and the tooling around them."
+	/>
 </svelte:head>
 
-<div class="relative min-h-[100svh] overflow-x-hidden">
+<main class="relative">
 	<InteractiveBackground enableStars enableClouds enableAurora />
 
-	<main class="relative z-10 px-4 py-12 sm:px-6 sm:py-16">
-		<div class="mx-auto w-full max-w-3xl space-y-10 fade-in sm:space-y-12">
-			<header class="space-y-3 text-center">
-				<AnimatedSection delay={80}>
-					<h1 class="title-typewriter text-center text-[clamp(1.65rem,8.5vw,3rem)] font-bold leading-[1.05]">
-						<span class="inline-flex">
-							<span class="title-char">p</span>
-							<span class="title-char">r</span>
-							<span class="title-char">o</span>
-							<span class="title-char">j</span>
-							<span class="title-char">e</span>
-							<span class="title-char">c</span>
-							<span class="title-char">t</span>
-							<span class="title-char">s</span>
-						</span>
-					</h1>
-				</AnimatedSection>
+	<header class="px-4 pb-8 pt-12 sm:px-6 sm:pt-16">
+		<div class="mx-auto w-full max-w-5xl">
+			<AnimatedSection delay={80}>
+				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/64">work</p>
+				<h1 class="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-muted-50 sm:text-4xl">
+					Six things I built, roughly in order of how much they hurt.
+				</h1>
+				<p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted-50/70 sm:text-base">
+					Two games, an AI, an app that tried to save water, one application I cannot show you, and a workshop of
+					tools for a coding agent. Each card opens the long version.
+				</p>
+			</AnimatedSection>
+		</div>
+	</header>
 
-				<AnimatedSection delay={140}>
-					<p class="text-sm text-muted-50/80 sm:text-base">a few of my recent tinkerings.</p>
-				</AnimatedSection>
-			</header>
-
-			<section class="space-y-6 sm:space-y-8" aria-label="Project list">
-				{#each projects as project, i (project.id)}
-					<AnimatedSection delay={200 + i * 90}>
-						<article
-							id={project.id}
-							class="scroll-mt-24 rounded-2xl border border-white/10 bg-muted-900/20 p-6 shadow-sm backdrop-blur-md sm:p-8"
-						>
-							<header class="flex flex-col gap-3 sm:gap-4">
-								<div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-									<div class="space-y-1">
-										<div class="flex items-center justify-center gap-2 sm:justify-start">
-											<h2 class="text-xl font-semibold text-muted-50 sm:text-2xl">{project.title}</h2>
-										</div>
-										<p class="text-center text-sm text-muted-50/78 sm:text-left">{project.subtitle}</p>
-									</div>
-
-									<div class="flex flex-wrap justify-center gap-2 sm:justify-end">
-										{#each project.tags as tag (tag)}
-											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-50/82">
-												{tag}
-											</span>
-										{/each}
-									</div>
-								</div>
-							</header>
-
-							<div class="mt-5 space-y-4 text-muted-50/85 leading-relaxed">
-								{#each project.description as paragraph, pi (`${project.id}-p-${pi}`)}
-									<p class="text-sm sm:text-base">{paragraph}</p>
-								{/each}
-							</div>
-
-							{#if project.galleryImages?.length}
-								<div class="mt-6 space-y-3">
-									<p class="text-sm text-muted-50/78">
-										{project.galleryAspect === 'wide' ? 'Screenshot' : 'Selected screenshots'}
-									</p>
-
-									{#if project.galleryAspect === 'wide'}
-										<button
-											type="button"
-											onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
-											class="group relative block aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
-											aria-label={`Open the ${project.title} screenshot`}
-										>
-											<img
-												src={project.galleryImages[0]}
-												alt={`${project.title} screenshot`}
-												class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-											/>
-											<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
-										</button>
-									{:else}
-										<div class="grid grid-cols-3 gap-3">
-											{#each project.galleryImages.slice(0, 3) as image, idx (image)}
-												<button
-													type="button"
-													onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
-													class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
-												>
-												{#if isVideo(image)}
-													<video
-														src={image}
-														class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-														muted
-														playsinline
-														autoplay
-														loop
-														aria-label={`${project.title} clip ${idx + 1}`}
-													></video>
-												{:else}
-													<img
-														src={image}
-														alt={`${project.title} screenshot ${idx + 1}`}
-														class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-													/>
-												{/if}
-													<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
-													{#if idx === 2 && project.galleryImages.length > 3}
-														<div
-															class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg"
-															aria-hidden="true"
-														>
-															<span class="text-2xl font-bold text-white">+{project.galleryImages.length - 3}</span>
-														</div>
-													{/if}
-												</button>
-											{/each}
-										</div>
-									{/if}
-								</div>
-							{/if}
-
-							{#if project.note}
-								<p class="mt-6 text-sm text-muted-50/78">{project.note}</p>
-							{/if}
-
-							{#if project.links?.length}
-								<div class="mt-6 flex flex-wrap justify-center gap-4 sm:justify-start">
-									{#each project.links as link (link.href)}
-										<a
-											href={link.href}
-											target={openInNewTab(link) ? '_blank' : undefined}
-											rel={openInNewTab(link) ? 'noreferrer' : undefined}
-											class="projects-link link-text rounded text-muted-50 transition-colors duration-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2"
-											aria-label={`${project.title}: ${link.label}`}
-										>
-											{link.label} →
-										</a>
-									{/each}
-								</div>
-							{/if}
-						</article>
-					</AnimatedSection>
-				{/each}
-			</section>
-
-			<footer class="flex justify-center pt-2">
-				<AnimatedSection delay={520}>
+	<section class="px-4 pb-20 sm:px-6" aria-label="Project list">
+		<div class="mx-auto grid w-full max-w-5xl gap-5 sm:gap-6 md:grid-cols-2">
+			{#each projects as project, i (project.id)}
+				{@const poster = posterOf(project)}
+				<AnimatedSection delay={120 + i * 60}>
 					<a
-						href="/"
-						class="projects-link link-text rounded text-muted-50 transition-colors duration-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2"
+						href={`/projects/${project.id}`}
+						class="group flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] transition-colors hover:border-white/20"
 					>
-						← back home
+						<div class="relative aspect-[16/10] overflow-hidden bg-[#0b0e18]">
+							{#if poster}
+								<img
+									src={poster}
+									alt=""
+									class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
+									width="1440"
+									height="900"
+									loading="lazy"
+								/>
+								<div class="absolute inset-0 bg-gradient-to-t from-[#070912]/85 via-[#070912]/15 to-transparent"></div>
+								<div class="absolute inset-0 bg-[#070912]/20 transition-opacity duration-500 group-hover:opacity-0"></div>
+							{:else}
+								<div
+									class="flex h-full w-full items-center justify-center bg-[radial-gradient(ellipse_at_30%_20%,rgba(167,139,250,0.18),transparent_62%)]"
+								>
+									<div
+										class="absolute inset-0 opacity-[0.18] [background-image:radial-gradient(rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:14px_14px]"
+									></div>
+									<span class="relative font-typewriter text-sm uppercase tracking-[0.32em] text-muted-50/55">
+										{project.tags[0]}
+									</span>
+								</div>
+							{/if}
+						</div>
+
+						<div class="flex flex-1 flex-col p-5">
+							<h2 class="text-lg text-muted-50 transition-colors group-hover:text-white">{project.title}</h2>
+							<p class="mt-0.5 text-xs text-muted-50/55">{project.subtitle}</p>
+							<p class="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-50/62">
+								{project.description[0]}
+							</p>
+
+							<div class="mt-auto flex flex-wrap items-center gap-1.5 pt-4">
+								{#each project.tags.slice(0, 3) as tag (tag)}
+									<span class="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[11px] text-muted-50/62">
+										{tag}
+									</span>
+								{/each}
+								<span class="ml-auto text-xs text-muted-50/55 transition group-hover:text-white">read →</span>
+							</div>
+						</div>
 					</a>
 				</AnimatedSection>
-			</footer>
+			{/each}
 		</div>
-	</main>
-</div>
-
-<Gallery
-	images={galleryImages}
-	label={galleryLabel}
-	open={galleryOpen}
-	onclose={closeGallery}
-/>
+	</section>
+</main>

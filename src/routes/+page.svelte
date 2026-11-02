@@ -8,35 +8,35 @@
 
 	const selected = [
 		{
-			href: '/play/dewdrop-bend',
+			href: '/projects/dewdrop-bend',
 			title: 'Dewdrop Bend',
 			year: '2026',
 			stack: 'vanilla JS · Canvas 2D · no dependencies',
 			line: 'A living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag.'
 		},
 		{
-			href: '/projects#driftblock',
+			href: '/projects/driftblock',
 			title: 'driftblock',
 			year: '2026',
 			stack: 'three.js · Web Audio · no build step',
 			line: 'A 3D drift racer where the circuits, the engine and the skid marks are all generated at runtime.'
 		},
 		{
-			href: '/projects#ai-f1-racing',
+			href: '/projects/ai-f1-racing',
 			title: 'ai-f1-racing',
 			year: '2026',
 			stack: 'TypeScript · evolution strategies',
 			line: 'A neural driver trained by evolution on a deterministic 2D sim, on circuits traced from Spa and Baku.'
 		},
 		{
-			href: '/projects#beaverwize',
+			href: '/projects/beaverwize',
 			title: 'BeaverWize',
 			year: '2025',
 			stack: 'SvelteKit · Express · microservices',
 			line: 'A gamified water-conservation app: measurements, streaks, rewards with real brands.'
 		},
 		{
-			href: '/projects#laravel-nda',
+			href: '/projects/laravel-nda',
 			title: 'Laravel application',
 			year: '2025',
 			stack: 'Laravel · MySQL · Docker',
@@ -48,6 +48,7 @@
 		start: 'bg-violet-400/15 text-violet-200/90',
 		school: 'bg-white/10 text-muted-50/78',
 		team: 'bg-sky-400/10 text-sky-200/80',
+		teach: 'bg-emerald-400/10 text-emerald-200/80',
 		work: 'bg-amber-400/10 text-amber-200/80',
 		solo: 'bg-violet-400/15 text-violet-200/90'
 	};
