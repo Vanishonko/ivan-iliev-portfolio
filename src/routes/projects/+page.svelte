@@ -30,7 +30,6 @@
 </svelte:head>
 
 <div class="relative min-h-[100svh] overflow-x-hidden">
-	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>
 	<InteractiveBackground enableStars enableClouds enableAurora />
 
 	<main class="relative z-10 px-4 py-12 sm:px-6 sm:py-16">
@@ -59,7 +58,10 @@
 			<section class="space-y-6 sm:space-y-8" aria-label="Project list">
 				{#each projects as project, i (project.id)}
 					<AnimatedSection delay={200 + i * 90}>
-						<article class="rounded-2xl border border-white/10 bg-muted-900/20 p-6 shadow-sm backdrop-blur-md sm:p-8">
+						<article
+							id={project.id}
+							class="scroll-mt-24 rounded-2xl border border-white/10 bg-muted-900/20 p-6 shadow-sm backdrop-blur-md sm:p-8"
+						>
 							<header class="flex flex-col gap-3 sm:gap-4">
 								<div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
 									<div class="space-y-1">
