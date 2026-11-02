@@ -645,7 +645,7 @@
 				type="button"
 				class="download-button"
 				onclick={downloadPng}
-				aria-label="Download current drawing as a 32 by 32 PNG"
+				aria-label="Download PNG — the current 32 by 32 drawing"
 			>
 				<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
 					<path d="M12 3v12"></path>

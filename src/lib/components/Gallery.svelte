@@ -53,6 +53,9 @@
 	<div
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
 		onclick={onclose}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') onclose();
+		}}
 		role="dialog"
 		aria-modal="true"
 		aria-label={label}

@@ -29,7 +29,7 @@
 					href={link.href}
 					class="rounded-full px-3 py-1.5 text-xs transition-colors sm:text-sm {isActive(link.href)
 						? 'bg-white/10 text-white'
-						: 'text-muted-50/60 hover:bg-white/5 hover:text-muted-50'}"
+						: 'text-muted-50/70 hover:bg-white/5 hover:text-muted-50'}"
 					aria-current={isActive(link.href) ? 'page' : undefined}
 				>
 					{link.label}

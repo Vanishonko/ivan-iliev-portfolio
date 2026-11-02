@@ -29,9 +29,9 @@
 	<section class="px-4 pb-8 pt-10 sm:px-6 sm:pt-14">
 		<div class="mx-auto w-full max-w-5xl">
 			<AnimatedSection delay={80}>
-				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/40">play</p>
+				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/60">play</p>
 				<h1 class="mt-2 text-3xl font-semibold text-muted-50 sm:text-4xl">driftblock</h1>
-				<p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted-50/60 sm:text-base">
+				<p class="mt-3 max-w-2xl text-sm leading-relaxed text-muted-50/70 sm:text-base">
 					A blocky 3D drift racer that runs entirely in the browser. Four procedural circuits, a synthesised
 					engine and no build step. Keyboard, gamepad and wheel all work — a real wheel even gets force feedback
 					through a native bridge.
@@ -58,7 +58,7 @@
 						href={GAME_URL}
 						target="_blank"
 						rel="noreferrer"
-						class="text-sm text-muted-50/50 underline-offset-4 hover:text-muted-50 hover:underline"
+						class="text-sm text-muted-50/64 underline-offset-4 hover:text-muted-50 hover:underline"
 					>
 						open standalone ↗
 					</a>
@@ -86,7 +86,6 @@
 						type="button"
 						onclick={launch}
 						class="group absolute inset-0 flex flex-col items-center justify-center gap-3 text-center"
-						aria-label="Launch driftblock"
 					>
 						<span
 							class="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 bg-white/10 text-muted-50 transition group-hover:scale-105 group-hover:bg-white/15"
@@ -96,17 +95,17 @@
 								<path d="M8 5.5v13l11-6.5-11-6.5z" />
 							</svg>
 						</span>
-						<span class="text-sm text-muted-50/70">launch driftblock</span>
-						<span class="max-w-xs text-xs text-muted-50/35">
+						<span class="text-sm text-muted-50/78">launch driftblock</span>
+						<span class="max-w-xs text-xs text-muted-50/58">
 							loads about 28 MB of three.js, car meshes and audio — nothing is fetched until you click
 						</span>
 					</button>
 				{/if}
 			</div>
 
-			<p class="mt-4 text-xs leading-relaxed text-muted-50/35">
+			<p class="mt-4 text-xs leading-relaxed text-muted-50/58">
 				The car body is a modified “Citroen C5 Sedan And Estate” by Nieve5677, licensed
-				<a class="underline underline-offset-2 hover:text-muted-50/60" href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
+				<a class="underline underline-offset-2 hover:text-muted-50/70" href="http://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>.
 				Everything else — circuits, engine, particles — is generated at runtime.
 			</p>
 		</div>

@@ -68,12 +68,12 @@
 										<div class="flex items-center justify-center gap-2 sm:justify-start">
 											<h2 class="text-xl font-semibold text-muted-50 sm:text-2xl">{project.title}</h2>
 										</div>
-										<p class="text-center text-sm text-muted-50/70 sm:text-left">{project.subtitle}</p>
+										<p class="text-center text-sm text-muted-50/78 sm:text-left">{project.subtitle}</p>
 									</div>
 
 									<div class="flex flex-wrap justify-center gap-2 sm:justify-end">
 										{#each project.tags as tag (tag)}
-											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-50/75">
+											<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-50/82">
 												{tag}
 											</span>
 										{/each}
@@ -89,7 +89,7 @@
 
 							{#if project.galleryImages?.length}
 								<div class="mt-6 space-y-3">
-									<p class="text-sm text-muted-50/70">
+									<p class="text-sm text-muted-50/78">
 										{project.galleryAspect === 'wide' ? 'Screenshot' : 'Selected screenshots'}
 									</p>
 
@@ -114,7 +114,6 @@
 													type="button"
 													onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
 													class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
-													aria-label={`Open screenshot ${idx + 1} for ${project.title}`}
 												>
 												{#if isVideo(image)}
 													<video
@@ -124,6 +123,7 @@
 														playsinline
 														autoplay
 														loop
+														aria-label={`${project.title} clip ${idx + 1}`}
 													></video>
 												{:else}
 													<img
@@ -134,7 +134,10 @@
 												{/if}
 													<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
 													{#if idx === 2 && project.galleryImages.length > 3}
-														<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+														<div
+															class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg"
+															aria-hidden="true"
+														>
 															<span class="text-2xl font-bold text-white">+{project.galleryImages.length - 3}</span>
 														</div>
 													{/if}
@@ -146,7 +149,7 @@
 							{/if}
 
 							{#if project.note}
-								<p class="mt-6 text-sm text-muted-50/70">{project.note}</p>
+								<p class="mt-6 text-sm text-muted-50/78">{project.note}</p>
 							{/if}
 
 							{#if project.links?.length}
@@ -174,7 +177,6 @@
 					<a
 						href="/"
 						class="projects-link link-text rounded text-muted-50 transition-colors duration-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-muted-400 focus:ring-offset-2"
-						aria-label="Back to home"
 					>
 						← back home
 					</a>

@@ -38,7 +38,7 @@
 	];
 
 	const kindColour: Record<string, string> = {
-		school: 'bg-white/10 text-muted-50/70',
+		school: 'bg-white/10 text-muted-50/78',
 		team: 'bg-sky-400/10 text-sky-200/80',
 		work: 'bg-amber-400/10 text-amber-200/80',
 		solo: 'bg-violet-400/15 text-violet-200/90'
@@ -82,7 +82,7 @@
 			</AnimatedSection>
 
 			<AnimatedSection delay={ANIMATION_DELAY.SUBTITLE} class="mt-5">
-				<p class="max-w-xl text-base leading-relaxed text-muted-50/75 sm:text-lg">
+				<p class="max-w-xl text-base leading-relaxed text-muted-50/82 sm:text-lg">
 					{PAGE_SUBTITLE}. I build things that run in a browser and do something you can watch — a drift racer
 					with no assets, a racing AI that trains itself, and a workshop of tools for an agent I use every day.
 				</p>
@@ -104,7 +104,7 @@
 				<a
 					href="/IlievIvanCV.pdf"
 					download="IlievIvanCV.pdf"
-					class="px-1 py-2.5 text-sm text-muted-50/60 underline-offset-4 transition hover:text-muted-50 hover:underline"
+					class="px-1 py-2.5 text-sm text-muted-50/70 underline-offset-4 transition hover:text-muted-50 hover:underline"
 				>
 					download cv
 				</a>
@@ -116,8 +116,8 @@
 	<section class="relative px-4 pb-20 sm:px-6" aria-labelledby="selected-heading">
 		<div class="mx-auto w-full max-w-3xl">
 			<div class="mb-4 flex items-baseline justify-between gap-4 border-b border-white/10 pb-3">
-				<h2 id="selected-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/50">selected work</h2>
-				<a href="/projects" class="text-xs text-muted-50/60 underline-offset-4 hover:text-muted-50 hover:underline">
+				<h2 id="selected-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/64">selected work</h2>
+				<a href="/projects" class="text-xs text-muted-50/70 underline-offset-4 hover:text-muted-50 hover:underline">
 					all projects →
 				</a>
 			</div>
@@ -130,14 +130,14 @@
 								href={item.href}
 								class="group grid grid-cols-1 gap-1 py-5 sm:grid-cols-[5rem_1fr_auto] sm:items-baseline sm:gap-6"
 							>
-								<span class="font-typewriter text-xs text-muted-50/40">{item.year}</span>
+								<span class="font-typewriter text-xs text-muted-50/60">{item.year}</span>
 								<span>
 									<span class="block text-lg text-muted-50 transition-colors group-hover:text-white">{item.title}</span>
-									<span class="mt-0.5 block text-sm text-muted-50/50">{item.line}</span>
-									<span class="mt-1 block text-xs text-muted-50/35">{item.stack}</span>
+									<span class="mt-0.5 block text-sm text-muted-50/64">{item.line}</span>
+									<span class="mt-1 block text-xs text-muted-50/58">{item.stack}</span>
 								</span>
 								<span
-									class="hidden text-muted-50/25 transition-all group-hover:translate-x-1 group-hover:text-muted-50/70 sm:block"
+									class="hidden text-muted-50/25 transition-all group-hover:translate-x-1 group-hover:text-muted-50/78 sm:block"
 									aria-hidden="true">→</span
 								>
 							</a>
@@ -154,9 +154,9 @@
 			<div class="overflow-hidden rounded-2xl border border-white/10 bg-white/[0.03] backdrop-blur-md">
 				<div class="grid gap-6 p-6 sm:grid-cols-[1fr_auto] sm:items-center sm:p-8">
 					<div>
-						<h2 id="lab-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/50">the lab</h2>
+						<h2 id="lab-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/64">the lab</h2>
 						<p class="mt-3 text-lg text-muted-50">Half of what I build is private.</p>
-						<p class="mt-2 max-w-lg text-sm leading-relaxed text-muted-50/60">
+						<p class="mt-2 max-w-lg text-sm leading-relaxed text-muted-50/70">
 							A pixel-art surface where a model draws, looks at its own drawing and draws again. A 32×32
 							creature that lives in the corner of the window. A bell that tells you what a turn cost. The
 							repositories stay closed — the work does not have to.
@@ -186,20 +186,20 @@
 	<section class="relative px-4 pb-20 sm:px-6" aria-labelledby="road-heading">
 		<div class="mx-auto w-full max-w-3xl">
 			<div class="mb-6 border-b border-white/10 pb-3">
-				<h2 id="road-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/50">how it got here</h2>
+				<h2 id="road-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/64">how it got here</h2>
 			</div>
 
 			<ol class="relative space-y-8 border-l border-white/10 pl-6">
 				{#each milestones as m (m.year + m.title)}
 					<li class="relative">
-						<span class="absolute -left-[27px] top-1.5 h-2 w-2 rounded-full bg-muted-50/30 ring-4 ring-[#0a0e1a]"
+						<span class="absolute -left-[27px] top-1.5 h-2 w-2 rounded-full bg-muted-50/56 ring-4 ring-[#0a0e1a]"
 						></span>
 						<div class="flex flex-wrap items-center gap-3">
 							<span class="font-typewriter text-sm text-muted-50/80">{m.year}</span>
 							<span class="rounded-full px-2 py-0.5 text-[11px] {kindColour[m.kind]}">{m.kind}</span>
 						</div>
 						<h3 class="mt-1 text-base text-muted-50">{m.title}</h3>
-						<p class="mt-1 max-w-2xl text-sm leading-relaxed text-muted-50/55">{m.body}</p>
+						<p class="mt-1 max-w-2xl text-sm leading-relaxed text-muted-50/66">{m.body}</p>
 					</li>
 				{/each}
 			</ol>
@@ -213,7 +213,7 @@
 				class="rounded-2xl border border-white/10 bg-gradient-to-br from-violet-500/10 via-transparent to-amber-400/5 p-6 sm:p-8"
 			>
 				<h2 id="contact-heading" class="text-lg text-muted-50">Looking for an intern who ships?</h2>
-				<p class="mt-2 max-w-lg text-sm leading-relaxed text-muted-50/60">
+				<p class="mt-2 max-w-lg text-sm leading-relaxed text-muted-50/70">
 					I'm in my final stretch at HZ and open to an internship or a junior role where I can build things people
 					actually open. The CV is above; the rest is one click away.
 				</p>
