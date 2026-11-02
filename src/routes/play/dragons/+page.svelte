@@ -157,9 +157,9 @@
 						href="http://feckliga.free.bg">feckliga.free.bg</a
 					> — a page I have been dumping things on since 2016. The version you can still open is that same list of
 					links wrapped in CSS I asked ChatGPT for a few years ago; the 2016 original was nine bare
-					<code class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">&lt;a&gt;</code> tags. It still links the
-					survivors: a Voronoi sketch, a work-in-progress RPG, a game called <em>Dodge the Wurst</em>, and a Game
-					of Life. Most of them are as broken as they are old, which is rather the point.
+					<code class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">&lt;a&gt;</code> tags, four of which have
+					since stopped working. It still links the survivors: a Voronoi sketch, a work-in-progress RPG, a Game of
+					Life and an old school site. Most of them are as broken as they are old, which is rather the point.
 				</p>
 			</div>
 		</div>
