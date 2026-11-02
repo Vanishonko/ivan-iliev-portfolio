@@ -24,9 +24,9 @@
 
 <svelte:head>
 	<title>Projects | Ivan Iliev</title>
-	<meta name="description" content="A showcase of my recent projects including BeaverWize, Laravel web applications, and this portfolio." />
+	<meta name="description" content="A drift racing game in the browser, an evolutionary racing AI, a gamified water-conservation app, and the tooling around them." />
 	<meta property="og:title" content="Projects | Ivan Iliev" />
-	<meta property="og:description" content="A showcase of my recent projects including BeaverWize, Laravel web applications, and this portfolio." />
+	<meta property="og:description" content="A drift racing game in the browser, an evolutionary racing AI, a gamified water-conservation app, and the tooling around them." />
 </svelte:head>
 
 <div class="relative min-h-[100svh] overflow-x-hidden">
@@ -87,40 +87,59 @@
 
 							{#if project.galleryImages?.length}
 								<div class="mt-6 space-y-3">
-									<p class="text-sm text-muted-50/70">Selected screenshots</p>
-									<div class="grid grid-cols-3 gap-3">
-										{#each project.galleryImages.slice(0, 3) as image, idx (image)}
-											<button
-												type="button"
-												onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
-												class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
-												aria-label={`Open screenshot ${idx + 1} for ${project.title}`}
-											>
-											{#if isVideo(image)}
-												<video
-													src={image}
-													class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-													muted
-													playsinline
-													autoplay
-													loop
-												></video>
-											{:else}
-												<img
-													src={image}
-													alt={`${project.title} screenshot ${idx + 1}`}
-													class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-												/>
-											{/if}
-												<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
-												{#if idx === 2 && project.galleryImages.length > 3}
-													<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
-														<span class="text-2xl font-bold text-white">+{project.galleryImages.length - 3}</span>
-													</div>
+									<p class="text-sm text-muted-50/70">
+										{project.galleryAspect === 'wide' ? 'Screenshot' : 'Selected screenshots'}
+									</p>
+
+									{#if project.galleryAspect === 'wide'}
+										<button
+											type="button"
+											onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
+											class="group relative block aspect-video w-full overflow-hidden rounded-xl border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
+											aria-label={`Open the ${project.title} screenshot`}
+										>
+											<img
+												src={project.galleryImages[0]}
+												alt={`${project.title} screenshot`}
+												class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+											/>
+											<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
+										</button>
+									{:else}
+										<div class="grid grid-cols-3 gap-3">
+											{#each project.galleryImages.slice(0, 3) as image, idx (image)}
+												<button
+													type="button"
+													onclick={() => openGallery(project.galleryImages ?? [], project.galleryLabel)}
+													class="group relative aspect-[9/16] overflow-hidden rounded-lg border border-white/10 bg-white/5 transition-all duration-300 hover:border-white/20 hover:bg-white/10"
+													aria-label={`Open screenshot ${idx + 1} for ${project.title}`}
+												>
+												{#if isVideo(image)}
+													<video
+														src={image}
+														class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+														muted
+														playsinline
+														autoplay
+														loop
+													></video>
+												{:else}
+													<img
+														src={image}
+														alt={`${project.title} screenshot ${idx + 1}`}
+														class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+													/>
 												{/if}
-											</button>
-										{/each}
-									</div>
+													<div class="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/20"></div>
+													{#if idx === 2 && project.galleryImages.length > 3}
+														<div class="absolute inset-0 flex items-center justify-center bg-black/50 rounded-lg">
+															<span class="text-2xl font-bold text-white">+{project.galleryImages.length - 3}</span>
+														</div>
+													{/if}
+												</button>
+											{/each}
+										</div>
+									{/if}
 								</div>
 							{/if}
 

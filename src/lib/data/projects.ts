@@ -2,6 +2,49 @@ import type { Project } from '$lib/types';
 
 export const projects = [
 	{
+		id: 'driftblock',
+		title: 'driftblock',
+		subtitle: '3D drift racing • WebGL • No build step',
+		tags: ['three.js', 'Web Audio', 'Gamepad API', 'Force feedback'],
+		description: [
+			'A 3D drift racing game that runs in the browser with no build step. Four circuits generated from radial harmonics, an engine synthesised entirely in Web Audio, and skid marks, smoke and sparks produced at runtime — the only imported geometry is the car body, a blocky portrait of a graphite-black Mercedes SLK with Dutch plates and a BRABUS badge.',
+			'The handling is not a rigid-body simulation. Velocity is split into the car’s own forward and lateral axes, so steering rotates the car away from the direction it is actually travelling, and the slide falls out of the maths instead of being faked. On top of that sit a gearbox with real gear ratios, an engine whose revs answer the throttle rather than the tarmac, and optional force feedback through a native HID bridge, so a real wheel pushes back with a tyre model rather than a rumble.'
+		],
+		galleryImages: ['/images/driftblock-gameplay.png'],
+		galleryAspect: 'wide',
+		galleryLabel: 'driftblock gameplay',
+		links: [
+			{
+				label: 'Play it',
+				href: 'https://vanishonko.github.io/driftblock/',
+				external: true
+			},
+			{
+				label: 'GitHub',
+				href: 'https://github.com/Vanishonko/driftblock',
+				external: true
+			}
+		]
+	},
+	{
+		id: 'ai-f1-racing',
+		title: 'ai-f1-racing',
+		subtitle: 'Evolutionary racing AI • Deterministic sim',
+		tags: ['TypeScript', 'Evolution Strategies', 'Neural networks', 'Determinism'],
+		description: [
+			'A top-down Formula 1 racing AI. A 38–16–3 neural network drives with analogue throttle, brake and steering, trained by an evolution strategy — antithetic perturbations, rank-normalised fitness, Adam on the search distribution — against a deterministic 2D simulation running at a fixed 60 Hz.',
+			'Determinism is a hard contract here: any function whose result is not bit-identical across JavaScript engines is banned from the simulation, and trigonometry is baked into tables at load. That is what makes a lap time mean the same thing twice and a training run reproducible. Spa-Francorchamps and Baku are traced from the real circuits to within about 0.1 % of their true lap lengths.'
+		],
+		note: 'The simulation and the trainer work — a driver can be trained to lap. Cars cannot yet see or hit each other, so the racing itself is the part still being built.',
+		links: [
+			{
+				label: 'GitHub',
+				href: 'https://github.com/Vanishonko/ai-f1-racing',
+				external: true
+			}
+		]
+	},
+	{
 		id: 'beaverwize',
 		title: 'BeaverWize',
 		subtitle: 'SvelteKit • Microservices • Gamification',
@@ -31,6 +74,24 @@ export const projects = [
 			'Some of the key functionalities included secure authentication, data entry and modification, user-configurable email and push notifications, multiple sorting and filtering options, and role-based access with different permissions and views. Our solution also supported exporting data in various formats.'
 		],
 		note: 'Screenshots and source code are NDA-protected. I’m happy to discuss the architecture and my contributions.'
+	},
+	{
+		id: 'dsh-works',
+		title: 'dsh-works plugins',
+		subtitle: 'DeepSeek Harness • Private workshop',
+		tags: ['Node.js', 'Svelte', 'Pixel art', 'Offline tests'],
+		description: [
+			'Plugins for DeepSeek Harness, built as bundles with a host half and a browser half: a pixel-art surface where the model draws a character grid, looks at the rendered image, gets a critique and draws again; a 32×32 creature that lives in the corner of the window and reacts to what the agent is doing; and an alerts bell that reports the duration, tokens and estimated cost of a turn.',
+			'No runtime dependencies — the PNG and GIF encoders are written against node: — and every suite runs offline, with no model and no network.'
+		],
+		note: 'The repositories are private; the organization page is public.',
+		links: [
+			{
+				label: 'dsh-works',
+				href: 'https://github.com/dsh-works',
+				external: true
+			}
+		]
 	},
 	{
 		id: 'portfolio',
