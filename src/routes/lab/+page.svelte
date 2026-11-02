@@ -25,15 +25,27 @@
 			<AnimatedSection delay={80}>
 				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/60">the lab</p>
 				<h1 class="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-muted-50 sm:text-4xl">
-					Work I can't open-source, but can still show you.
+					Private repositories, public proof.
 				</h1>
 				<p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted-50/70 sm:text-base">
 					These are plugins for <a
 						class="underline underline-offset-4 hover:text-muted-50"
 						href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness</a
-					>, the coding agent I use every day. The repositories are private. So instead of screenshots of a
-					repository you can't open, here are the pieces themselves — running.
+					>, the coding agent I use every day. The code lives in private repositories — partly because this is a
+					workshop rather than a product, and partly because some of it is built with the agent it plugs into and
+					I am not ready to defend every line of it in public. The work itself runs here.
 				</p>
+
+				<div class="mt-5 max-w-2xl rounded-xl border border-violet-300/20 bg-violet-400/[0.07] p-4">
+					<p class="text-sm leading-relaxed text-muted-50/85">
+						<strong class="text-violet-100">Ask and you shall receive.</strong> If anything here is interesting —
+						the pixel-art loop, the antenna maths, the cost arithmetic — say so and I will send you the code. I
+						would rather share it with someone curious than polish it for nobody.
+						<a class="ml-1 underline underline-offset-4 hover:text-white" href="mailto:vanishonko@gmail.com"
+							>Email me</a
+						>.
+					</p>
+				</div>
 			</AnimatedSection>
 		</div>
 	</header>
@@ -153,14 +165,14 @@
 			</p>
 
 			<p class="mt-4 text-sm leading-relaxed text-muted-50/70">
-				The repositories stay private, but the plugins do not have to. If you use DeepSeek Harness and any of
-				this looks useful — Pip, the pixel-art surface, the alerts bell — <a
+				The repositories stay private for now, but the code does not have to. If anything here caught your eye —
+				Pip, the pixel-art surface, the alerts bell — <a
 					class="underline underline-offset-4 hover:text-white"
 					href="mailto:vanishonko@gmail.com">email me</a
 				> or find me on <a
 					class="underline underline-offset-4 hover:text-white"
 					href="https://github.com/Vanishonko">GitHub</a
-				>. I am more than happy to share them with anyone who would actually use them.
+				>. I am happy to share it with anyone curious enough to ask.
 			</p>
 		</div>
 	</section>

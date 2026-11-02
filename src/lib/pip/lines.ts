@@ -12,6 +12,12 @@ export const PIP_LINES = {
 	tug: ['Boing. That is attached, you know.', 'Hey - the aerial!', 'Easy on the antenna.'],
 	/** A click (or Space / Enter) is a pat, not a poke. */
 	pat: ['Hehe.', 'That tickles.', 'Hello to you too.', 'Again, again.'],
+	/** Three pokes in a row put him on the floor. Verbatim from the plugin. */
+	tipOver: [
+		'Okay. I am down. I live here now.',
+		'That is it. I am on the floor.',
+		'Tell my story.'
+	],
 	/** Rare idle chatter, while he is left alone. */
 	idle: ['Just having a look around.', 'Nice day for it.', 'I am here.', 'Nothing on fire.'],
 	/** He has just nodded off. */

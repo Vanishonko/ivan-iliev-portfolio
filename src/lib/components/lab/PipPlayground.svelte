@@ -12,6 +12,12 @@
 		type AntennaPoint,
 		type AntennaState
 	} from '$lib/pip/antenna';
+	import {
+		originForParticle,
+		spawn as spawnParticles,
+		update as updateParticles
+	} from '$lib/pip/particles';
+	import { drawParticles } from '$lib/pip/paintParticles';
 	import { pickLine, type LineKind } from '$lib/pip/lines';
 
 	/* ------------------------------------------------------------------ */
@@ -53,8 +59,16 @@
 	const IDLE_LINE_MAX_GAP_MS = 30000;
 	const IDLE_LINE_RETRY_MS = 3000;
 	const IDLE_LINE_CHANCE = 0.5;
-	/* A press that moves less than this many cell pixels is not a tug. */
+	/* A press that moves the bulb less than this many cell pixels is not a tug. */
 	const TUG_PULL_CELLS = 1.5;
+	/* Three pokes inside this window tip him over; the same window is the quiet
+	   time after which the count starts again. */
+	const POKE_WINDOW_MS = 4000;
+	const POKE_LIMIT = 3;
+	/* The tipped sheet runs 900 + 900 + 700 + 900 ms, then he lies there for a
+	   beat before getting up (the sheet's last frame is held). */
+	const TIP_DOWN_MS = 2700;
+	const TIP_STATIC_MS = 2800;
 
 	type Pose =
 		| 'idle'
@@ -67,13 +81,32 @@
 		| 'jump'
 		| 'startle'
 		| 'aha'
-		| 'toke';
+		| 'toke'
+		| 'tipped';
 
 	type Reaction = Extract<Pose, 'happy' | 'giggle' | 'jump' | 'startle' | 'aha'>;
 
 	type Speech = {
 		kind: LineKind;
 		text: string;
+	};
+
+	/* Shape of a particle between `spawn` and `update`; the module owns the
+	   behaviour, this is only enough to type the array in the component. */
+	type Particle = {
+		id: string;
+		kind: string;
+		x: number;
+		y: number;
+		born: number;
+		life: number;
+		vx: number;
+		vy: number;
+		size: number;
+		age?: number;
+		atX?: number;
+		atY?: number;
+		alpha?: number;
 	};
 
 	type Sheet = {
@@ -151,8 +184,20 @@
 			frames: 8,
 			ms: [420, 460, 620, 320, 650, 520, 650, 700],
 			loop: false
+		},
+		tipped: {
+			url: '/pip/tipped.png',
+			frames: 4,
+			ms: [900, 900, 700, 900],
+			loop: false,
+			hold: true
 		}
 	};
+
+	/** How long the tipped sheet runs before he has to lie there. */
+	const TIP_SHEET_MS = SHEETS.tipped.ms.reduce((total, ms) => total + ms, 0);
+	const TIP_RECOVER_MS = TIP_SHEET_MS + TIP_DOWN_MS;
+	const JUMP_LANDING_FRAME = SHEETS.jump.frames - 1;
 
 	const REACTIONS: Reaction[] = ['happy', 'giggle', 'jump', 'startle', 'aha'];
 
@@ -167,7 +212,8 @@
 		jump: 'boing!',
 		startle: '!',
 		aha: 'aha!',
-		toke: 'on a break'
+		toke: 'on a break',
+		tipped: 'down. he lives here now'
 	};
 
 	const ANNOUNCEMENTS: Record<Reaction, string> = {
@@ -189,6 +235,7 @@
 	let facing = $state<1 | -1>(1);
 	let x = $state<number | null>(null);
 	let stageWidth = $state(0);
+	let stageHeight = $state(0);
 	let announcement = $state('');
 	let offDuty = $state(false);
 
@@ -236,6 +283,13 @@
 	let stageEl = $state<HTMLDivElement | null>(null);
 	let spriteEl = $state<HTMLDivElement | null>(null);
 	let antennaEl = $state<HTMLCanvasElement | null>(null);
+	let particleEl = $state<HTMLCanvasElement | null>(null);
+
+	/* The particle layer, in stage pixels. The modules own the lifetimes and
+	   the drawing; this owns only the canvas backing store and the tab pause. */
+	let particleCtx: CanvasRenderingContext2D | null = null;
+	let particles: Particle[] = [];
+	let particleDirty = false;
 
 	/* The plugin's rig: one state for the whole component. */
 	let antennaCtx: CanvasRenderingContext2D | null = null;
@@ -244,10 +298,10 @@
 	let antennaPull: AntennaPoint | null = null;
 	let antennaPointerId: number | null = null;
 	let suppressClick = false;
-	/* Where this drag started, in cell pixels: the tug line fires once, on the
-	   first real movement, and not again for the rest of the drag. */
-	let antennaGrab: AntennaPoint | null = null;
-	let antennaTugSaid = false;
+	/* Where the bulb started this drag and the furthest it actually travelled:
+	   the tug line is decided on release, never while the pointer is down. */
+	let antennaStartTip: AntennaPoint | null = null;
+	let antennaMaxPull = 0;
 
 	/* Pip's previous position, for the rig's body-velocity lag. */
 	let lastBodyX: number | null = null;
@@ -266,6 +320,10 @@
 
 	let lastActivity = 0;
 	let sitStartedAt = 0;
+
+	/* Tipping over: when the floor pose began, and the recent poke times. */
+	let tipStartedAt = 0;
+	let pokeTimes: number[] = [];
 
 	let lastReaction: Reaction | null = null;
 	let staticReactionTimer: ReturnType<typeof setTimeout> | null = null;
@@ -310,17 +368,150 @@
 	}
 
 	/* ------------------------------------------------------------------ */
+	/* Particles                                                          */
+	/* ------------------------------------------------------------------ */
+
+	type ParticleOrigin = {
+		x: number;
+		y: number;
+		spreadX: number;
+		spreadY: number;
+	};
+
+	/**
+	 * The particle canvas in viewport pixels.
+	 *
+	 * Its top-left is the drawing origin: using the stage box instead would be a
+	 * border-width off, because the canvas sits inside the stage's border.
+	 */
+	function particleCanvasRect(): DOMRect | null {
+		return particleEl?.getBoundingClientRect() ?? null;
+	}
+
+	/**
+	 * Where an emitter should leave from, in stage pixels.
+	 *
+	 * The model's `originForParticle` speaks in viewport pixels and knows which
+	 * emitters are thoughts (above the head) and which are physical (at the
+	 * body). The stage canvas is its own little viewport, so the box is shifted
+	 * into canvas space here.
+	 */
+	function particleOrigin(kind: string): ParticleOrigin | null {
+		const canvas = particleCanvasRect();
+		const sprite = spriteEl?.getBoundingClientRect();
+		if (!canvas || !sprite) return null;
+		const origin = originForParticle(kind, sprite, { x: sprite.left, y: sprite.top });
+		return {
+			x: origin.x - canvas.left,
+			y: origin.y - canvas.top,
+			spreadX: origin.spreadX,
+			spreadY: origin.spreadY
+		};
+	}
+
+	/** The bulb's current position, in stage pixels: the ring leaves from there. */
+	function antennaTipOrigin(): ParticleOrigin | null {
+		const canvas = particleCanvasRect();
+		const sprite = spriteEl?.getBoundingClientRect();
+		if (!canvas || !sprite) return null;
+		const tip = antennaTip(ensureAntenna());
+		const localX = facing === 1 ? tip.x : ART - tip.x;
+		return {
+			x: sprite.left - canvas.left + (localX / ART) * sprite.width,
+			y: sprite.top - canvas.top + (tip.y / ART) * sprite.height,
+			spreadX: 2,
+			spreadY: 2
+		};
+	}
+
+	/** The floor under him, for a fall rather than a thought. */
+	function floorOrigin(): ParticleOrigin | null {
+		const canvas = particleCanvasRect();
+		const sprite = spriteEl?.getBoundingClientRect();
+		if (!canvas || !sprite) return null;
+		return {
+			x: sprite.left - canvas.left + sprite.width / 2,
+			y: sprite.top - canvas.top + sprite.height * 0.82,
+			spreadX: sprite.width * 0.22,
+			spreadY: 4
+		};
+	}
+
+	/**
+	 * One burst from the plugin's particle model.
+	 *
+	 * Reduced motion spawns nothing at all — the same promise the CSS makes.
+	 * The module chooses the count, the styles and the lifetime; the caller only
+	 * supplies the emitter and the origin.
+	 */
+	function spawnParticle(kind: string, origin: ParticleOrigin | null): void {
+		if (!browser || reducedMotion || origin === null) return;
+		particles = spawnParticles(particles, {
+			kind,
+			x: origin.x,
+			y: origin.y,
+			now: performance.now(),
+			spreadX: origin.spreadX,
+			spreadY: origin.spreadY
+		}) as Particle[];
+		particleDirty = true;
+	}
+
+	function emitParticle(kind: string): void {
+		spawnParticle(kind, particleOrigin(kind));
+	}
+
+	/**
+	 * Step and paint the layer.
+	 *
+	 * `update` returns new particles each frame; the painter fades each one, so
+	 * it is called per particle to carry the model's own `alpha` through
+	 * `globalAlpha` (the painter deliberately leaves that to its caller).
+	 */
+	function paintParticles(): void {
+		const canvas = particleEl;
+		if (!canvas) return;
+		if (particleCtx === null) particleCtx = canvas.getContext('2d');
+		const context = particleCtx;
+		if (!context) return;
+
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		context.globalAlpha = 1;
+		context.clearRect(0, 0, canvas.width, canvas.height);
+		for (const particle of particles) {
+			context.globalAlpha = Math.max(0, Math.min(1, particle.alpha ?? 1));
+			drawParticles(context, [particle]);
+		}
+		context.globalAlpha = 1;
+		particleDirty = particles.length > 0;
+	}
+
+	function stepParticles(now: number): void {
+		if (reducedMotion) {
+			if (particles.length > 0) {
+				particles = [];
+				particleDirty = true;
+			}
+		} else {
+			const stepped = updateParticles(particles, now);
+			particles = stepped.particles as Particle[];
+			if (particles.length > 0) particleDirty = true;
+		}
+		if (particles.length > 0 || particleDirty) paintParticles();
+	}
+
+	/* ------------------------------------------------------------------ */
 	/* Speech                                                              */
 	/* ------------------------------------------------------------------ */
 
 	/**
 	 * Say one line, replacing whatever he was saying.
 	 *
-	 * The bubble hides itself after {@link SPEECH_MS}. Only `tug` and `pat` are
-	 * announced through the polite live region: idle chatter, sleep and the
-	 * off-duty lines are ambient, and reading them aloud would be noise. The
-	 * announcement is throttled separately from the bubble, so rapid pats still
-	 * change the words on screen without re-reading them every time.
+	 * The bubble hides itself after {@link SPEECH_MS}. Only `tug`, `pat` and
+	 * `tipOver` are announced through the polite live region: idle chatter,
+	 * sleep and the off-duty lines are ambient, and reading them aloud would be
+	 * noise. The announcement is throttled separately from the bubble, so rapid
+	 * pats still change the words on screen without re-reading them every time.
 	 */
 	function say(kind: LineKind, options: { announce?: boolean } = {}): void {
 		if (!browser) return;
@@ -360,6 +551,9 @@
 	 */
 	function maybeIdleLine(now: number): void {
 		if (!browser) return;
+		/* A held antenna is an interaction in progress: chatter would read as
+		   him talking over the drag. */
+		if (antennaPointerId !== null) return;
 		if (pose !== 'idle' && pose !== 'sit') return;
 		if (now - lastActivity < IDLE_LINE_QUIET_MS) return;
 		if (now < nextIdleLineCheckAt) return;
@@ -451,9 +645,65 @@
 		}
 	}
 
+	/**
+	 * Count one poke and answer whether this one is the straw.
+	 *
+	 * The window is a rolling one: times older than {@link POKE_WINDOW_MS} fall
+	 * out, so two pokes and a long pause are two pokes again. The counter is
+	 * cleared when he tips and when he gets up.
+	 */
+	function registerPoke(now: number): boolean {
+		pokeTimes = pokeTimes.filter((at) => now - at <= POKE_WINDOW_MS);
+		pokeTimes.push(now);
+		return pokeTimes.length >= POKE_LIMIT;
+	}
+
+	/** Three pokes in the window: the floor. */
+	function startTipOver(now: number): void {
+		pokeTimes = [];
+		tipStartedAt = now;
+		lastActivity = now;
+		setPose('tipped');
+		announce('Pip tips over.');
+		say('tipOver', { announce: true });
+		spawnParticle('smoke', floorOrigin());
+
+		if (reducedMotion) {
+			/* No animation loop, so show the last frame and use a timer. */
+			setPose('tipped', SHEETS.tipped.frames - 1);
+			if (staticReactionTimer !== null) clearTimeout(staticReactionTimer);
+			staticReactionTimer = setTimeout(() => {
+				staticReactionTimer = null;
+				endTipOver();
+			}, TIP_STATIC_MS);
+			return;
+		}
+
+		syncLoop();
+	}
+
+	function endTipOver(): void {
+		lastActivity = performance.now();
+		pokeTimes = [];
+		setPose('idle');
+		announce('Pip is back up.');
+	}
+
 	function triggerReaction(): void {
+		/* Already on the floor: no reaction, and no further pokes stack up. */
+		if (pose === 'tipped') return;
+
 		const now = performance.now();
 		lastActivity = now;
+
+		/* A click that wakes him is not one of the three: he must not tip over
+		   out of sleep. The reaction itself still plays, exactly as before. */
+		if (pose !== 'sleep' && registerPoke(now)) {
+			startTipOver(now);
+			return;
+		}
+
+		emitParticle('cheer');
 
 		const options = REACTIONS.filter((reaction) => reaction !== lastReaction);
 		const reaction = options[Math.floor(Math.random() * options.length)] ?? 'happy';
@@ -516,6 +766,8 @@
 
 			if (frame < sheet.frames - 1) {
 				frame += 1;
+				/* The jump's last frame is the landing: one small puff of dust. */
+				if (pose === 'jump' && frame === JUMP_LANDING_FRAME) emitParticle('land');
 				continue;
 			}
 
@@ -588,6 +840,9 @@
 
 	function update(dt: number, now: number): void {
 		advanceSheet(dt);
+		/* The sheet plays once and holds its last frame; the floor-time clock
+		   (rather than the frame clock) decides when he gets up. */
+		if (pose === 'tipped' && now - tipStartedAt >= TIP_RECOVER_MS) endTipOver();
 		if (pose === 'walk') updateWalk(dt);
 		updateMood(now);
 		maybeIdleLine(now);
@@ -602,6 +857,7 @@
 		if (x !== null) update(dt, timestamp);
 		stepAntennaFrame(dt, timestamp);
 		drawAntenna();
+		stepParticles(timestamp);
 
 		if (browser && !reducedMotion && documentVisible && inView) {
 			rafId = requestAnimationFrame(tick);
@@ -617,6 +873,10 @@
 			if (sitStartedAt > 0) sitStartedAt += pausedFor;
 			if (lookStartedAt > 0) lookStartedAt += pausedFor;
 			if (nextIdleLineCheckAt > 0) nextIdleLineCheckAt += pausedFor;
+			if (tipStartedAt > 0) tipStartedAt += pausedFor;
+			/* Freeze every particle's age too: a tab that was hidden for a
+			   minute should not skip the whole burst on the first frame back. */
+			for (const particle of particles) particle.born += pausedFor;
 			pausedAt = 0;
 		}
 
@@ -762,20 +1022,22 @@
 		if (antennaPointerId === null || event.pointerId !== antennaPointerId) return;
 		const point = antennaPointFromPointer(event);
 		if (point === null) return;
+		const state = ensureAntenna();
 		antennaPull = point;
-		pullAntenna(ensureAntenna(), point, { now: performance.now() });
-		drawAntenna();
+		pullAntenna(state, point, { now: performance.now() });
 
-		/* One tug line per drag: the first real movement, not every pointermove
-		   frame. A press that never moves the bulb is not a pull. */
-		if (!antennaTugSaid && antennaGrab !== null) {
-			const dx = point.x - antennaGrab.x;
-			const dy = point.y - antennaGrab.y;
-			if (Math.hypot(dx, dy) > TUG_PULL_CELLS) {
-				antennaTugSaid = true;
-				say('tug', { announce: true });
-			}
+		/* Track how far the bulb actually travelled, not where the pointer ended
+		   up: a drag out and back is still a tug, and the line is decided on
+		   release. Nothing is said while the pointer is down. */
+		if (antennaStartTip !== null) {
+			const tip = antennaTip(state);
+			antennaMaxPull = Math.max(
+				antennaMaxPull,
+				Math.hypot(tip.x - antennaStartTip.x, tip.y - antennaStartTip.y)
+			);
 		}
+
+		drawAntenna();
 	}
 
 	/**
@@ -800,8 +1062,8 @@
 		suppressClick = true;
 		antennaPointerId = event.pointerId;
 		antennaPull = point;
-		antennaGrab = point;
-		antennaTugSaid = false;
+		antennaStartTip = tip;
+		antennaMaxPull = 0;
 		try {
 			stageEl?.setPointerCapture(event.pointerId);
 		} catch {
@@ -813,12 +1075,22 @@
 		drawAntenna();
 	}
 
-	function endAntennaPull(event: PointerEvent | null): void {
+	/**
+	 * End the drag and say one line if it was a real tug.
+	 *
+	 * The bulb has to have moved more than {@link TUG_PULL_CELLS} at some point
+	 * during the drag. That is the whole speech rule: no pointermove here ever
+	 * calls `say`, so a hold that never releases stays silent.
+	 */
+	function endAntennaPull(event: PointerEvent | null, options: { speak?: boolean } = {}): void {
 		if (antennaPointerId === null) return;
+		const pulled = antennaMaxPull > TUG_PULL_CELLS;
+		/* The rings leave from where the bulb is at the instant of release. */
+		const ringOrigin = pulled ? antennaTipOrigin() : null;
 		antennaPointerId = null;
 		antennaPull = null;
-		antennaGrab = null;
-		antennaTugSaid = false;
+		antennaStartTip = null;
+		antennaMaxPull = 0;
 		if (event !== null) {
 			try {
 				if (stageEl?.hasPointerCapture(event.pointerId)) {
@@ -830,6 +1102,12 @@
 		}
 		releaseAntenna(ensureAntenna(), { now: performance.now() });
 		drawAntenna();
+		lastActivity = performance.now();
+
+		if (pulled && options.speak !== false) {
+			say('tug', { announce: true });
+			spawnParticle('ring', ringOrigin);
+		}
 	}
 
 	function handleAntennaPointerUp(event: PointerEvent): void {
@@ -958,12 +1236,19 @@
 				clearTimeout(staticReactionTimer);
 				staticReactionTimer = null;
 			}
-			endAntennaPull(null);
+			endAntennaPull(null, { speak: false });
 			setPose('idle', 0);
+			pokeTimes = [];
+			tipStartedAt = 0;
 			antennaState = null;
 			stopLoop();
 			stepAntennaStatic();
 			drawAntenna();
+			/* Reduced motion means the particle layer empties instead of
+			   finishing its bursts. */
+			particles = [];
+			particleDirty = false;
+			paintParticles();
 		} else {
 			antennaState = null;
 			syncLoop();
@@ -988,6 +1273,7 @@
 		if (!root || !stage) return;
 
 		antennaCtx = antennaEl?.getContext('2d') ?? null;
+		particleCtx = particleEl?.getContext('2d') ?? null;
 		drawAntenna();
 
 		lastActivity = performance.now();
@@ -995,6 +1281,7 @@
 
 		const measure = (): void => {
 			stageWidth = stage.clientWidth;
+			stageHeight = stage.clientHeight;
 			x = x === null ? Math.max(EDGE, (stageWidth - SIZE) / 2) : clamp(x, EDGE, maxLeft());
 			if (targetX !== null) targetX = clamp(targetX, EDGE, maxLeft());
 		};
@@ -1110,6 +1397,17 @@
 				<span class="pip-speech-tail" style:left={speechPlacement.tail}></span>
 			</div>
 		</div>
+
+		<!-- Particle layer: stage-sized, transparent, and never a pointer target.
+		     Its backing store is the displayed CSS size, so the module's 1-3px
+		     squares stay on the pixel grid. -->
+		<canvas
+			class="pip-particles"
+			bind:this={particleEl}
+			width={Math.max(1, stageWidth)}
+			height={Math.max(1, stageHeight)}
+			aria-hidden="true"
+		></canvas>
 	</div>
 
 	<footer class="pip-foot">
@@ -1362,6 +1660,11 @@
 		opacity: 0.55;
 	}
 
+	.pip-stage[data-pose='tipped'] .pip-shadow {
+		width: 86px;
+		opacity: 0.86;
+	}
+
 	/* The flip layer mirrors the sprite and the antenna together, exactly like
 	   the plugin. The antenna rig stays in unmirrored cell coordinates. */
 	.pip-figure {
@@ -1387,6 +1690,20 @@
 		inset: 0;
 		width: 96px;
 		height: 96px;
+		pointer-events: none;
+		image-rendering: crisp-edges;
+		image-rendering: pixelated;
+	}
+
+	/* A separate transparent layer over the whole stage. Its backing store is
+	   exactly its displayed CSS size, so the particle module's 1-3px squares
+	   stay on the grid. Decorative: pointer-events is never negotiable here. */
+	.pip-particles {
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		width: 100%;
+		height: 100%;
 		pointer-events: none;
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;

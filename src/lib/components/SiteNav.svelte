@@ -30,7 +30,7 @@
 		class="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4 sm:h-16 sm:px-6"
 		aria-label="Main"
 	>
-		<a href="/" class="group flex items-center gap-2.5" aria-label="Ivan Iliev — home">
+		<a href="/" class="group flex items-center gap-2.5">
 			<span
 				class="flex h-7 w-7 items-center justify-center rounded-md border border-violet-300/25 bg-violet-400/10 font-typewriter text-[11px] leading-none text-violet-100 shadow-[0_0_16px_-6px_rgba(167,139,250,0.9)] transition group-hover:border-violet-300/40 group-hover:bg-violet-400/15"
 				aria-hidden="true">ii</span

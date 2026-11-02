@@ -48,12 +48,13 @@
 					<p class="mt-3 text-sm leading-relaxed text-muted-50/85">
 						<strong class="text-amber-100">I was eleven.</strong> There is no delta time, so the game runs at whatever
 						your monitor does. Collisions are rectangles. The engine is one 4 KB file of global variables. The
-						"art direction" is two sets of GIFs I found online, and my little brother's sky photograph. The sounds
-						are MP3s named after the noises they make. It is bad in ways I could not have avoided at eleven and
-						would not fix now — fixing it would defeat the point.
+						"art direction" is two sets of GIFs I found online and a sky photograph I stole from the internet
+						without a second thought. The score is drawn in a free "Tribal Dragon" font I downloaded around the
+						same time. The sounds are MP3s named after the noises they make. It is bad in ways I could not have
+						avoided at eleven and would not fix now — fixing it would defeat the point.
 					</p>
 					<p class="mt-3 text-sm leading-relaxed text-muted-50/70">
-						What it does have: dragons, a score counter in red Arial, and the exact moment I decided this was
+						What it does have: dragons, a score counter in a tribal font, and the exact moment I decided this was
 						what I wanted to do with my life.
 					</p>
 				</div>
