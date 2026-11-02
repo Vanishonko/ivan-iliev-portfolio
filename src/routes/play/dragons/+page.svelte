@@ -159,7 +159,8 @@
 					links wrapped in CSS I asked ChatGPT for a few years ago; the 2016 original was nine bare
 					<code class="rounded bg-white/10 px-1 py-0.5 text-[0.85em]">&lt;a&gt;</code> tags, two of which have
 					since been retired. It still links what still runs — a Voronoi sketch, a work-in-progress RPG, a Game of
-					Life and an old school site — plus a couple of buttons that only made sense in 2016.
+					Life and an old school site — plus two canvas experiments with the best names in the archive:
+					<em>Chep.io Prototype</em> and <em>Click me!</em>.
 				</p>
 			</div>
 		</div>
