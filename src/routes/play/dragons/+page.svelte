@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const SRC = '/games/dragons/start.html';
@@ -15,15 +17,14 @@
 	};
 </script>
 
-<svelte:head>
-	<title>dragons (2015) — play | ivan iliev</title>
-	<meta
-		name="description"
-		content="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here for the joke, exactly as it shipped."
-	/>
-	<meta property="og:title" content="Dragons — a game from 2015" />
-	<meta property="og:description" content="Built at eleven, during my second year of JavaScript classes. It shows." />
-</svelte:head>
+<Seo
+	 title="dragons (2015) — play | ivan iliev"
+	 description="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here for the joke, exactly as it shipped."
+	 path="/play/dragons"
+	 image={socialImage('dragons')}
+	 type="article"
+	jsonLd={[gameJsonLd({ name: 'Dragons', description: 'Dragons in the browser', path: '/play/dragons', genre: ['arcade'], released: '2015-09-06' })]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />

@@ -1,14 +1,17 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { page } from '$app/stores';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const statusChars = String($page.status).split('');
 </script>
 
-<svelte:head>
-	<title>{$page.status === 404 ? 'page not found' : 'error'} | ivan iliev</title>
-	<meta name="description" content="The page you are looking for does not exist." />
-</svelte:head>
+<Seo
+	title={`${$page.status === 404 ? 'page not found' : 'error'} | ivan iliev`}
+	description="The page you are looking for does not exist."
+	path={$page.url.pathname}
+	noindex
+/>
 
 <div class="relative min-h-[100svh] overflow-hidden">
 	<div class="fixed inset-0 -z-10 background-gradient" aria-hidden="true"></div>

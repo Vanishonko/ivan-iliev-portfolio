@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { breadcrumbJsonLd, projectJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground, Gallery } from '$lib/components';
 	import type { Project } from '$lib/types';
 
@@ -19,12 +21,21 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{project.title.toLowerCase()} | ivan iliev</title>
-	<meta name="description" content={project.description[0].slice(0, 180)} />
-	<meta property="og:title" content={`${project.title} | Ivan Iliev`} />
-	<meta property="og:description" content={project.subtitle} />
-</svelte:head>
+<Seo
+	title={`${project.title.toLowerCase()} | ivan iliev`}
+	description={project.description[0].slice(0, 158)}
+	path={`/projects/${project.id}`}
+	image={socialImage(project.id)}
+	type="article"
+	jsonLd={[
+		projectJsonLd(project),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'work', path: '/projects' },
+			{ name: project.title, path: `/projects/${project.id}` }
+		])
+	]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />

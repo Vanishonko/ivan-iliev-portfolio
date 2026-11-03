@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { projectListJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { projects } from '$lib/data/projects';
 
@@ -7,18 +9,13 @@
 		p.poster ?? p.galleryImages?.find((i) => !isVideo(i)) ?? null;
 </script>
 
-<svelte:head>
-	<title>work | ivan iliev</title>
-	<meta
-		name="description"
-		content="Six projects: a pixel-art pond, a drift racing game, an evolutionary racing AI, a gamified water-conservation app, an NDA Laravel application and a private plugin workshop."
-	/>
-	<meta property="og:title" content="Work | Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="A pixel-art pond, a drift racer, an evolutionary racing AI, and the tooling around them."
-	/>
-</svelte:head>
+<Seo
+	 title="work | ivan iliev"
+	 description="Six projects: a pixel-art pond, a drift racer, an evolutionary racing AI, a water-conservation app, an NDA Laravel application and a private plugin workshop."
+	 path="/projects"
+	 image={socialImage('work')}
+	 jsonLd={[projectListJsonLd(projects)]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds enableAurora />

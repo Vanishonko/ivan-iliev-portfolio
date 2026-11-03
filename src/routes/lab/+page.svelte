@@ -1,21 +1,23 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { itemListJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import PipPlayground from '$lib/components/lab/PipPlayground.svelte';
 	import PixelArtStudio from '$lib/components/lab/PixelArtStudio.svelte';
 </script>
 
-<svelte:head>
-	<title>the lab | ivan iliev</title>
-	<meta
-		name="description"
-		content="Private work, shown in public: Pip the pixel creature, a pixel-art surface for a coding agent, and the alerts bell that tells you what a turn cost."
-	/>
-	<meta property="og:title" content="The lab | Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="Pip, the pixel-art surface and the alerts bell — plugins I build for DeepSeek Harness."
-	/>
-</svelte:head>
+<Seo
+	 title="the lab | ivan iliev"
+	 description="Private work, shown in public: Pip the pixel creature, a pixel-art surface for a coding agent, and the alerts bell that tells you what a turn cost."
+	 path="/lab"
+	 image={socialImage('lab')}
+	jsonLd={[
+		itemListJsonLd('the lab', '/lab', [
+			{ name: 'Pip', path: '/lab', description: 'a 32x32 creature that lives in the corner of the window' },
+			{ name: 'Pixel art surface', path: '/lab', description: 'a model draws a character grid, looks at it, and draws again' },
+			{ name: 'Alerts bell', path: '/lab', description: 'duration, tokens and estimated cost for a finished turn' }
+		])]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableAurora />

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const SRC = '/games/dewdrop-bend/index.html';
@@ -22,15 +24,14 @@
 	];
 </script>
 
-<svelte:head>
-	<title>dewdrop bend — play | ivan iliev</title>
-	<meta
-		name="description"
-		content="Dewdrop Bend — a living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag. Vanilla JavaScript and Canvas 2D."
-	/>
-	<meta property="og:title" content="Dewdrop Bend — a living pixel-art pond" />
-	<meta property="og:description" content="A hand-drawn pond you can touch. 24-hour sky, thirteen creatures, rain and a field notebook." />
-</svelte:head>
+<Seo
+	 title="dewdrop bend — play | ivan iliev"
+	 description="Play Dewdrop Bend: a living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag. Vanilla JavaScript and Canvas 2D."
+	 path="/play/dewdrop-bend"
+	 image={socialImage('dewdrop-bend')}
+	 type="article"
+	jsonLd={[gameJsonLd({ name: 'Dewdrop Bend', description: 'Dewdrop Bend in the browser', path: '/play/dewdrop-bend', genre: ['pixel art', 'simulation', 'sandbox'], released: '2026-09-20' })]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />

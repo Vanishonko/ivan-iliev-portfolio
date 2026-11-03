@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { itemListJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const games = [
@@ -32,15 +34,18 @@
 	];
 </script>
 
-<svelte:head>
-	<title>play | ivan iliev</title>
-	<meta
-		name="description"
-		content="Three things to play: Dewdrop Bend, a living pixel-art pond; driftblock, a blocky 3D drift racer; and Dragons, the 2015 game that started it all."
-	/>
-	<meta property="og:title" content="Play | Ivan Iliev" />
-	<meta property="og:description" content="A living pixel-art pond and a blocky 3D drift racer, both in the browser." />
-</svelte:head>
+<Seo
+	 title="play | ivan iliev"
+	 description="Three things to play: Dewdrop Bend, a living pixel-art pond; driftblock, a blocky 3D drift racer; and Dragons, the 2015 game that started it all."
+	 path="/play"
+	 image={socialImage('play')}
+	jsonLd={[
+		itemListJsonLd('play', '/play', [
+			{ name: 'Dewdrop Bend', path: '/play/dewdrop-bend', description: 'a living pixel-art pond with a 24-hour sky' },
+			{ name: 'driftblock', path: '/play/driftblock', description: 'a blocky 3D drift racer with procedural circuits' },
+			{ name: 'Dragons', path: '/play/dragons', description: 'the 2015 JavaScript game, archived unedited' }
+		])]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds enableAurora />

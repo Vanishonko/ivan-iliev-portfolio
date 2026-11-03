@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { SITE, personJsonLd, websiteJsonLd } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { ANIMATION_DELAY, PAGE_TITLE, PAGE_SUBTITLE } from '$lib/constants';
 	import { milestones } from '$lib/data/timeline';
@@ -54,14 +56,12 @@
 	};
 </script>
 
-<svelte:head>
-	<title>ivan iliev</title>
-	<meta property="og:title" content="Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="Browser games, racing AI and tooling. ICT student at HZ University of Applied Sciences."
-	/>
-</svelte:head>
+<Seo
+	 title="ivan iliev"
+	 description={SITE.description}
+	 path="/"
+	 jsonLd={[personJsonLd(), websiteJsonLd()]}
+/>
 
 <main>
 	<InteractiveBackground enableStars enableClouds enableAurora />

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const GAME_URL = 'https://vanishonko.github.io/driftblock/';
@@ -15,13 +17,14 @@
 	};
 </script>
 
-<svelte:head>
-	<title>driftblock — play | ivan iliev</title>
-	<meta
-		name="description"
-		content="Play driftblock in the browser: a blocky 3D drift racer with no build step, procedural circuits and a synthesised engine."
-	/>
-</svelte:head>
+<Seo
+	 title="driftblock — play | ivan iliev"
+	 description="Play driftblock in the browser: a blocky 3D drift racer with no build step, procedural circuits and a synthesised engine."
+	 path="/play/driftblock"
+	 image={socialImage('driftblock')}
+	 type="article"
+	jsonLd={[gameJsonLd({ name: 'driftblock', description: 'driftblock in the browser', path: '/play/driftblock', genre: ['racing', 'drift'], released: '2026-09-30' })]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />
