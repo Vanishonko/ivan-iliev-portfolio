@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { SITE, personJsonLd, websiteJsonLd } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { ANIMATION_DELAY, PAGE_TITLE, PAGE_SUBTITLE } from '$lib/constants';
 	import { milestones } from '$lib/data/timeline';
@@ -54,14 +56,12 @@
 	};
 </script>
 
-<svelte:head>
-	<title>ivan iliev</title>
-	<meta property="og:title" content="Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="Browser games, racing AI and tooling. ICT student at HZ University of Applied Sciences."
-	/>
-</svelte:head>
+<Seo
+	 title="ivan iliev — browser games, pixel art and tooling"
+	 description={SITE.description}
+	 path="/"
+	 jsonLd={[websiteJsonLd()]}
+/>
 
 <main>
 	<InteractiveBackground enableStars enableClouds enableAurora />
@@ -78,7 +78,8 @@
 
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE}>
 				<h1 class="title-typewriter text-[clamp(1.9rem,9vw,3.6rem)] font-bold leading-[1.02]">
-					<span class="inline-flex flex-wrap gap-x-3 gap-y-2">
+				<span class="sr-only">ivan iliev</span>
+					<span class="inline-flex flex-wrap gap-x-3 gap-y-2" aria-hidden="true">
 						{#each titleWordChars as wordChars, wi (wi)}
 							<span class="inline-flex">
 								{#each wordChars as char, ci (`${wi}-${ci}`)}
@@ -117,6 +118,12 @@
 					class="px-1 py-2.5 text-sm text-muted-50/70 underline-offset-4 transition hover:text-muted-50 hover:underline"
 				>
 					download cv
+				</a>
+				<a
+					href="mailto:vanishonko@gmail.com"
+					class="px-1 py-2.5 text-sm text-muted-50/70 underline-offset-4 transition hover:text-muted-50 hover:underline"
+				>
+					say hello
 				</a>
 			</AnimatedSection>
 		</div>

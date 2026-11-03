@@ -1,24 +1,33 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { itemListJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import { projects } from '$lib/data/projects';
 
 	const isVideo = (path: string) => path.endsWith('.webm');
+	const NUMBER_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+	const countWord = NUMBER_WORDS[projects.length] ?? String(projects.length);
 	const posterOf = (p: (typeof projects)[number]) =>
 		p.poster ?? p.galleryImages?.find((i) => !isVideo(i)) ?? null;
 </script>
 
-<svelte:head>
-	<title>work | ivan iliev</title>
-	<meta
-		name="description"
-		content="Six projects: a pixel-art pond, a drift racing game, an evolutionary racing AI, a gamified water-conservation app, an NDA Laravel application and a private plugin workshop."
-	/>
-	<meta property="og:title" content="Work | Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="A pixel-art pond, a drift racer, an evolutionary racing AI, and the tooling around them."
-	/>
-</svelte:head>
+<Seo
+	 title="work — projects, from a pond to a racing AI | ivan iliev"
+	 description={`${countWord.charAt(0).toUpperCase() + countWord.slice(1)} projects: a pixel-art pond, a drift racer, a racing AI, a water-conservation app, an NDA Laravel app, a private plugin workshop and this site.`}
+	 path="/projects"
+	 image={socialImage('work')}
+	 jsonLd={[
+		itemListJsonLd(
+			'work',
+			'/projects',
+			projects.map((project) => ({
+				name: project.title,
+				path: `/projects/${project.id}`,
+				description: project.metaDescription
+			}))
+		)
+	]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds enableAurora />
@@ -28,7 +37,7 @@
 			<AnimatedSection delay={80}>
 				<p class="text-xs uppercase tracking-[0.2em] text-muted-50/64">work</p>
 				<h1 class="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-muted-50 sm:text-4xl">
-					Six things I built, roughly in order of how much they hurt.
+					{countWord.charAt(0).toUpperCase() + countWord.slice(1)} things I built, roughly in order of how much they hurt.
 				</h1>
 				<p class="mt-4 max-w-2xl text-sm leading-relaxed text-muted-50/70 sm:text-base">
 					Two games, an AI, an app that tried to save water, one application I cannot show you, and a workshop of
@@ -53,8 +62,6 @@
 									src={poster}
 									alt=""
 									class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-									width="1440"
-									height="900"
 									loading="lazy"
 								/>
 								<div class="absolute inset-0 bg-gradient-to-t from-[#070912]/85 via-[#070912]/15 to-transparent"></div>

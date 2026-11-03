@@ -1,12 +1,19 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { breadcrumbJsonLd, gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const SRC = '/games/dragons/start.html';
 
 	let started = $state(false);
+	/** Bumped to remount the iframe, so "restart" actually restarts the game. */
+	let runId = $state(0);
 	let frame: HTMLDivElement | undefined = $state();
 
-	const launch = () => (started = true);
+	const launch = () => {
+		if (started) runId += 1;
+		else started = true;
+	};
 
 	const fullscreen = async () => {
 		if (!frame) return;
@@ -15,15 +22,28 @@
 	};
 </script>
 
-<svelte:head>
-	<title>dragons (2015) — play | ivan iliev</title>
-	<meta
-		name="description"
-		content="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here for the joke, exactly as it shipped."
-	/>
-	<meta property="og:title" content="Dragons — a game from 2015" />
-	<meta property="og:description" content="Built at eleven, during my second year of JavaScript classes. It shows." />
-</svelte:head>
+<Seo
+	title="dragons (2015) — play | ivan iliev"
+	description="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here unedited, with a warning label and no apologies."
+	path="/play/dragons"
+	image={socialImage('dragons')}
+	type="article"
+	jsonLd={[
+		gameJsonLd({
+			name: 'Dragons',
+			description: 'A 2015 JavaScript arcade game by an eleven-year-old: one canvas, GIF dragons, a score counter and no delta time. Archived unedited.',
+			path: '/play/dragons',
+			slug: 'dragons',
+			tags: ['javascript', 'canvas 2d', 'arcade', 'archive'],
+			released: '2015-09-06'
+		}),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'play', path: '/play' },
+			{ name: 'dragons', path: '/play/dragons' }
+		])
+	]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />
@@ -89,12 +109,14 @@
 				class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220] shadow-2xl shadow-black/40"
 			>
 				{#if started}
-					<iframe
-						src={SRC}
-						title="Dragons — a 2015 JavaScript game"
-						class="h-full w-full border-0"
-						allow="fullscreen; autoplay"
-					></iframe>
+					{#key runId}
+						<iframe
+							src={SRC}
+							title="Dragons — a 2015 JavaScript game"
+							class="h-full w-full border-0"
+							allow="fullscreen; autoplay"
+						></iframe>
+					{/key}
 				{:else}
 					<button type="button" onclick={launch} class="group absolute inset-0 flex items-center justify-center">
 						<img

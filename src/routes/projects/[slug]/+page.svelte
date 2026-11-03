@@ -1,4 +1,6 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { breadcrumbJsonLd, projectJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground, Gallery } from '$lib/components';
 	import type { Project } from '$lib/types';
 
@@ -19,12 +21,21 @@
 	};
 </script>
 
-<svelte:head>
-	<title>{project.title.toLowerCase()} | ivan iliev</title>
-	<meta name="description" content={project.description[0].slice(0, 180)} />
-	<meta property="og:title" content={`${project.title} | Ivan Iliev`} />
-	<meta property="og:description" content={project.subtitle} />
-</svelte:head>
+<Seo
+	title={`${project.title.toLowerCase()} | ivan iliev`}
+	description={project.metaDescription}
+	path={`/projects/${project.id}`}
+	image={socialImage(project.id)}
+	type="article"
+	jsonLd={[
+		projectJsonLd(project),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'work', path: '/projects' },
+			{ name: project.title, path: `/projects/${project.id}` }
+		])
+	]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />
@@ -40,6 +51,10 @@
 			<AnimatedSection delay={100}>
 				<h1 class="mt-4 text-3xl font-semibold text-muted-50 sm:text-4xl">{project.title}</h1>
 				<p class="mt-1 text-sm text-muted-50/64">{project.subtitle}</p>
+
+				<p class="mt-3 font-typewriter text-xs uppercase tracking-[0.18em] text-muted-50/55">
+					{project.year} · {project.role === 'solo' ? 'solo' : 'team'}
+				</p>
 
 				<div class="mt-4 flex flex-wrap gap-2">
 					{#each project.tags as tag (tag)}

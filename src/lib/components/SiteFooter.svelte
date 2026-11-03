@@ -18,7 +18,7 @@
 			</div>
 
 			<ul class="flex flex-wrap gap-x-5 gap-y-2 text-sm">
-				<li><a class="text-muted-50/78 underline-offset-4 hover:text-white hover:underline" href="https://ivaniliev.online">ivaniliev.online</a></li>
+				<li><a class="text-muted-50/78 underline-offset-4 hover:text-white hover:underline" href="https://www.ivaniliev.online">ivaniliev.online</a></li>
 				{#each SOCIAL_LINKS.filter((l) => l.icon !== 'github') as link (link.href)}
 					<li>
 						<a class="text-muted-50/78 underline-offset-4 hover:text-white hover:underline" href={link.href}
@@ -34,7 +34,7 @@
 
 		<div class="flex flex-col gap-2 border-t border-white/5 pt-6 text-xs text-muted-50/60 sm:flex-row sm:items-center sm:justify-between">
 			<p>© {year} Ivan Iliev. Built with SvelteKit and too many stars.</p>
-			<p class="font-typewriter">no telemetry · no trackers · one page</p>
+			<p class="font-typewriter">no telemetry · no trackers · no cookies</p>
 		</div>
 	</div>
 </footer>
