@@ -52,6 +52,10 @@
 				<h1 class="mt-4 text-3xl font-semibold text-muted-50 sm:text-4xl">{project.title}</h1>
 				<p class="mt-1 text-sm text-muted-50/64">{project.subtitle}</p>
 
+				<p class="mt-3 font-typewriter text-xs uppercase tracking-[0.18em] text-muted-50/55">
+					{project.year} · {project.role === 'solo' ? 'solo' : 'team'}
+				</p>
+
 				<div class="mt-4 flex flex-wrap gap-2">
 					{#each project.tags as tag (tag)}
 						<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-muted-50/70">{tag}</span>

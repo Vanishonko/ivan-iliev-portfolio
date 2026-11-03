@@ -3,6 +3,8 @@ import type { Project } from '$lib/types';
 export const projects = [
 	{
 		id: 'dewdrop-bend',
+		year: '2026',
+		role: 'solo',
 		title: 'Dewdrop Bend',
 		subtitle: 'Pixel-art pond • Canvas 2D • No dependencies',
 		tags: ['Canvas 2D', 'Vanilla JS', 'Procedural audio', 'Pixel art'],
@@ -25,6 +27,8 @@ export const projects = [
 	},
 	{
 		id: 'driftblock',
+		year: '2026',
+		role: 'solo',
 		title: 'driftblock',
 		subtitle: '3D drift racing • WebGL • No build step',
 		tags: ['three.js', 'Web Audio', 'Gamepad API', 'Force feedback'],
@@ -52,6 +56,8 @@ export const projects = [
 	},
 	{
 		id: 'ai-f1-racing',
+		year: '2026',
+		role: 'solo',
 		title: 'ai-f1-racing',
 		subtitle: 'Evolutionary racing AI • Deterministic sim',
 		tags: ['TypeScript', 'Evolution Strategies', 'Neural networks', 'Determinism'],
@@ -73,6 +79,8 @@ export const projects = [
 	},
 	{
 		id: 'beaverwize',
+		year: '2025',
+		role: 'team',
 		title: 'BeaverWize',
 		subtitle: 'SvelteKit • Microservices • Gamification',
 		tags: ['SvelteKit', 'Express', 'Microservices', 'API Gateway', 'Data Viz'],
@@ -96,6 +104,8 @@ export const projects = [
 	},
 	{
 		id: 'laravel-nda',
+		year: '2025',
+		role: 'team',
 		title: 'Laravel Web Application',
 		subtitle: 'Laravel • MySQL • Docker • Agile Development',
 		tags: ['Laravel', 'MySQL', 'Docker', 'RBAC', 'Notifications'],
@@ -109,6 +119,8 @@ export const projects = [
 	},
 	{
 		id: 'dsh-works',
+		year: '2026',
+		role: 'solo',
 		title: 'dsh-works plugins',
 		subtitle: 'DeepSeek Harness • Private workshop',
 		tags: ['Node.js', 'Svelte', 'Pixel art', 'Offline tests'],
@@ -121,6 +133,10 @@ export const projects = [
 		note: 'The repositories are private; the organization page is public.',
 		links: [
 			{
+				label: 'See them running',
+				href: '/lab'
+			},
+			{
 				label: 'dsh-works',
 				href: 'https://github.com/dsh-works',
 				external: true
@@ -129,6 +145,8 @@ export const projects = [
 	},
 	{
 		id: 'portfolio',
+		year: '2026',
+		role: 'solo',
 		title: 'ivaniliev.online',
 		subtitle: 'this website',
 		tags: ['SvelteKit', 'Tailwind', 'Responsive', 'Animation'],

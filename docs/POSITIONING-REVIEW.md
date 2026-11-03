@@ -5,7 +5,7 @@
 
 ## Verdict
 
-The first screen passes the literal brief — name, city, “open to work”, browser projects, CV — but it never names the job Ivan wants, shows none of the work, and offers no way to make contact. The project pages prove real craft on the games and the lab, while the two professional projects are written in a passive team voice that hides what Ivan actually did, and the most distinctive work — the dsh-works tooling — is buried sixth in a list that calls itself six things when it has seven. Accessibility is better than most portfolios (skip link, real reduced-motion, working keyboard Pip and pixel studio), but the lab’s micro-labels fail contrast, the name is announced letter by letter, and the gallery dialog drops focus; the net read is “talented student who makes polished browser games and has done some team coursework”, not yet “junior developer who ships”.
+The first screen passes the literal brief — name, city, “open to work”, browser projects, CV — but it never names the job Ivan wants, shows none of the work, and offers no way to make contact. The project pages prove real craft on the games and the lab, while the two professional projects are written in a passive team voice that hides what Ivan actually did, and the most distinctive work — the dsh-works tooling — is buried sixth in a list that calls itself six things when it has seven. Accessibility is better than most portfolios (skip link, real reduced-motion, working keyboard Pip and pixel studio), but the lab’s micro-labels fail contrast and the gallery dialog drops focus; the net read is “talented student who makes polished browser games and has done some team coursework”, not yet “junior developer who ships”.
 
 ## 1. The 10-second test
 
@@ -28,7 +28,7 @@ Without scrolling, at both 1280×900 and 390×844, the first screen is the hero 
 
 **What does not land.**
 
-- **The site never says “developer”, “engineer”, or even “junior”.** The only role noun on the page is “ICT student”. The structured data in the page source says `jobTitle: "ICT student and developer"`; a human visitor never sees that. The first screen tells you what Ivan is studying, not what he wants to be hired as.
+- **The site never says “developer”, “engineer”, or even “junior”.** The only current role label on the page is “ICT student”. The structured data in the page source says `jobTitle: "ICT student and developer"`; a human visitor never sees that. The first screen tells you what Ivan is studying, not what he wants to be hired as.
 - **It shows no work.** The hero is a text block on a starfield. The best visual proof the site owns — the Dewdrop Bend screenshot, the driftblock frame, Pip — is at least one scroll away, and the work list itself is text-only. A hiring manager can read the claim but not see the artefact.
 - **There is no contact action.** “Open to work” is a label, not a link. Email, LinkedIn and GitHub are at the bottom of the page (and in the footer); the hero offers CV but not conversation.
 - **“An agent” is unexplained.** “A workshop of tools for an agent I use every day” is the most distinctive line in the hero, and a general hiring manager may not know that “agent” means a coding agent/harness. The lab explains it; the first screen does not.
@@ -71,7 +71,7 @@ The site has the evidence for the story Ivan wants to tell. Most of it is filed 
 1. **The lab is the best thing on the site.** “Private repositories, public proof.” is a strong, honest framing, and it is immediately backed by working surfaces: the real Pip sprite data, a real 32×32 editor with a working PNG export, and a readable alerts mock. The pixel studio is not a screenshot; it loads, draws, undoes, downloads, and responds to the keyboard. This is the difference between “I build tools” and “here is a tool”.
 2. **The hero’s “workshop of tools for an agent I use every day”** is specific and unusual. It says he noticed friction in his own workflow and built for it. It is the most “proactive” sentence on the site; it just needs to be understandable to a non-agent user.
 3. **The dsh-works description** is full of the right kind of detail: host half/browser half, no runtime dependencies, PNG and GIF encoders written against `node:`, offline tests, no model and no network. That is engineering discipline, not a hobby.
-4. **The 2012–2026 timeline** tells a long arc: Telerik at eight, JavaScript games at ten, a surviving repository at eleven, mentoring at twenty, C#/.NET at twenty-one, professional work at twenty-two, “the year the projects stopped being assignments” at twenty-two. “Software that had to work for someone who was not me” is a mature sentence. The timeline is the best answer to “is he proactive?”.
+4. **The 2012–2026 timeline** tells a long arc: Telerik at eight, JavaScript games at ten, a surviving repository at eleven, mentoring in 2022, C#/.NET in 2023, professional work in 2025, and “the year the projects stopped being assignments” in 2026. “Software that had to work for someone who was not me” is a mature sentence. The timeline is the best answer to “is he proactive?”.
 5. **The constraints on the games** — “no frameworks, no runtime dependencies” for Dewdrop, “no build step” for driftblock — are evidence of someone who chooses a hard constraint and ships inside it. They read as craft, not cost-cutting.
 6. **The dry, specific tone** (“roughly in order of how much they hurt”, “the year the projects stopped being assignments”, “same kid, better tooling”) signals someone who has actually shipped and knows what it costs. It is the opposite of hype.
 
@@ -81,7 +81,7 @@ The site has the evidence for the story Ivan wants to tell. Most of it is filed 
 2. **The private-code framing undercuts it.** “I am not ready to defend every line of it in public” invites the reader to assume the code is not good enough to show. “Ask and you shall receive” and “I would rather share it with someone curious than polish it for nobody” change the register from confident builder to someone asking for attention. The honesty is admirable; the effect is defensive.
 3. **The two professional projects are the least specific pages.** BeaverWize and Laravel are where a hiring manager looks for evidence that Ivan can work with a team, a client and a deadline. Both hide his contribution behind passive/team language. The site therefore proves the hobby story better than the employability story.
 4. **Four of seven project cards have no image.** The fallback is a large first tag (“TYPESCRIPT”, “LARAVEL”, “NODE.JS”, “SVELTEKIT”) in an otherwise empty 16:10 panel. It reads as a missing screenshot, not a design choice. The richest visual evidence is in the lab; the work list looks unfinished by comparison.
-5. **The only role noun is “ICT student”.** A hiring manager has to infer “developer” from the work. The hero’s examples reinforce “games/AI”, not “web developer”. The site’s own structured data knows the answer; the visible page does not say it.
+5. **The only current role label is “ICT student”.** A hiring manager has to infer “developer” from the work. The hero’s examples reinforce “games/AI”, not “web developer”. The site’s own structured data knows the answer; the visible page does not say it.
 6. **“This website” is filler.** It is the weakest card and the one that breaks the count. “Galaxy-themed” is the only generic phrase in an otherwise specific site.
 
 **Which story wins?** If a hiring manager reads only the hero and `/projects`, the takeaway is: *a talented student who makes polished browser games, has done some team coursework, and keeps a private workshop.* If they read `/lab` and the timeline, the takeaway is: *a self-directed builder who has been at this since he was eight, ships real things, and builds his own tooling.* The second story is the true one and the one Ivan wants; the site makes the reader work for it. The fix is promotion and specificity, not more adjectives.
@@ -106,9 +106,9 @@ The voice slips in a few places:
 - **“It resulted in a significantly smoother and more reliable workflow.”** Unquantified corporate language; the only hype-adjacent claim on the site. “One of the largest international steel producers” is likewise unverifiable by design (NDA), which is fine, but the two together read like a CV cliché.
 - **“Six things” on a page with seven.** Small, but it is the kind of error a detail-oriented hiring manager notices, and it sits directly under the headline.
 - **“One page” in the footer of a 14-route site.** Plainly false. “No telemetry · no trackers” is mostly true — there is no analytics in the source — but the site loads Google Fonts from `fonts.googleapis.com`, so a strict privacy reader will raise an eyebrow at “no trackers” too.
-- **The driftblock credit mismatch.** The project page calls the imported car a “graphite-black Mercedes SLK”; the play page credits a modified “Citroen C5 Sedan And Estate” by Nieve5677. It may be a Citroën base restyled as an SLK, but the reader sees two different cars and no explanation.
+- **The driftblock credit mismatch.** The project page calls the imported car a “graphite-black Mercedes SLK”; the play page credits a modified “Citroen C5 Sedan And Estate” by Nieve5677. The two pages name different cars; it may be a Citroën base restyled as an SLK, but the reader gets no explanation.
 
-**What a sceptical reader would not believe:** the precision without an artefact. “Spa-Francorchamps and Baku are traced … to within about 0.1 % of their true lap lengths” is a strong claim with no source, screenshot or test output on the page. “Every suite runs offline” is unverifiable while the repositories are private. “25 sheets and 113 frames” is a number a visitor cannot check; the site ships 12 visible Pip sheets. None of these are implausible, but they are the kind of precise claim that invites verification and then withholds it.
+**What a sceptical reader would not believe:** the precision without an artefact. “Spa-Francorchamps and Baku are traced … to within about 0.1 % of their true lap lengths” is a strong claim with no source, screenshot or test output on the page. “Every suite runs offline” is unverifiable while the repositories are private. “25 sheets and 113 frames” is a number a visitor cannot check; the site’s public assets contain 12 Pip sheet images. None of these are implausible, but they are the kind of precise claim that invites verification and then withholds it.
 
 **What builds trust:** the honesty about ai-f1’s missing collisions, the Dragons page’s unflinching self-assessment (“no delta time… collisions are rectangles… I stole [the sky] from the internet”), and the fact that the demos are real. The site is not hypey. Its credibility risk is small factual slips and unverifiable precision, not overclaiming.
 
@@ -132,12 +132,12 @@ The voice slips in a few places:
 
 ## 6. Accessibility as a reader
 
-**Method.** axe-core 4.14 found **no WCAG A/AA violations**, but it reported contrast as “incomplete” on every page (54 nodes on `/lab`) because of translucent cards and canvas backgrounds. I measured rendered pixels separately. A clean axe run is not a clean bill here.
+**Method.** axe-core 4.14 found **no violations under the WCAG 2.0/2.1 A/AA rule set**, but it reported contrast as “incomplete” on every page (54 nodes on `/lab`) because of translucent cards and canvas backgrounds. I measured rendered pixels separately. A clean axe run is not a clean bill here.
 
 **What works**
 
 - Skip link is first in the tab order and works.
-- One `<main>`, one `h1` per page, labelled nav and footer.
+- One `<main>`, one `h1` per page, labelled nav and footer. Chrome’s accessibility tree still computes the split-character `h1` as “ivan iliev”, so the typewriter effect does not cost the name.
 - Visible focus: default outline on links, custom ring on the Pip stage, custom ring on the pixel canvas and studio controls.
 - **Pip is genuinely keyboard-accessible.** Focus the stage and press Enter/Space: the pose changes, the polite live region announces the reaction, and the focus ring is visible. A screen-reader user gets “Pip the pixel creature. Click him, or press Enter or Space, for a reaction.”
 - **The pixel studio is genuinely keyboard-accessible.** The canvas takes focus, arrow keys move a cursor, Space paints, Ctrl/Cmd+Z undoes, the status line announces the action, and the tool/palette/gallery buttons have names. This is rare in a portfolio toy.
@@ -162,19 +162,17 @@ The voice slips in a few places:
 
    The canvas hint and the status line are functional instructions/feedback, not decoration. The rest are micro-labels that could be made decorative or raised to body-text contrast. For comparison, the main site’s body text measures 5.66–10.07:1 and passes AA comfortably.
 
-2. **The `h1` is announced letter by letter.** Because the typewriter title is split into one `<span>` per character, Chrome’s accessibility tree exposes it as `[ i v a n i l i e v ]`, not “Ivan Iliev”. A screen reader hears the brackets and each letter separately. The visual effect is worth keeping; the accessible name needs to be supplied separately and the decorative spans hidden.
+2. **The gallery dialog does not manage focus.** Open any project gallery: focus stays on the trigger button behind the overlay; Tab moves through background page buttons, not the dialog; the close/prev/next buttons are reachable only if you tab far enough. The dialog has `aria-modal="true"` but the background is not inert and focus is never moved in or trapped. Escape and arrow keys work, and the body scroll lock works. This is the main keyboard failure on the site.
 
-3. **The gallery dialog does not manage focus.** Open any project gallery: focus stays on the trigger button behind the overlay; Tab moves through background page buttons, not the dialog; the close/prev/next buttons are reachable only if you tab far enough. The dialog has `aria-modal="true"` but the background is not inert and focus is never moved in or trapped. Escape and arrow keys work, and the body scroll lock works. This is the main keyboard failure on the site.
+3. **Heading hierarchy breaks in the lab, and is flat elsewhere.** `/lab` goes `h1` → `h2 01` → `h3 A creature…` → `h2 02` → `h3 Draw…` → **`h2 Pixel Art Studio`** (the embedded card) → `h3 PLUGIN OUTPUT` → `h2 03`. The embedded card’s `h2` is a sub-part of section 02 and should not be a peer of it. Project and play pages have only an `h1`; the long descriptions have no sections to navigate.
 
-4. **Heading hierarchy breaks in the lab, and is flat elsewhere.** `/lab` goes `h1` → `h2 01` → `h3 A creature…` → `h2 02` → `h3 Draw…` → **`h2 Pixel Art Studio`** (the embedded card) → `h3 PLUGIN OUTPUT` → `h2 03`. The embedded card’s `h2` is a sub-part of section 02 and should not be a peer of it. Project and play pages have only an `h1`; the long descriptions have no sections to navigate.
+4. **Gallery alt text is generic.** The BeaverWize buttons are named “BeaverWize screenshot 1” … “screenshot 7” and “clip 2”; the modal image is “Gallery image 1”. The screenshots are the only proof of that project, and the alt text describes the file, not the content. The `/projects` card posters use `alt=""` (acceptable as decorative, but it means the visual proof is lost to screen-reader users), while `/play` and the launch images have genuinely descriptive alt text — so the team knows how to do it.
 
-5. **Gallery alt text is generic.** The BeaverWize buttons are named “BeaverWize screenshot 1” … “screenshot 7” and “clip 2”; the modal image is “Gallery image 1”. The screenshots are the only proof of that project, and the alt text describes the file, not the content. The `/projects` card posters use `alt=""` (acceptable as decorative, but it means the visual proof is lost to screen-reader users), while `/play` and the launch images have genuinely descriptive alt text — so the team knows how to do it.
+5. **The BeaverWize clip has no text alternative** beyond “clip 2”; it is a silent screen recording, so captions are not the issue, but the content of the clip is not described anywhere.
 
-6. **The BeaverWize clip has no text alternative** beyond “clip 2”; it is a silent screen recording, so captions are not the issue, but the content of the clip is not described anywhere.
+6. **Restart buttons do nothing.** After launching, the button changes to “restart the pond” / “restart” / “restart the dragons”, but clicking it does not reload or reset the iframe (verified: the iframe element and its `src` are unchanged). This is a functional bug, and it makes the page’s most prominent control a lie.
 
-7. **Restart buttons do nothing.** After launching, the button changes to “restart the pond” / “restart” / “restart the dragons”, but clicking it does not reload or reset the iframe (verified: the iframe element and its `src` are unchanged). This is a functional bug, and it makes the page’s most prominent control a lie.
-
-8. **Dragons is mouse-only.** The page is honest about it, and a path-dependent flying game arguably falls under the WCAG keyboard exception, but a keyboard-only visitor cannot play the archived game. That is acceptable for a 2015 relic if the site says so; it does.
+7. **Dragons is mouse-only.** The page is honest about it, and a path-dependent flying game arguably falls under the WCAG keyboard exception, but a keyboard-only visitor cannot play the archived game. That is acceptable for a 2015 relic if the site says so; it does.
 
 ## 7. Changes that would move the needle most
 
@@ -195,9 +193,8 @@ These are directions, not replacement copy.
 **Accessibility**
 
 10. **Raise the lab microtext to readable contrast and size** (the table above), or make the labels decorative and put the same information in body text. The canvas hint and status line are functional; they cannot stay at 2.9:1 and 3.9:1.
-11. **Give the `h1` a clean accessible name** and hide the per-character spans from the accessibility tree. The visual typewriter effect can stay.
-12. **Manage focus in the gallery dialog:** move focus to the close button (or the dialog) on open, trap Tab inside, mark the background inert, and restore focus to the trigger on close.
-13. **Make gallery alt text describe the screenshot**, not its index, and add a short text description for the BeaverWize clip.
+11. **Manage focus in the gallery dialog:** move focus to the close button (or the dialog) on open, trap Tab inside, mark the background inert, and restore focus to the trigger on close.
+12. **Make gallery alt text describe the screenshot**, not its index, and add a short text description for the BeaverWize clip.
 
 ## Plainly
 
