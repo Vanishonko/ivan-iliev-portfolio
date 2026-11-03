@@ -14,6 +14,8 @@
 	} = $props();
 
 	let currentIndex = $state(0);
+	let dialogEl: HTMLDivElement | undefined = $state();
+	let returnFocusTo: HTMLElement | null = null;
 
 	const setBodyScroll = (locked: boolean) => {
 		if (typeof document !== 'undefined') {
@@ -38,6 +40,16 @@
 
 	$effect(() => {
 		setBodyScroll(open);
+
+		// Move focus into the dialog when it opens, and give it back when it closes:
+		// without this a keyboard user is left tabbing through the page behind it.
+		if (open) {
+			returnFocusTo = document.activeElement as HTMLElement | null;
+			dialogEl?.focus();
+		} else {
+			returnFocusTo?.focus?.();
+			returnFocusTo = null;
+		}
 	});
 
 	const isVideo = (path: string) => path.endsWith('.webm');
@@ -51,6 +63,7 @@
 
 {#if open}
 	<div
+		bind:this={dialogEl}
 		class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
 		onclick={onclose}
 		onkeydown={(e) => {

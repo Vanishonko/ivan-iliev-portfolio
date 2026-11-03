@@ -1468,7 +1468,7 @@
 		line-height: 1;
 		letter-spacing: 0.22em;
 		text-transform: uppercase;
-		color: rgba(245, 244, 241, 0.55);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.pip-name {
@@ -1493,7 +1493,7 @@
 	}
 
 	.pip-meta {
-		color: rgba(245, 244, 241, 0.28);
+		color: rgba(245, 244, 241, 0.68);
 		letter-spacing: 0.16em;
 	}
 
@@ -1787,7 +1787,7 @@
 		padding: 0.6rem 1rem 0.65rem;
 		font-size: 0.6875rem;
 		line-height: 1.2;
-		color: rgba(245, 244, 241, 0.52);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.pip-caption {
@@ -1826,7 +1826,7 @@
 		border: 1px solid rgba(255, 255, 255, 0.12);
 		border-radius: 4px;
 		background: rgba(255, 255, 255, 0.035);
-		color: rgba(245, 244, 241, 0.55);
+		color: rgba(245, 244, 241, 0.68);
 		font: inherit;
 		font-size: 0.625rem;
 		line-height: 1;
@@ -1858,7 +1858,7 @@
 	}
 
 	.pip-mood[data-mood='off'] {
-		color: rgba(245, 244, 241, 0.42);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.pip-mood[data-mood='off'] .pip-mood-dot {
@@ -1874,7 +1874,7 @@
 		font-size: 0.5625rem;
 		letter-spacing: 0.12em;
 		text-transform: uppercase;
-		color: rgba(245, 244, 241, 0.28);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.pip-key kbd {
@@ -1884,7 +1884,7 @@
 		border-bottom-color: rgba(0, 0, 0, 0.45);
 		border-radius: 3px;
 		background: rgba(255, 255, 255, 0.05);
-		color: rgba(245, 244, 241, 0.48);
+		color: rgba(245, 244, 241, 0.68);
 		font-family: inherit;
 		font-size: inherit;
 		line-height: 1.35;

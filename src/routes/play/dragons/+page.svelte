@@ -6,9 +6,14 @@
 	const SRC = '/games/dragons/start.html';
 
 	let started = $state(false);
+	/** Bumped to remount the iframe, so "restart" actually restarts the game. */
+	let runId = $state(0);
 	let frame: HTMLDivElement | undefined = $state();
 
-	const launch = () => (started = true);
+	const launch = () => {
+		if (started) runId += 1;
+		else started = true;
+	};
 
 	const fullscreen = async () => {
 		if (!frame) return;
@@ -104,12 +109,14 @@
 				class="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-[#0b1220] shadow-2xl shadow-black/40"
 			>
 				{#if started}
-					<iframe
-						src={SRC}
-						title="Dragons — a 2015 JavaScript game"
-						class="h-full w-full border-0"
-						allow="fullscreen; autoplay"
-					></iframe>
+					{#key runId}
+						<iframe
+							src={SRC}
+							title="Dragons — a 2015 JavaScript game"
+							class="h-full w-full border-0"
+							allow="fullscreen; autoplay"
+						></iframe>
+					{/key}
 				{:else}
 					<button type="button" onclick={launch} class="group absolute inset-0 flex items-center justify-center">
 						<img

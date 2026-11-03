@@ -33,7 +33,7 @@ export const projects = [
 		subtitle: '3D drift racing • WebGL • No build step',
 		tags: ['three.js', 'Web Audio', 'Gamepad API', 'Force feedback'],
 		description: [
-			'A 3D drift racing game that runs in the browser with no build step. Four circuits generated from radial harmonics, an engine synthesised entirely in Web Audio, and skid marks, smoke and sparks produced at runtime — the only imported geometry is the car body, a blocky portrait of a graphite-black Mercedes SLK with Dutch plates and a BRABUS badge.',
+			'A 3D drift racing game that runs in the browser with no build step. Four circuits generated from radial harmonics, an engine synthesised entirely in Web Audio, and skid marks, smoke and sparks produced at runtime — the only imported geometry is the car body — a CC BY mesh, reworked — standing in for a graphite-black Mercedes SLK with Dutch plates and a BRABUS badge.',
 			'The handling is not a rigid-body simulation. Velocity is split into the car’s own forward and lateral axes, so steering rotates the car away from the direction it is actually travelling, and the slide falls out of the maths instead of being faked. On top of that sit a gearbox with real gear ratios, an engine whose revs answer the throttle rather than the tarmac, and optional force feedback through a native HID bridge, so a real wheel pushes back with a tyre model rather than a rumble.'
 		],
 		metaDescription:

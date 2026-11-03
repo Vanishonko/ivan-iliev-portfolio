@@ -822,7 +822,7 @@
 		align-items: center;
 		gap: 0.45rem;
 		min-width: 0;
-		color: rgba(245, 244, 241, 0.58);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.61rem;
 		letter-spacing: 0.13em;
 		text-transform: uppercase;
@@ -848,7 +848,7 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 999px;
 		padding: 0.2rem 0.5rem;
-		color: rgba(245, 244, 241, 0.58);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.58rem;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
@@ -874,7 +874,7 @@
 
 	.lede {
 		margin: 0.45rem 0 0;
-		color: rgba(245, 244, 241, 0.62);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.79rem;
 		line-height: 1.55;
 	}
@@ -888,7 +888,7 @@
 		align-items: center;
 		gap: 0.38rem;
 		margin: 0;
-		color: rgba(245, 244, 241, 0.46);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.62rem;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
@@ -901,7 +901,7 @@
 
 	.coord-readout {
 		margin-left: auto;
-		color: rgba(245, 244, 241, 0.26);
+		color: rgba(245, 244, 241, 0.68);
 		transition: color 180ms ease;
 	}
 
@@ -978,7 +978,7 @@
 
 	.canvas-hint {
 		margin: 0.5rem 0 0;
-		color: rgba(245, 244, 241, 0.34);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.65rem;
 		line-height: 1.4;
 		text-align: center;
@@ -1014,7 +1014,7 @@
 		border-color: rgba(255, 255, 255, 0.09);
 		border-radius: 0.45rem;
 		background: rgba(255, 255, 255, 0.025);
-		color: rgba(245, 244, 241, 0.6);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.73rem;
 		transition:
 			color 150ms ease,
@@ -1055,7 +1055,7 @@
 		justify-content: space-between;
 		gap: 0.75rem;
 		margin-bottom: 0.4rem;
-		color: rgba(245, 244, 241, 0.36);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.59rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -1069,7 +1069,7 @@
 
 	.current-color span {
 		margin-left: 0.3rem;
-		color: rgba(245, 244, 241, 0.36);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.palette {
@@ -1143,7 +1143,7 @@
 		padding: 0.35rem 0.65rem;
 		border-color: rgba(255, 255, 255, 0.09);
 		background: transparent;
-		color: rgba(245, 244, 241, 0.62);
+		color: rgba(245, 244, 241, 0.68);
 	}
 
 	.secondary-button:hover:not(:disabled) {
@@ -1160,7 +1160,7 @@
 		flex: 1 1 auto;
 		gap: 0.4rem;
 		padding: 0.35rem 0.8rem;
-		border-color: rgba(245, 244, 241, 0.8);
+		border-color: rgba(245, 244, 241, 0.80);
 		background: #f5f4f1;
 		color: #14141c;
 		font-weight: 600;
@@ -1190,7 +1190,7 @@
 		align-items: center;
 		justify-content: space-between;
 		margin-bottom: 0.45rem;
-		color: rgba(245, 244, 241, 0.3);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.58rem;
 		letter-spacing: 0.08em;
 		text-transform: uppercase;
@@ -1221,7 +1221,7 @@
 		border: 1px solid rgba(255, 255, 255, 0.08);
 		border-radius: 0.45rem;
 		background: rgba(0, 0, 0, 0.16);
-		color: rgba(245, 244, 241, 0.7);
+		color: rgba(245, 244, 241, 0.70);
 		font: inherit;
 		text-align: left;
 		cursor: pointer;
@@ -1378,7 +1378,7 @@
 	.gallery-meta {
 		display: block;
 		padding: 0.05rem 0.45rem 0.4rem;
-		color: rgba(245, 244, 241, 0.3);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.52rem;
 		letter-spacing: 0.04em;
 		white-space: nowrap;
@@ -1398,7 +1398,7 @@
 
 	.status-line {
 		margin: 0;
-		color: rgba(245, 244, 241, 0.43);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.65rem;
 		line-height: 1.4;
 	}
@@ -1406,7 +1406,7 @@
 	.privacy-line {
 		flex: none;
 		margin: 0;
-		color: rgba(245, 244, 241, 0.23);
+		color: rgba(245, 244, 241, 0.68);
 		font-size: 0.54rem;
 		letter-spacing: 0.04em;
 		text-transform: uppercase;

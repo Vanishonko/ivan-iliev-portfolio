@@ -119,6 +119,12 @@
 				>
 					download cv
 				</a>
+				<a
+					href="mailto:vanishonko@gmail.com"
+					class="px-1 py-2.5 text-sm text-muted-50/70 underline-offset-4 transition hover:text-muted-50 hover:underline"
+				>
+					say hello
+				</a>
 			</AnimatedSection>
 		</div>
 	</section>

@@ -6,9 +6,14 @@
 	const SRC = '/games/dewdrop-bend/index.html';
 
 	let started = $state(false);
+	/** Bumped to remount the iframe, so "restart" actually restarts the game. */
+	let runId = $state(0);
 	let frame: HTMLDivElement | undefined = $state();
 
-	const launch = () => (started = true);
+	const launch = () => {
+		if (started) runId += 1;
+		else started = true;
+	};
 
 	const fullscreen = async () => {
 		if (!frame) return;
@@ -105,12 +110,14 @@
 				class="relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/10 bg-[#071513] shadow-2xl shadow-black/40"
 			>
 				{#if started}
-					<iframe
-						src={SRC}
-						title="Dewdrop Bend — an interactive pixel-art pond"
-						class="h-full w-full border-0"
-						allow="fullscreen"
-					></iframe>
+					{#key runId}
+						<iframe
+							src={SRC}
+							title="Dewdrop Bend — an interactive pixel-art pond"
+							class="h-full w-full border-0"
+							allow="fullscreen"
+						></iframe>
+					{/key}
 				{:else}
 					<button
 						type="button"

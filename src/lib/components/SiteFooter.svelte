@@ -34,7 +34,7 @@
 
 		<div class="flex flex-col gap-2 border-t border-white/5 pt-6 text-xs text-muted-50/60 sm:flex-row sm:items-center sm:justify-between">
 			<p>© {year} Ivan Iliev. Built with SvelteKit and too many stars.</p>
-			<p class="font-typewriter">no telemetry · no trackers · one page</p>
+			<p class="font-typewriter">no telemetry · no trackers · no cookies</p>
 		</div>
 	</div>
 </footer>
