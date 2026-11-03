@@ -116,16 +116,209 @@ function createSurface(width: number, height: number): Surface {
 	return { canvas, ctx };
 }
 
-/** Blur the whole surface once, in place, through a scratch copy. */
+/**
+ * Blur the whole surface once, in place, through a scratch copy.
+ *
+ * `ctx.filter` is the fast path and the only one most browsers need. Safari (and every
+ * iOS browser, which is WebKit) does not expose it, and a silent `return` there was
+ * shipping raw, unblurred gradients to iPhones — visible as hard ellipses. So when the
+ * filter is missing, fall back to a real blur instead of doing nothing.
+ */
 function blurSurface(surface: Surface, blurPx: number) {
 	const { canvas, ctx } = surface;
-	if (blurPx <= 0 || typeof ctx.filter !== 'string') return;
-	const copy = createSurface(canvas.width, canvas.height);
-	copy.ctx.drawImage(canvas, 0, 0);
+	if (blurPx <= 0) return;
+
+	if (typeof ctx.filter === 'string') {
+		const copy = createSurface(canvas.width, canvas.height);
+		copy.ctx.drawImage(canvas, 0, 0);
+		ctx.clearRect(0, 0, canvas.width, canvas.height);
+		ctx.filter = `blur(${blurPx}px)`;
+		ctx.drawImage(copy.canvas, 0, 0);
+		ctx.filter = 'none';
+		return;
+	}
+
+	if (blurPx >= 16) pyramidBlur(surface, blurPx);
+	else fallbackBlur(surface, blurPx);
+}
+
+/**
+ * Cheap wide blur for big soft sprites: halve, halve, halve — then scale back up.
+ *
+ * Every step is a `drawImage` with smoothing, so the cost is a couple of full-screen blits
+ * rather than a pixel loop, and the result is a smooth wide wash. Used for the aurora and
+ * the clouds, where the target radius is tens of pixels; below that the box blur is both
+ * cheaper and closer to a real Gaussian.
+ */
+function pyramidBlur(surface: Surface, blurPx: number) {
+	const { canvas, ctx } = surface;
+	let levels = 1;
+	while (levels < 6 && blurPx / Math.pow(2, levels) > 0.75) levels++;
+
+	const chain: Surface[] = [createSurface(canvas.width, canvas.height)];
+	chain[0].ctx.drawImage(canvas, 0, 0);
+
+	let current = chain[0];
+	for (let level = 0; level < levels; level++) {
+		const width = Math.max(1, Math.floor(current.canvas.width / 2));
+		const height = Math.max(1, Math.floor(current.canvas.height / 2));
+		const next = createSurface(width, height);
+		next.ctx.imageSmoothingEnabled = true;
+		next.ctx.imageSmoothingQuality = 'high';
+		next.ctx.drawImage(current.canvas, 0, 0, width, height);
+		chain.push(next);
+		current = next;
+	}
+
+	for (let level = chain.length - 2; level >= 0; level--) {
+		const target = chain[level];
+		const targetCtx = target.ctx;
+		targetCtx.clearRect(0, 0, target.canvas.width, target.canvas.height);
+		targetCtx.imageSmoothingEnabled = true;
+		targetCtx.imageSmoothingQuality = 'high';
+		targetCtx.drawImage(
+			current.canvas,
+			0,
+			0,
+			current.canvas.width,
+			current.canvas.height,
+			0,
+			0,
+			target.canvas.width,
+			target.canvas.height
+		);
+		current = target;
+	}
+
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	ctx.filter = `blur(${blurPx}px)`;
-	ctx.drawImage(copy.canvas, 0, 0);
-	ctx.filter = 'none';
+	ctx.imageSmoothingEnabled = true;
+	ctx.imageSmoothingQuality = 'high';
+	ctx.drawImage(current.canvas, 0, 0, canvas.width, canvas.height);
+}
+
+/**
+ * A separable box blur, three passes, on a downscaled copy of the surface.
+ *
+ * Three moves: halve (or quarter) the resolution so the pixel loop stays small, blur the
+ * four channels with a sliding-window sum (premultiplied, so transparent edges do not
+ * bleed colour), then scale the result back up with smoothing. The result is softer and
+ * slightly broader than a true Gaussian, which for a background wash is indistinguishable
+ * — and it means an iPhone gets the same soft aurora as a desktop instead of nothing.
+ */
+function fallbackBlur(surface: Surface, blurPx: number) {
+	const { canvas, ctx } = surface;
+	const shortEdge = Math.min(canvas.width, canvas.height);
+	// Downscale when the sprite is big enough that a full-resolution loop would be felt on
+	// a phone; small sprites (particles, clouds) are already cheap.
+	const step = shortEdge >= 512 ? 4 : shortEdge >= 192 ? 3 : 1;
+	const w = Math.max(1, Math.round(canvas.width / step));
+	const h = Math.max(1, Math.round(canvas.height / step));
+
+	const scaled = createSurface(w, h);
+	scaled.ctx.imageSmoothingQuality = 'high';
+	scaled.ctx.drawImage(canvas, 0, 0, w, h);
+
+	const image = scaled.ctx.getImageData(0, 0, w, h);
+	boxBlurImageData(image, Math.max(1, Math.round(blurPx / step)));
+
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	ctx.imageSmoothingQuality = 'high';
+	ctx.imageSmoothingEnabled = true;
+	ctx.drawImage(scaled.canvas, 0, 0, w, h, 0, 0, canvas.width, canvas.height);
+}
+
+/** Three-pass separable box blur over premultiplied RGBA, in place. */
+function boxBlurImageData(image: ImageData, radius: number) {
+	const { width: w, height: h, data } = image;
+	if (radius < 1 || w < 2 || h < 2) return;
+
+	const size = w * h * 4;
+	const buffer = new Float32Array(size);
+	for (let i = 0; i < size; i += 4) {
+		const alpha = data[i + 3] / 255;
+		buffer[i] = data[i] * alpha;
+		buffer[i + 1] = data[i + 1] * alpha;
+		buffer[i + 2] = data[i + 2] * alpha;
+		buffer[i + 3] = data[i + 3];
+	}
+
+	const scratch = new Float32Array(size);
+	const window = radius * 2 + 1;
+
+	for (let pass = 0; pass < 3; pass++) {
+		blurPass(buffer, scratch, w, h, window, true);
+		blurPass(scratch, buffer, w, h, window, false);
+	}
+
+	for (let i = 0; i < size; i += 4) {
+		const alpha = buffer[i + 3];
+		if (alpha <= 0.0001) {
+			data[i] = 0;
+			data[i + 1] = 0;
+			data[i + 2] = 0;
+			data[i + 3] = 0;
+			continue;
+		}
+		const inv = 255 / alpha;
+		data[i] = Math.min(255, buffer[i] * inv);
+		data[i + 1] = Math.min(255, buffer[i + 1] * inv);
+		data[i + 2] = Math.min(255, buffer[i + 2] * inv);
+		data[i + 3] = Math.min(255, alpha);
+	}
+
+	image.data.set(data);
+}
+
+/** One box-blur pass along x (horizontal) or y, edge-clamped. */
+function blurPass(
+	source: Float32Array,
+	target: Float32Array,
+	w: number,
+	h: number,
+	window: number,
+	horizontal: boolean
+) {
+	const radius = (window - 1) / 2;
+	const norm = 1 / window;
+	const lines = horizontal ? h : w;
+	const length = horizontal ? w : h;
+	const stride = horizontal ? 4 : w * 4;
+
+	for (let line = 0; line < lines; line++) {
+		const base = horizontal ? line * w * 4 : line * 4;
+		let r = 0;
+		let g = 0;
+		let b = 0;
+		let a = 0;
+
+		const at = (index: number) => {
+			const clamped = index < 0 ? 0 : index >= length ? length - 1 : index;
+			return base + clamped * stride;
+		};
+
+		for (let k = -radius; k <= radius; k++) {
+			const i = at(k);
+			r += source[i];
+			g += source[i + 1];
+			b += source[i + 2];
+			a += source[i + 3];
+		}
+
+		for (let p = 0; p < length; p++) {
+			const out = base + p * stride;
+			target[out] = r * norm;
+			target[out + 1] = g * norm;
+			target[out + 2] = b * norm;
+			target[out + 3] = a * norm;
+
+			const incoming = at(p + radius + 1);
+			const outgoing = at(p - radius);
+			r += source[incoming] - source[outgoing];
+			g += source[incoming + 1] - source[outgoing + 1];
+			b += source[incoming + 2] - source[outgoing + 2];
+			a += source[incoming + 3] - source[outgoing + 3];
+		}
+	}
 }
 
 /**
