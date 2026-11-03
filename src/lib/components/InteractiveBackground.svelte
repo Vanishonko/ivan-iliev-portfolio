@@ -318,14 +318,20 @@
 
 <style>
 	/*
-	 * Same box as the DOM implementation: fixed, full viewport, z-index 1, and
-	 * transparent to pointer events. Overflow hides the parallax bleed at the edges.
+	 * Fixed, full viewport, and transparent to pointer events. Overflow hides the parallax
+	 * bleed at the edges.
+	 *
+	 * `z-index: -1` and not `1`: the layer is mounted *inside* the page's <main>, so it
+	 * shares that stacking context with the content. At `1` it painted above every static
+	 * card on the page — stars over the project thumbnails. Negative puts it behind the
+	 * content while staying in front of the page gradient, which is a sibling at -10 in
+	 * the layout.
 	 */
 	.interactive-background {
 		position: fixed;
 		inset: 0;
 		overflow: hidden;
-		z-index: 1;
+		z-index: -1;
 		pointer-events: none;
 	}
 
