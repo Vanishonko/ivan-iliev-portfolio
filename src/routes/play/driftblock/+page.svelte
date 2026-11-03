@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import { gameJsonLd, socialImage } from '$lib/seo';
+	import { breadcrumbJsonLd, gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const GAME_URL = 'https://vanishonko.github.io/driftblock/';
@@ -18,12 +18,26 @@
 </script>
 
 <Seo
-	 title="driftblock — play | ivan iliev"
-	 description="Play driftblock in the browser: a blocky 3D drift racer with no build step, procedural circuits and a synthesised engine."
-	 path="/play/driftblock"
-	 image={socialImage('driftblock')}
-	 type="article"
-	jsonLd={[gameJsonLd({ name: 'driftblock', description: 'driftblock in the browser', path: '/play/driftblock', genre: ['racing', 'drift'], released: '2026-09-30' })]}
+	title="driftblock — play | ivan iliev"
+	description="Play driftblock in the browser: a blocky 3D drift racer with no build step, four procedural circuits and an engine synthesised in Web Audio."
+	path="/play/driftblock"
+	image={socialImage('driftblock')}
+	type="article"
+	jsonLd={[
+		gameJsonLd({
+			name: 'driftblock',
+			description: 'A blocky 3D drift racer that runs entirely in the browser: procedural circuits, synthesised engine, keyboard, gamepad and force feedback on a real wheel.',
+			path: '/play/driftblock',
+			slug: 'driftblock',
+			tags: ['three.js', 'webgl', 'drift', 'racing', 'web audio'],
+			released: '2026-09-30'
+		}),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'play', path: '/play' },
+			{ name: 'driftblock', path: '/play/driftblock' }
+		])
+	]}
 />
 
 <main class="relative">
@@ -38,6 +52,13 @@
 					A blocky 3D drift racer that runs entirely in the browser. Four procedural circuits, a synthesised
 					engine and no build step. Keyboard, gamepad and wheel all work — a real wheel even gets force feedback
 					through a native bridge.
+				</p>
+				<p class="mt-4 text-sm">
+					<a
+						href="/projects/driftblock"
+						class="text-muted-50/70 underline-offset-4 hover:text-white hover:underline"
+						>how the drifting works →</a
+					>
 				</p>
 			</AnimatedSection>
 

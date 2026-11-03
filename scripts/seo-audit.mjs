@@ -1,9 +1,11 @@
 /**
  * seo-audit.mjs — fetch every route from a running server and check the metadata a crawler
- * or a link preview actually reads. No dependencies; run against dev or a deployment.
+ * or a link preview actually reads. No dependencies; run against dev, preview or production.
  *
- *   node scripts/seo-audit.mjs                       # http://127.0.0.1:5215
+ *   node scripts/seo-audit.mjs                                   # http://127.0.0.1:5215
  *   node scripts/seo-audit.mjs --base https://www.ivaniliev.online
+ *
+ * Exits 1 on any problem, so it can be wired into CI as a release gate.
  */
 const args = process.argv.slice(2);
 const base = (args.includes('--base') ? args[args.indexOf('--base') + 1] : 'http://127.0.0.1:5215').replace(/\/$/, '');
@@ -27,24 +29,49 @@ const ROUTES = [
 	'/play/dragons'
 ];
 
-function tag(html, re) {
-	const m = html.match(re);
-	return m ? m[1].trim() : null;
-}
-
 const problems = [];
 const rows = [];
+
+const all = (html, re) => [...html.matchAll(re)].map((m) => m[1].trim());
+const one = (html, re) => {
+	const found = all(html, re);
+	return found.length === 1 ? found[0] : null;
+};
+const expectedFor = (route) => (route === '/' ? `${ORIGIN}/` : `${ORIGIN}${route}`);
+
+function pngSize(buffer) {
+	if (buffer.length < 24 || buffer.toString('ascii', 1, 4) !== 'PNG') return null;
+	return { width: buffer.readUInt32BE(16), height: buffer.readUInt32BE(20) };
+}
+
+const titles = new Map();
+const descriptions = new Map();
+const ogImages = new Map();
 
 for (const route of ROUTES) {
 	const res = await fetch(base + route, { headers: { 'user-agent': 'seo-audit' } });
 	const html = await res.text();
 
-	const title = tag(html, /<title[^>]*>([\s\S]*?)<\/title>/i);
-	const description = tag(html, /<meta\s+name="description"\s+content="([^"]*)"/i);
-	const canonical = tag(html, /<link\s+rel="canonical"\s+href="([^"]*)"/i);
-	const ogImage = tag(html, /<meta\s+property="og:image"\s+content="([^"]*)"/i);
-	const ogUrl = tag(html, /<meta\s+property="og:url"\s+content="([^"]*)"/i);
-	const robots = tag(html, /<meta\s+name="robots"\s+content="([^"]*)"/i);
+	// Every tag of each kind must appear exactly once: duplicates are invisible to a naive
+	// "first match" regex, and this site shipped that bug once already.
+	const counts = {
+		title: all(html, /<title[^>]*>([\s\S]*?)<\/title>/gi).length,
+		description: all(html, /<meta\s+name="description"\s+content="([^"]*)"/gi).length,
+		canonical: all(html, /<link\s+rel="canonical"\s+href="([^"]*)"/gi).length,
+		robots: all(html, /<meta\s+name="robots"\s+content="([^"]*)"/gi).length,
+		ogImage: all(html, /<meta\s+property="og:image"\s+content="([^"]*)"/gi).length,
+		ogUrl: all(html, /<meta\s+property="og:url"\s+content="([^"]*)"/gi).length
+	};
+	for (const [name, count] of Object.entries(counts)) {
+		if (count !== 1) problems.push(`${route}: ${count} ${name} tags`);
+	}
+
+	const title = one(html, /<title[^>]*>([\s\S]*?)<\/title>/gi);
+	const description = one(html, /<meta\s+name="description"\s+content="([^"]*)"/gi);
+	const canonical = one(html, /<link\s+rel="canonical"\s+href="([^"]*)"/gi);
+	const robots = one(html, /<meta\s+name="robots"\s+content="([^"]*)"/gi);
+	const ogUrl = one(html, /<meta\s+property="og:url"\s+content="([^"]*)"/gi);
+	const ogImage = one(html, /<meta\s+property="og:image"\s+content="([^"]*)"/gi);
 	const h1Count = (html.match(/<h1[\s>]/gi) ?? []).length;
 
 	const blocks = [...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map((m) => m[1]);
@@ -58,36 +85,63 @@ for (const route of ROUTES) {
 		}
 	}
 
-	const expected = route === '/' ? `${ORIGIN}/` : `${ORIGIN}${route}`;
-	rows.push({ route, status: res.status, title, canonical: canonical === expected ? 'ok' : `got ${canonical}`, og: !!ogImage, ld: types.join('+') || '-', h1: h1Count });
+	const expected = expectedFor(route);
+	rows.push({ route, status: res.status, title, canonical: canonical === expected ? 'ok' : 'bad', ld: types.join('+') || '-', h1: h1Count });
 
 	if (res.status !== 200) problems.push(`${route}: HTTP ${res.status}`);
-	if (!title) problems.push(`${route}: no <title>`);
-	if (!description) problems.push(`${route}: no meta description`);
+	if (title && (title.length < 12 || title.length > 65)) problems.push(`${route}: title length ${title.length}`);
 	if (description && (description.length < 70 || description.length > 165)) problems.push(`${route}: description length ${description.length}`);
-	if (!canonical) problems.push(`${route}: no canonical`);
-	else if (canonical !== expected) problems.push(`${route}: canonical ${canonical} !== ${expected}`);
+	if (description && !/[.!?…]$/.test(description)) problems.push(`${route}: description does not end a sentence`);
+	if (description && /\s\w{1,3}$/.test(description)) problems.push(`${route}: description ends mid-word`);
+	if (canonical !== expected) problems.push(`${route}: canonical ${canonical} !== ${expected}`);
 	if (ogUrl !== expected) problems.push(`${route}: og:url ${ogUrl} !== ${expected}`);
-	if (!ogImage) problems.push(`${route}: no og:image`);
 	if (!robots?.includes('index')) problems.push(`${route}: robots "${robots}"`);
 	if (h1Count !== 1) problems.push(`${route}: ${h1Count} h1 elements`);
-	if (!blocks.length) problems.push(`${route}: no JSON-LD`);
+
+	if (title) {
+		if (titles.has(title)) problems.push(`${route}: duplicate title (same as ${titles.get(title)})`);
+		else titles.set(title, route);
+	}
+	if (description) {
+		if (descriptions.has(description)) problems.push(`${route}: duplicate description (same as ${descriptions.get(description)})`);
+		else descriptions.set(description, route);
+	}
+	if (ogImage) ogImages.set(route, ogImage);
 }
 
+// 404: real status, noindex, and no canonical pointing at a page that does not exist.
 const notFound = await fetch(base + '/this-page-does-not-exist-404');
 const nfHtml = await notFound.text();
-const nfRobots = tag(nfHtml, /<meta\s+name="robots"\s+content="([^"]*)"/i);
+const nfRobots = one(nfHtml, /<meta\s+name="robots"\s+content="([^"]*)"/gi);
+const nfCanonical = one(nfHtml, /<link\s+rel="canonical"\s+href="([^"]*)"/gi);
 if (notFound.status !== 404) problems.push(`404 route returned ${notFound.status}`);
 if (!nfRobots?.includes('noindex')) problems.push(`404 route not noindex (robots: ${nfRobots})`);
+if (nfCanonical) problems.push(`404 route declares a canonical (${nfCanonical})`);
 
+// Sitemap: every canonical URL is in it, and every URL it lists resolves.
 const sitemap = await fetch(base + '/sitemap.xml');
 const sitemapText = await sitemap.text();
 if (sitemap.status !== 200) problems.push(`sitemap: HTTP ${sitemap.status}`);
-const locs = [...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-if (locs.length < ROUTES.length) problems.push(`sitemap has ${locs.length} urls, expected at least ${ROUTES.length}`);
+const locs = all(sitemapText, /<loc>([^<]+)<\/loc>/g);
 for (const route of ROUTES) {
-	const expected = route === '/' ? `${ORIGIN}/` : `${ORIGIN}${route}`;
+	const expected = expectedFor(route);
 	if (!locs.includes(expected)) problems.push(`sitemap missing ${expected}`);
+}
+for (const loc of locs) {
+	const res = await fetch(loc.replace(ORIGIN, base), { method: 'HEAD' });
+	if (res.status !== 200) problems.push(`sitemap lists ${loc} which returns ${res.status}`);
+}
+
+// Social cards: every one must exist, be a PNG, and be exactly 1200x630.
+for (const [route, url] of ogImages) {
+	const res = await fetch(url.replace(ORIGIN, base));
+	if (!res.ok) {
+		problems.push(`${route}: og:image ${url} -> ${res.status}`);
+		continue;
+	}
+	const size = pngSize(Buffer.from(await res.arrayBuffer()));
+	if (!size) problems.push(`${route}: og:image is not a PNG`);
+	else if (size.width !== 1200 || size.height !== 630) problems.push(`${route}: og:image is ${size.width}x${size.height}`);
 }
 
 const robotsTxt = await (await fetch(base + '/robots.txt')).text();
@@ -98,24 +152,23 @@ if (manifest.status !== 200) problems.push(`manifest: HTTP ${manifest.status}`);
 const manifestJson = await manifest.json().catch(() => null);
 if (!manifestJson?.icons?.length) problems.push('manifest has no icons');
 
-const icons = await Promise.all(['/icon-192.png', '/icon-512.png', '/apple-touch-icon.png'].map(async (p) => {
-	const r = await fetch(base + p, { method: 'HEAD' });
-	return `${p}:${r.status}`;
-}));
+for (const path of ['/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']) {
+	const res = await fetch(base + path, { method: 'HEAD' });
+	if (res.status !== 200) problems.push(`${path} -> ${res.status}`);
+}
 
-const ogImages = await Promise.all(
-	[...new Set(rows.map((r) => r.route))].slice(0, 3).map(async (route) => {
-		const html = await (await fetch(base + route)).text();
-		const src = tag(html, /<meta\s+property="og:image"\s+content="([^"]*)"/i);
-		if (!src) return `${route}: none`;
-		const r = await fetch(src.replace(ORIGIN, base), { method: 'HEAD' });
-		return `${new URL(src).pathname}:${r.status}`;
-	})
-);
+// The vendored game shells are public but must never be indexed as thin duplicates.
+for (const path of ['/games/dewdrop-bend/index.html', '/games/dragons/start.html']) {
+	const res = await fetch(base + path);
+	const html = await res.text();
+	if (res.status !== 200) continue;
+	const robots = one(html, /<meta\s+name="robots"\s+content="([^"]*)"/gi);
+	if (!robots?.includes('noindex')) problems.push(`${path} is indexable`);
+	if (!one(html, /<link\s+rel="canonical"\s+href="([^"]*)"/gi)) problems.push(`${path} has no canonical`);
+}
 
 console.table(rows);
-console.log('icons:', icons.join(' '), '| og images:', ogImages.join(' '));
-console.log(`sitemap urls: ${locs.length}, robots: ${robotsTxt.split('\n')[0].trim()}`);
+console.log(`sitemap urls: ${locs.length} | cards: ${ogImages.size}`);
 if (problems.length) {
 	console.log(`\n${problems.length} problem(s):`);
 	for (const p of problems) console.log(' -', p);

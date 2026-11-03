@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { absolute, SITE, socialImage, type JsonLd } from '$lib/seo';
+	import { absolute, personJsonLd, SITE, socialImage, type JsonLd } from '$lib/seo';
 
 	let {
 		title,
@@ -19,15 +19,15 @@
 		jsonLd?: JsonLd[];
 	} = $props();
 
-	const canonical = $derived(absolute(path));
-
 	/*
 	 * Svelte renders everything inside a template `<script>` element as raw text, so the
-	 * JSON-LD block cannot be a template tag with an expression in it — it has to enter the
-	 * document as HTML. `<` is escaped so a string in the data can never close the tag.
+	 * JSON-LD block cannot be a template tag with an expression in it — it enters the
+	 * document as HTML instead, just after the component. That is valid: search engines
+	 * read JSON-LD anywhere in the document, and it keeps the head free of escaped markup.
 	 */
+	const blocks = $derived([personJsonLd(), ...jsonLd]);
 	const ldScripts = $derived(
-		jsonLd
+		blocks
 			.map(
 				(data) =>
 					`<script type="application/ld+json">${JSON.stringify(data).replace(/</g, '\\u003c')}<\/script>`
@@ -39,22 +39,25 @@
 <svelte:head>
 	<title>{title}</title>
 	<meta name="description" content={description} />
-	<link rel="canonical" href={canonical} />
 
 	{#if noindex}
 		<meta name="robots" content="noindex, follow" />
 	{:else}
 		<meta name="robots" content="index, follow, max-image-preview:large" />
+		<link rel="canonical" href={absolute(path)} />
 	{/if}
 
 	<meta property="og:site_name" content={SITE.name} />
 	<meta property="og:type" content={type} />
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
-	<meta property="og:url" content={canonical} />
+	{#if !noindex}
+		<meta property="og:url" content={absolute(path)} />
+	{/if}
 	<meta property="og:image" content={image} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
+	<meta property="og:image:type" content="image/png" />
 	<meta property="og:image:alt" content={title} />
 	<meta property="og:locale" content={SITE.locale} />
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Seo from '$lib/components/Seo.svelte';
-	import { gameJsonLd, socialImage } from '$lib/seo';
+	import { breadcrumbJsonLd, gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const SRC = '/games/dragons/start.html';
@@ -18,12 +18,26 @@
 </script>
 
 <Seo
-	 title="dragons (2015) — play | ivan iliev"
-	 description="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here for the joke, exactly as it shipped."
-	 path="/play/dragons"
-	 image={socialImage('dragons')}
-	 type="article"
-	jsonLd={[gameJsonLd({ name: 'Dragons', description: 'Dragons in the browser', path: '/play/dragons', genre: ['arcade'], released: '2015-09-06' })]}
+	title="dragons (2015) — play | ivan iliev"
+	description="The first game I still have: a 2015 JavaScript dragon game, built when I was eleven. Archived here unedited, with a warning label and no apologies."
+	path="/play/dragons"
+	image={socialImage('dragons')}
+	type="article"
+	jsonLd={[
+		gameJsonLd({
+			name: 'Dragons',
+			description: 'A 2015 JavaScript arcade game by an eleven-year-old: one canvas, GIF dragons, a score counter and no delta time. Archived unedited.',
+			path: '/play/dragons',
+			slug: 'dragons',
+			tags: ['javascript', 'canvas 2d', 'arcade', 'archive'],
+			released: '2015-09-06'
+		}),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'play', path: '/play' },
+			{ name: 'dragons', path: '/play/dragons' }
+		])
+	]}
 />
 
 <main class="relative">

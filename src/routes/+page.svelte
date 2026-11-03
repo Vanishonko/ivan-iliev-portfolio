@@ -57,10 +57,10 @@
 </script>
 
 <Seo
-	 title="ivan iliev"
+	 title="ivan iliev — browser games, pixel art and tooling"
 	 description={SITE.description}
 	 path="/"
-	 jsonLd={[personJsonLd(), websiteJsonLd()]}
+	 jsonLd={[websiteJsonLd()]}
 />
 
 <main>
@@ -78,7 +78,8 @@
 
 			<AnimatedSection delay={ANIMATION_DELAY.TITLE}>
 				<h1 class="title-typewriter text-[clamp(1.9rem,9vw,3.6rem)] font-bold leading-[1.02]">
-					<span class="inline-flex flex-wrap gap-x-3 gap-y-2">
+				<span class="sr-only">ivan iliev</span>
+					<span class="inline-flex flex-wrap gap-x-3 gap-y-2" aria-hidden="true">
 						{#each titleWordChars as wordChars, wi (wi)}
 							<span class="inline-flex">
 								{#each wordChars as char, ci (`${wi}-${ci}`)}

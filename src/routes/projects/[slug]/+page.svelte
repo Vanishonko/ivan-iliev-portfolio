@@ -23,7 +23,7 @@
 
 <Seo
 	title={`${project.title.toLowerCase()} | ivan iliev`}
-	description={project.description[0].slice(0, 158)}
+	description={project.metaDescription}
 	path={`/projects/${project.id}`}
 	image={socialImage(project.id)}
 	type="article"

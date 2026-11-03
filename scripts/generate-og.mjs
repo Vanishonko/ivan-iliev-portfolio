@@ -45,8 +45,9 @@ const CARDS = [
 	{
 		slug: 'work',
 		eyebrow: 'work',
-		title: 'six projects, from a pond to a racing AI',
-		subtitle: 'driftblock · Dewdrop Bend · ai-f1-racing · BeaverWize · Laravel · the lab',
+		title: 'seven projects, from a pond to a racing AI',
+		subtitle:
+			'Dewdrop Bend · driftblock · ai-f1-racing · BeaverWize · Laravel · dsh-works · this site',
 		path: '/projects'
 	},
 	{

@@ -13,9 +13,9 @@
 	 image={socialImage('lab')}
 	jsonLd={[
 		itemListJsonLd('the lab', '/lab', [
-			{ name: 'Pip', path: '/lab', description: 'a 32x32 creature that lives in the corner of the window' },
-			{ name: 'Pixel art surface', path: '/lab', description: 'a model draws a character grid, looks at it, and draws again' },
-			{ name: 'Alerts bell', path: '/lab', description: 'duration, tokens and estimated cost for a finished turn' }
+			{ name: 'Pip', path: '/lab#pip', description: 'a 32x32 creature that lives in the corner of the window' },
+			{ name: 'Pixel art surface', path: '/lab#pixel-art', description: 'a model draws a character grid, looks at it, and draws again' },
+			{ name: 'Alerts bell', path: '/lab#alerts', description: 'duration, tokens and estimated cost for a finished turn' }
 		])]}
 />
 
@@ -53,7 +53,7 @@
 	</header>
 
 	<!-- Pip -->
-	<section class="px-4 pb-14 sm:px-6" aria-labelledby="pip-heading">
+	<section id="pip" class="scroll-mt-24 px-4 pb-14 sm:px-6" aria-labelledby="pip-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<div class="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-center">
 				<AnimatedSection delay={120}>
@@ -78,7 +78,7 @@
 	</section>
 
 	<!-- Pixel art -->
-	<section class="px-4 pb-14 sm:px-6" aria-labelledby="art-heading">
+	<section id="pixel-art" class="scroll-mt-24 px-4 pb-14 sm:px-6" aria-labelledby="art-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<AnimatedSection delay={80} class="max-w-2xl">
 				<h2 id="art-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/60">02 — pixel art</h2>
@@ -102,7 +102,7 @@
 	</section>
 
 	<!-- Alerts -->
-	<section class="px-4 pb-16 sm:px-6" aria-labelledby="alerts-heading">
+	<section id="alerts" class="scroll-mt-24 px-4 pb-16 sm:px-6" aria-labelledby="alerts-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<div class="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
 				<AnimatedSection delay={120}>

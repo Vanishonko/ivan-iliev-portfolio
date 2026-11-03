@@ -78,8 +78,6 @@
 								src={game.poster}
 								alt={game.alt}
 								class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]"
-								width="1440"
-								height="900"
 								loading="lazy"
 							/>
 							<div class="absolute inset-0 bg-gradient-to-t from-[#070912] via-[#070912]/20 to-transparent"></div>

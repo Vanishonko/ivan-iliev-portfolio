@@ -29,6 +29,11 @@ export function socialImage(slug = 'home') {
 	return absolute(`/og/${slug}.png`);
 }
 
+/** Games live at two URLs (a write-up and a playable page) and must resolve to one entity. */
+export function gameId(slug: string) {
+	return `${SITE.url}/#game-${slug}`;
+}
+
 export type JsonLd = Record<string, unknown>;
 
 export function personJsonLd(): JsonLd {
@@ -38,7 +43,7 @@ export function personJsonLd(): JsonLd {
 		'@id': `${SITE.url}/#person`,
 		name: SITE.name,
 		url: absolute('/'),
-		email: `mailto:${SITE.email}`,
+		email: SITE.email,
 		jobTitle: 'ICT student and developer',
 		description: SITE.description,
 		address: {
@@ -79,34 +84,42 @@ export function websiteJsonLd(): JsonLd {
 	};
 }
 
-export function projectListJsonLd(projects: readonly Project[]): JsonLd {
-	return {
-		'@context': 'https://schema.org',
-		'@type': 'ItemList',
-		name: 'Projects',
-		itemListElement: projects.map((project, index) => ({
-			'@type': 'ListItem',
-			position: index + 1,
-			name: project.title,
-			url: absolute(`/projects/${project.id}`)
-		}))
+/** The game slugs, so a project write-up and its playable page describe one entity. */
+export const GAME_SLUGS = ['dewdrop-bend', 'driftblock', 'dragons'] as const;
+
+export function isGame(id: string) {
+	return (GAME_SLUGS as readonly string[]).includes(id);
+}
+
+export function gameGenres(slug: string): string[] {
+	const genres: Record<string, string[]> = {
+		'driftblock': ['racing', 'drift', 'arcade'],
+		'dewdrop-bend': ['simulation', 'sandbox', 'pixel art'],
+		'dragons': ['arcade']
 	};
+	return genres[slug] ?? ['arcade'];
 }
 
 export function projectJsonLd(project: Project): JsonLd {
-	const isGame = ['driftblock', 'dewdrop-bend', 'dragons'].includes(project.id);
+	const external = (project.links ?? []).filter((link) => link.external && /^https?:/.test(link.href));
+	const game = isGame(project.id);
+
 	return {
 		'@context': 'https://schema.org',
-		'@type': isGame ? 'VideoGame' : 'CreativeWork',
+		'@type': game ? 'VideoGame' : 'CreativeWork',
+		...(game ? { '@id': gameId(project.id) } : {}),
 		name: project.title,
-		description: project.description[0],
+		description: project.metaDescription,
 		url: absolute(`/projects/${project.id}`),
 		image: socialImage(project.id),
-		genre: project.tags,
+		keywords: project.tags.join(', '),
+		...(game
+			? { genre: gameGenres(project.id), gamePlatform: 'Web browser', playMode: 'SinglePlayer' }
+			: {}),
 		author: { '@id': `${SITE.url}/#person` },
 		creator: { '@id': `${SITE.url}/#person` },
 		inLanguage: 'en',
-		...(project.links?.length ? { sameAs: project.links.filter((l) => l.external).map((l) => l.href) } : {})
+		...(external.length ? { sameAs: external.map((link) => link.href) } : {})
 	};
 }
 
@@ -139,7 +152,7 @@ export function itemListJsonLd(
 			'@type': 'ListItem',
 			position: index + 1,
 			name: item.name,
-			url: absolute(item.path),
+			item: absolute(item.path),
 			...(item.description ? { description: item.description } : {})
 		}))
 	};
@@ -150,17 +163,20 @@ export function gameJsonLd(game: {
 	name: string;
 	description: string;
 	path: string;
-	genre: readonly string[];
+	slug: string;
+	tags: readonly string[];
 	released?: string;
 }): JsonLd {
 	return {
 		'@context': 'https://schema.org',
 		'@type': 'VideoGame',
+		'@id': gameId(game.slug),
 		name: game.name,
 		description: game.description,
 		url: absolute(game.path),
-		image: socialImage(game.path.split('/').pop() ?? 'home'),
-		genre: [...game.genre],
+		image: socialImage(game.slug),
+		genre: gameGenres(game.slug),
+		keywords: game.tags.join(', '),
 		gamePlatform: 'Web browser',
 		playMode: 'SinglePlayer',
 		applicationCategory: 'Game',
