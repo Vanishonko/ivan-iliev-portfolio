@@ -3,24 +3,19 @@
 	import '../app.css';
 	import SiteNav from '$lib/components/SiteNav.svelte';
 	import SiteFooter from '$lib/components/SiteFooter.svelte';
+	import { SITE } from '$lib/seo';
 
 	let { children } = $props();
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
-	<meta
-		name="description"
-		content="Ivan Iliev — ICT student at HZ University of Applied Sciences. Browser games, racing AI and tooling, built in Vlissingen."
-	/>
-	<meta property="og:title" content="Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="Browser games, racing AI and tooling. ICT student at HZ University of Applied Sciences."
-	/>
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://www.ivaniliev.online" />
-	<meta name="theme-color" content="#070912" />
+	<meta name="theme-color" content={SITE.themeColor} />
+	<meta name="color-scheme" content="dark" />
+
+	<link rel="icon" href={favicon} type="image/svg+xml" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+	<link rel="manifest" href="/manifest.webmanifest" />
+
 	<link rel="preconnect" href="https://fonts.googleapis.com" />
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link

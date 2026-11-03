@@ -1,12 +1,19 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { breadcrumbJsonLd, gameJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 
 	const SRC = '/games/dewdrop-bend/index.html';
 
 	let started = $state(false);
+	/** Bumped to remount the iframe, so "restart" actually restarts the game. */
+	let runId = $state(0);
 	let frame: HTMLDivElement | undefined = $state();
 
-	const launch = () => (started = true);
+	const launch = () => {
+		if (started) runId += 1;
+		else started = true;
+	};
 
 	const fullscreen = async () => {
 		if (!frame) return;
@@ -22,15 +29,28 @@
 	];
 </script>
 
-<svelte:head>
-	<title>dewdrop bend — play | ivan iliev</title>
-	<meta
-		name="description"
-		content="Dewdrop Bend — a living pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag. Vanilla JavaScript and Canvas 2D."
-	/>
-	<meta property="og:title" content="Dewdrop Bend — a living pixel-art pond" />
-	<meta property="og:description" content="A hand-drawn pond you can touch. 24-hour sky, thirteen creatures, rain and a field notebook." />
-</svelte:head>
+<Seo
+	title="dewdrop bend — play | ivan iliev"
+	description="Play Dewdrop Bend in the browser: a pixel-art pond with a 24-hour sky, thirteen creatures and a clock you can drag. Nothing to install."
+	path="/play/dewdrop-bend"
+	image={socialImage('dewdrop-bend')}
+	type="article"
+	jsonLd={[
+		gameJsonLd({
+			name: 'Dewdrop Bend',
+			description: 'A living pixel-art pond with a 24-hour sky: drag the clock hands, plant the banks, and meet thirteen hand-drawn creatures, each with a field note.',
+			path: '/play/dewdrop-bend',
+			slug: 'dewdrop-bend',
+			tags: ['pixel art', 'canvas 2d', 'simulation', 'procedural audio'],
+			released: '2026-09-20'
+		}),
+		breadcrumbJsonLd([
+			{ name: 'ivan iliev', path: '/' },
+			{ name: 'play', path: '/play' },
+			{ name: 'Dewdrop Bend', path: '/play/dewdrop-bend' }
+		])
+	]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableClouds />
@@ -44,6 +64,13 @@
 					A small, living pixel-art pond with a full 24-hour sky. Turn the clock hands, plant wildflowers on the
 					banks, watch the bees work and the frogs hop between lily pads, let the rain in from a single cloud
 					button, and collect a field note for every creature you meet.
+				</p>
+				<p class="mt-4 text-sm">
+					<a
+						href="/projects/dewdrop-bend"
+						class="text-muted-50/70 underline-offset-4 hover:text-white hover:underline"
+						>how it is built →</a
+					>
 				</p>
 			</AnimatedSection>
 
@@ -83,12 +110,14 @@
 				class="relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/10 bg-[#071513] shadow-2xl shadow-black/40"
 			>
 				{#if started}
-					<iframe
-						src={SRC}
-						title="Dewdrop Bend — an interactive pixel-art pond"
-						class="h-full w-full border-0"
-						allow="fullscreen"
-					></iframe>
+					{#key runId}
+						<iframe
+							src={SRC}
+							title="Dewdrop Bend — an interactive pixel-art pond"
+							class="h-full w-full border-0"
+							allow="fullscreen"
+						></iframe>
+					{/key}
 				{:else}
 					<button
 						type="button"

@@ -1,21 +1,23 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
+	import { itemListJsonLd, socialImage } from '$lib/seo';
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import PipPlayground from '$lib/components/lab/PipPlayground.svelte';
 	import PixelArtStudio from '$lib/components/lab/PixelArtStudio.svelte';
 </script>
 
-<svelte:head>
-	<title>the lab | ivan iliev</title>
-	<meta
-		name="description"
-		content="Private work, shown in public: Pip the pixel creature, a pixel-art surface for a coding agent, and the alerts bell that tells you what a turn cost."
-	/>
-	<meta property="og:title" content="The lab | Ivan Iliev" />
-	<meta
-		property="og:description"
-		content="Pip, the pixel-art surface and the alerts bell — plugins I build for DeepSeek Harness."
-	/>
-</svelte:head>
+<Seo
+	 title="the lab | ivan iliev"
+	 description="Private work, shown in public: Pip the pixel creature, a pixel-art surface for a coding agent, and the alerts bell that tells you what a turn cost."
+	 path="/lab"
+	 image={socialImage('lab')}
+	jsonLd={[
+		itemListJsonLd('the lab', '/lab', [
+			{ name: 'Pip', path: '/lab#pip', description: 'a 32x32 creature that lives in the corner of the window' },
+			{ name: 'Pixel art surface', path: '/lab#pixel-art', description: 'a model draws a character grid, looks at it, and draws again' },
+			{ name: 'Alerts bell', path: '/lab#alerts', description: 'duration, tokens and estimated cost for a finished turn' }
+		])]}
+/>
 
 <main class="relative">
 	<InteractiveBackground enableStars enableAurora />
@@ -51,7 +53,7 @@
 	</header>
 
 	<!-- Pip -->
-	<section class="px-4 pb-14 sm:px-6" aria-labelledby="pip-heading">
+	<section id="pip" class="scroll-mt-24 px-4 pb-14 sm:px-6" aria-labelledby="pip-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<div class="grid gap-6 lg:grid-cols-[1.1fr_1fr] lg:items-center">
 				<AnimatedSection delay={120}>
@@ -76,7 +78,7 @@
 	</section>
 
 	<!-- Pixel art -->
-	<section class="px-4 pb-14 sm:px-6" aria-labelledby="art-heading">
+	<section id="pixel-art" class="scroll-mt-24 px-4 pb-14 sm:px-6" aria-labelledby="art-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<AnimatedSection delay={80} class="max-w-2xl">
 				<h2 id="art-heading" class="text-xs uppercase tracking-[0.2em] text-muted-50/60">02 — pixel art</h2>
@@ -100,7 +102,7 @@
 	</section>
 
 	<!-- Alerts -->
-	<section class="px-4 pb-16 sm:px-6" aria-labelledby="alerts-heading">
+	<section id="alerts" class="scroll-mt-24 px-4 pb-16 sm:px-6" aria-labelledby="alerts-heading">
 		<div class="mx-auto w-full max-w-4xl">
 			<div class="grid gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-center">
 				<AnimatedSection delay={120}>
