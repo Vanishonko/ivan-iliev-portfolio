@@ -4,6 +4,7 @@
 	import { AnimatedSection, InteractiveBackground } from '$lib/components';
 	import PipPlayground from '$lib/components/lab/PipPlayground.svelte';
 	import PixelArtStudio from '$lib/components/lab/PixelArtStudio.svelte';
+	import ContactCard from '$lib/components/lab/ContactCard.svelte';
 </script>
 
 <Seo
@@ -38,15 +39,8 @@
 					I am not ready to defend every line of it in public. The work itself runs here.
 				</p>
 
-				<div class="mt-5 max-w-2xl rounded-xl border border-violet-300/20 bg-violet-400/[0.07] p-4">
-					<p class="text-sm leading-relaxed text-muted-50/85">
-						<strong class="text-violet-100">Ask and you shall receive.</strong> If anything here is interesting —
-						the pixel-art loop, the antenna maths, the cost arithmetic — say so and I will send you the code. I
-						would rather share it with someone curious than polish it for nobody.
-						<a class="ml-1 underline underline-offset-4 hover:text-white" href="mailto:vanishonko@gmail.com"
-							>Email me</a
-						>.
-					</p>
+				<div class="max-w-2xl">
+					<ContactCard />
 				</div>
 			</AnimatedSection>
 		</div>
