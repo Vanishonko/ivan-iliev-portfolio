@@ -337,6 +337,12 @@ body.is-revealed .signature { transition-delay: 1s; }
   display: none;
 }
 
+@media (max-width: 759px) {
+  .camera {
+    display: none;
+  }
+}
+
 .hint {
   color: var(--ink-faint);
   opacity: 0.8;
