@@ -248,6 +248,8 @@ body.is-night .plate canvas {
   top: -38px;
   height: 38px;
   border-left: 1px dashed rgba(122, 90, 55, 0.7);
+  opacity: 0;
+  transition: opacity 0.8s var(--ease);
   transform: rotate(1.6deg);
   transform-origin: bottom;
 }
@@ -275,6 +277,8 @@ body.is-night .dedication {
 body.is-night .dedication::before {
   border-left-color: rgba(239, 194, 102, 0.55);
 }
+
+body.is-revealed .dedication::before { opacity: 1; }
 
 .tag-body {
   max-height: 0;
@@ -382,6 +386,8 @@ body.is-revealed .signature { transition-delay: 1s; }
 
 .controls button {
   appearance: none;
+  white-space: nowrap;
+  flex: none;
   padding: 2px 0;
   border: 0;
   border-bottom: 1px solid transparent;
@@ -458,60 +464,90 @@ body.is-revealed .signature { transition-delay: 1s; }
 .noscript p { margin: 0; }
 
 @media (max-width: 700px) {
-  body { overflow-y: auto; }
+  body { overflow: hidden; }
   .page {
+    height: 100svh;
     min-height: 100svh;
-    grid-template-rows: auto minmax(0, 1fr) auto auto;
-    gap: 8px;
-    padding: 14px 16px 12px;
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
   }
-  .masthead { letter-spacing: 0.16em; }
-  .plate {
-    width: min(100%, 480px);
-    max-height: 54svh;
-    padding: 8px;
-  }
-  .dedication {
+  .masthead {
     position: relative;
-    left: auto;
-    bottom: auto;
+    z-index: 10;
+    padding: calc(14px + env(safe-area-inset-top)) 16px 10px;
+    background: linear-gradient(to bottom, var(--paper) 62%, transparent);
+  }
+  .stage-wrap {
+    position: relative;
     width: 100%;
-    max-width: 480px;
-    margin: 16px auto 0;
-    padding: 24px 18px 16px;
-    transform: none;
+    height: 100%;
+    min-height: 0;
   }
-  .dedication::before {
-    top: -22px;
-    height: 22px;
+  .plate {
+    width: 100vw;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
   }
-  .dedication::after {
-    top: 8px;
-  }
-  .prelude {
-    font-size: 1.15rem;
-  }
+  .plate canvas { width: 100%; height: 100%; }
   .specimen {
-    left: 12px;
-    bottom: 8px;
-    right: 12px;
-    justify-content: space-between;
-    letter-spacing: 0.08em;
+    top: 10px;
+    bottom: auto;
+    left: 16px;
+    right: auto;
+    justify-content: flex-start;
+    font-size: 0.54rem;
+    z-index: 2;
   }
   .plate-meta { display: none; }
-  .wish-line {
-    font-size: 0.98rem;
-    line-height: 1.38;
+  .dedication {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: calc(50px + env(safe-area-inset-bottom));
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 15px 16px 10px;
+    z-index: 12;
+    transform: rotate(-1.1deg);
   }
-  .wish-line.line-1 {
-    font-size: 1.28rem;
+  .dedication::before {
+    top: -82px;
+    height: 82px;
+  }
+  .dedication::after {
+    top: 7px;
+  }
+  .prelude { font-size: 1.05rem; }
+  .wish-line {
+    font-size: 0.92rem;
+    line-height: 1.3;
+  }
+  .wish-line.line-1 { font-size: 1.2rem; }
+  .signature {
+    margin-top: 4px;
+    font-size: 0.54rem;
   }
   .colophon {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 14;
+    justify-content: flex-start;
+    padding: 4px 16px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--paper) 58%, transparent);
+    flex-direction: row;
+    align-items: baseline;
   }
-  .footer-note { text-align: left; order: 2; }
+  .footer-note { display: none; }
   .hint { display: none; }
 }
 
@@ -528,3 +564,8 @@ body.is-revealed .signature { transition-delay: 1s; }
     transition-duration: 0.01ms !important;
   }
 }
+
+
+
+
+
