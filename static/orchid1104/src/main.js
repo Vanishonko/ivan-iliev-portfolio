@@ -1,5 +1,5 @@
 import { ART_HD } from './art-hd.js';
-import { ART_FULL } from './art-full.js';
+import { ART_HD_DENSE } from './art-hd-dense.js';
 import { OrchidScene } from './scene.js';
 import { Ambient } from './ambient.js';
 
@@ -12,8 +12,7 @@ const hint = document.getElementById('hint');
 const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const desktopQuery = window.matchMedia('(min-width: 760px)');
 const reduced = reducedQuery.matches;
-const isDesktop = desktopQuery.matches;
-const initialArt = isDesktop ? ART_FULL : ART_HD;
+const initialArt = ART_HD_DENSE;
 const setMeta = (art) => {
   document.querySelector('.plate-meta').textContent = `ASCII · ${art.cols} × ${art.rows}`;
 };
@@ -47,24 +46,18 @@ if (!reduced) {
   ambient.start();
 }
 
-// Desktop opens on the whole plant; phones open on the readable hero close-up.
-if (isDesktop) {
-  scene.setCamera('full');
-  cameraBtn.hidden = false;
-  cameraBtn.textContent = '[ close-up ]';
-} else {
-  scene.setCamera('close');
-  cameraBtn.hidden = false;
-  cameraBtn.textContent = '[ full plant ]';
-}
+// The whole plant is the default everywhere; the close-up is the detail view.
+scene.setCamera('full');
+cameraBtn.hidden = false;
+cameraBtn.textContent = '[ close-up ]';
 cameraBtn.addEventListener('click', () => {
   if (scene.cameraMode === 'full') {
     scene.setArt(ART_HD, 'close');
     setMeta(ART_HD);
     cameraBtn.textContent = '[ full plant ]';
   } else {
-    scene.setArt(ART_FULL, 'full');
-    setMeta(ART_FULL);
+    scene.setArt(ART_HD_DENSE, 'full');
+    setMeta(ART_HD_DENSE);
     cameraBtn.textContent = '[ close-up ]';
   }
 });
@@ -138,8 +131,8 @@ window.addEventListener('keydown', (e) => {
 window.setTimeout(() => hint.classList.add('is-hidden'), 9000);
 
 // static copy for assistive tech, and a no-JS-ish fallback
-const rows = Array.from({ length: ART_FULL.rows }, () => Array(ART_FULL.cols).fill(' '));
-for (const c of ART_FULL.cells) rows[c.y][c.x] = c.ch;
+const rows = Array.from({ length: ART_HD_DENSE.rows }, () => Array(ART_HD_DENSE.cols).fill(' '));
+for (const c of ART_HD_DENSE.cells) rows[c.y][c.x] = c.ch;
 document.getElementById('static-art').textContent = rows.map((r) => r.join('').replace(/\s+$/, '')).join('\n');
 
 // resize
@@ -153,4 +146,5 @@ reducedQuery.addEventListener?.('change', () => location.reload());
 desktopQuery.addEventListener?.('change', () => location.reload());
 
 // expose for QA
-window.__orchid = { scene, ART_FULL, ART_HD, reduced, ambient };
+window.__orchid = { scene, ART_HD, ART_HD_DENSE, reduced, ambient };
+
