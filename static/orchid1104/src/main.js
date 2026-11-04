@@ -73,7 +73,7 @@ canvas.addEventListener('pointerdown', (e) => {
   downX = e.clientX;
   downY = e.clientY;
   canvas.setPointerCapture?.(e.pointerId);
-  scene.beginDrag(e.clientX);
+  scene.beginDrag(e.clientX, e.clientY);
   body.classList.add('is-touched');
 });
 
@@ -81,7 +81,7 @@ canvas.addEventListener('pointermove', (e) => {
   const rect = canvas.getBoundingClientRect();
   if (dragging) {
     moved = Math.max(moved, Math.hypot(e.clientX - downX, e.clientY - downY));
-    scene.moveDrag(e.clientX, rect.width);
+    scene.moveDrag(e.clientX, rect.width, e.clientY, rect.height);
     if (moved > 8) hint.classList.add('is-hidden');
   } else {
     scene.setPointer(e.clientX, e.clientY, rect);

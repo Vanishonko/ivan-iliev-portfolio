@@ -81,6 +81,10 @@ export function parseArt({ text, layers, elements }, { bloomGap = 0.55 } = {}) {
     cy: e.center.y,
     rx: e.bbox.w / 2 + 1,
     ry: e.bbox.h / 2 + 1,
+    x0: e.bbox.x0,
+    y0: e.bbox.y0,
+    w: e.bbox.w,
+    h: e.bbox.h,
     delay: 1.8 + i * bloomGap,
     layer: `bloom${i}`
   }));

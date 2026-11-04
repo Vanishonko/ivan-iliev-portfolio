@@ -8,6 +8,10 @@ const T = {
 };
 
 const MONO = '"Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace';
+const rad = (d) => (d * Math.PI) / 180;
+const angDiff = (a, b) => Math.atan2(Math.sin(a - b), Math.cos(a - b));
+const gauss = (d, w) => Math.exp(-0.5 * (d / w) ** 2);
+const PETAL_ANGLES = [90, 30, 150, 212, 328];
 
 function layerZ(layer) {
   if (layer.startsWith('bloom')) {
@@ -42,6 +46,8 @@ export class OrchidScene {
     this.art = art;
     this.reduced = reduced;
     this.onState = onState;
+    this.occupied = Array.from({ length: art.rows }, () => Array(art.cols).fill(false));
+    for (const c of art.cells) this.occupied[c.y][c.x] = true;
     this.time = 0;
     this.theme = reduced ? 1 : 0;
     this.manualTheme = null;
@@ -55,9 +61,14 @@ export class OrchidScene {
     this.pointerLean = 0;
     this.dragging = false;
     this.dragHint = false;
+    this.pitch = 0;
+    this.pitchTarget = 0;
+    this.pitchVel = 0;
     this.particles = [];
     this.fireflies = [];
     this.petals = [];
+    this.hearts = [];
+    this.heartsSpawned = false;
     this.lastPetal = 0;
     this.cameraMode = 'full';
     this.camera = { x0: 0, y0: 0, w: art.cols, h: art.rows };
@@ -91,11 +102,11 @@ export class OrchidScene {
   setCamera(mode = 'full') {
     this.cameraMode = mode;
     if (mode === 'close') {
-      const b = this.art.blooms[0] || { cx: this.art.cols / 2, cy: this.art.rows / 2 };
-      const w = Math.min(58, this.art.cols);
-      const h = Math.min(34, this.art.rows);
+      const b = this.art.blooms[0] || { cx: this.art.cols / 2, cy: this.art.rows / 2, w: 34, h: 18 };
+      const w = Math.min((b.w || 34) + 14, this.art.cols);
+      const h = Math.min((b.h || 18) + 14, this.art.rows);
       const x0 = clamp(b.cx - w * 0.5, 0, this.art.cols - w);
-      const y0 = clamp(b.cy - b.ry - 1, 0, this.art.rows - h);
+      const y0 = clamp(b.cy - h * 0.45, 0, this.art.rows - h);
       this.camera = { x0, y0, w, h };
     } else {
       this.camera = { x0: 0, y0: 0, w: this.art.cols, h: this.art.rows };
@@ -163,7 +174,12 @@ export class OrchidScene {
     this.yawTarget = 0;
     this.yawVel = 0;
     this.pointerLean = 0;
+    this.pitch = 0;
+    this.pitchTarget = 0;
+    this.pitchVel = 0;
     this.petals = [];
+    this.hearts = [];
+    this.heartsSpawned = false;
     this.lastPetal = 0;
     this.initParticles();
     this.emit(true);
@@ -204,6 +220,18 @@ export class OrchidScene {
     const target = this.manualTheme !== null ? this.manualTheme : autoTheme;
     this.theme += (target - this.theme) * Math.min(1, dt * 3.2);
     if (this.manualTheme === null && this.time >= T.reveal) this.revealed = true;
+    if (this.revealed && !this.heartsSpawned) {
+      this.heartsSpawned = true;
+      const b = this.art.blooms[0] || { cx: this.art.cols / 2, cy: this.art.rows / 3 };
+      this.hearts = Array.from({ length: 10 }, (_, i) => ({
+        x: b.cx + (Math.random() - 0.5) * 18,
+        y: b.cy + (Math.random() - 0.5) * 8,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: -0.25 - Math.random() * 0.3,
+        phase: i * 1.9,
+        life: 0
+      }));
+    }
 
     // yaw spring
     const targetYaw = this.yawTarget + this.pointerLean;
@@ -212,6 +240,11 @@ export class OrchidScene {
     this.yawVel *= Math.pow(damp, dt * 60);
     this.yaw += this.yawVel * dt;
     this.yaw = clamp(this.yaw, -30, 30);
+
+    this.pitchVel += (this.pitchTarget - this.pitch) * 30 * dt;
+    this.pitchVel *= Math.pow(0.86, dt * 60);
+    this.pitch += this.pitchVel * dt;
+    this.pitch = clamp(this.pitch, -14, 14);
 
     // particles
     for (const p of this.particles) {
@@ -244,6 +277,13 @@ export class OrchidScene {
     }
     this.petals = this.petals.filter((p) => p.life < 14);
 
+    for (const h of this.hearts) {
+      h.life += dt;
+      h.x += (h.vx + Math.sin(this.time * 0.8 + h.phase) * 0.12) * dt;
+      h.y += h.vy * dt;
+    }
+    this.hearts = this.hearts.filter((h) => h.life < 7);
+
     this.emit();
   }
 
@@ -254,6 +294,49 @@ export class OrchidScene {
   budOpen(b, i) {
     if (this.reduced) return 1;
     return smoothstep(4.6 + i * 0.5, 5.6 + i * 0.5, this.time);
+  }
+
+  drawBloomTexture(pal) {
+    const { ctx, art } = this;
+    const cam = this.camera;
+    for (let bi = 0; bi < art.blooms.length; bi++) {
+      if (this.cameraMode === 'close' && bi > 0) continue;
+      const b = art.blooms[bi];
+      const open = this.bloomOpen(b);
+      if (open < 0.18) continue;
+      const scale = 0.34 + 0.66 * open;
+      const rx = b.rx || 16;
+      const ry = b.ry || 8;
+      for (let y = b.y0; y <= b.y0 + b.h; y++) {
+        for (let x = b.x0; x <= b.x0 + b.w; x++) {
+          if (x < 0 || x >= art.cols || y < 0 || y >= art.rows) continue;
+          if (this.occupied[y][x]) continue;
+          const dx = (x - b.cx) / rx;
+          const dy = (y - b.cy) / ry;
+          const rr = Math.hypot(dx, dy);
+          const th = Math.atan2(-dy, dx);
+          let R = 0.48;
+          for (const a of PETAL_ANGLES) R += 0.20 * gauss(angDiff(th, rad(a)), 0.34);
+          if (rr > R * 0.96) continue;
+          const h = (x * 13 + y * 29 + bi * 7) % 100;
+          let ch = '';
+          let vein = false;
+          for (const a of PETAL_ANGLES) {
+            if (Math.abs(angDiff(th, rad(a))) < 0.07 && rr > 0.25 && rr < 0.88) { vein = true; break; }
+          }
+          if (vein && h < 42) ch = h % 3 === 0 ? "'" : '.';
+          else if (h < (rr < 0.55 ? 14 : 8)) ch = h % 3 === 0 ? ':' : '.';
+          if (!ch) continue;
+          const sx = b.cx + (x - b.cx) * scale;
+          const sy = b.cy + (y - b.cy) * scale;
+          if (sx < cam.x0 - 1 || sx > cam.x0 + cam.w + 1 || sy < cam.y0 - 1 || sy > cam.y0 + cam.h + 1) continue;
+          ctx.globalAlpha = (this.theme > 0.5 ? 0.30 : 0.20) * Math.min(1, open * 1.5);
+          ctx.fillStyle = this.theme > 0.5 ? pal.blush : pal.ink;
+          ctx.fillText(ch, this.ox + (sx + 0.5) * this.cw, this.oy + (sy + 0.5) * this.ch);
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
   }
 
   draw() {
@@ -317,6 +400,8 @@ export class OrchidScene {
     const time = this.time;
     const sway = Math.sin(time * 0.55) * 0.35 + Math.sin(time * 0.27 + 1.4) * 0.18;
     const yawRad = (this.yaw * Math.PI) / 180;
+    const pitchRad = (this.pitch * Math.PI) / 180;
+    const ops = [];
 
     for (const cell of art.cells) {
       let { x, y } = cell;
@@ -353,11 +438,17 @@ export class OrchidScene {
         alpha = Math.min(1, grow * 1.2);
       }
 
-      // 2.5D turn: near layers move more; keep characters upright
-      const z = layerZ(layer);
-      const shift = Math.sin(yawRad) * z * 2.2;
-      const scale3d = 1 + Math.cos(yawRad) * z * 0.012;
+      // depth: the lip and column sit in front, the leaves and pot behind
+      let depth = layerZ(layer);
+      if (cell.key === 'lip' || cell.key === 'lipDark' || cell.key === 'gold') depth += 0.9;
+      else if (cell.key === 'petal' || cell.key === 'blush') depth += 0.25;
+      else if (cell.key === 'leaf') depth -= 0.7;
+      else if (cell.key === 'pot') depth -= 1.3;
+
+      const shift = Math.sin(yawRad) * depth * 3.0;
+      const scale3d = 1 + Math.cos(yawRad) * depth * 0.012;
       x = cols / 2 + (x - cols / 2) * scale3d + shift;
+      y += Math.sin(pitchRad) * depth * 1.8;
       const drift = sway * (0.35 + (rows - y) / rows * 0.65);
       x += drift;
       if (layer.startsWith('leaf')) x += Math.sin(time * 0.8 + (layer === 'leaf-r' ? 2 : 0)) * 0.25 * (rows - y) * 0.03;
@@ -383,15 +474,45 @@ export class OrchidScene {
         }
       }
 
-      const px = this.ox + (x + 0.5) * this.cw;
-      const py = this.oy + (y + 0.5) * this.ch;
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = color;
-      ctx.fillText(cell.ch, px, py);
-      if (!'.,:;`\'"'.includes(cell.ch)) {
-        ctx.globalAlpha = alpha * 0.26;
-        ctx.fillText(cell.ch, px + 0.35, py + 0.35);
-      }
+      ops.push({
+        x, y, depth,
+        ch: cell.ch,
+        color,
+        alpha,
+        stipple: '.,:;`\'"'.includes(cell.ch)
+      });
+    }
+
+    const yawS = Math.sin(yawRad);
+    const pitchS = Math.sin(pitchRad);
+
+    // back stacked characters: the extrusion, in shadow
+    for (const op of ops) {
+      if (op.stipple) continue;
+      const px = this.ox + (op.x + 0.5 - yawS * op.depth * 2.6 + 0.45) * this.cw;
+      const py = this.oy + (op.y + 0.5 - pitchS * op.depth * 1.9 + 0.45) * this.ch;
+      ctx.globalAlpha = op.alpha * 0.20;
+      ctx.fillStyle = this.theme > 0.5 ? pal.lipDark : pal.ink;
+      ctx.fillText(op.ch, px, py);
+    }
+
+    // ink
+    for (const op of ops) {
+      const px = this.ox + (op.x + 0.5) * this.cw;
+      const py = this.oy + (op.y + 0.5) * this.ch;
+      ctx.globalAlpha = op.alpha;
+      ctx.fillStyle = op.color;
+      ctx.fillText(op.ch, px, py);
+    }
+
+    // front stacked characters: the lit edge of the extrusion
+    for (const op of ops) {
+      if (op.stipple) continue;
+      const px = this.ox + (op.x + 0.5 + yawS * op.depth * 1.6 - 0.4) * this.cw;
+      const py = this.oy + (op.y + 0.5 + pitchS * op.depth * 1.2 - 0.4) * this.ch;
+      ctx.globalAlpha = op.alpha * (this.theme > 0.5 ? 0.18 : 0.10);
+      ctx.fillStyle = pal.gold;
+      ctx.fillText(op.ch, px, py);
     }
     ctx.globalAlpha = 1;
 
@@ -437,6 +558,24 @@ export class OrchidScene {
       }
       ctx.globalAlpha = 1;
     }
+
+    // the reveal gets a small burst of hearts
+    if (!this.reduced && this.hearts.length) {
+      ctx.save();
+      ctx.font = `${Math.max(11, font * 0.95)}px ${MONO}`;
+      ctx.textAlign = 'center';
+      ctx.shadowColor = pal.lip;
+      ctx.shadowBlur = 7;
+      for (const h of this.hearts) {
+        const a = Math.sin((Math.PI * h.life) / 7) * 0.85;
+        if (a <= 0.02) continue;
+        ctx.globalAlpha = a;
+        ctx.fillStyle = h.phase % 2 > 1 ? pal.gold : pal.lip;
+        ctx.fillText('♡', this.ox + (h.x + 0.5) * this.cw, this.oy + (h.y + 0.5) * this.ch);
+      }
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
   }
 
   burst() {
@@ -460,22 +599,27 @@ export class OrchidScene {
     this.pointerLean = (nx - 0.5) * 5;
   }
 
-  beginDrag(x) {
+  beginDrag(x, y = 0) {
     this.dragging = true;
     this.dragStartX = x;
+    this.dragStartY = y;
     this.dragStartYaw = this.yaw;
+    this.dragStartPitch = this.pitch;
   }
 
-  moveDrag(x, width) {
+  moveDrag(x, width, y = 0, height = 1) {
     if (!this.dragging) return;
     const dx = x - this.dragStartX;
+    const dy = y - this.dragStartY;
     this.yawTarget = clamp(this.dragStartYaw + (dx / width) * 90, -28, 28);
+    this.pitchTarget = clamp(this.dragStartPitch - (dy / height) * 40, -12, 12);
     this.dragHint = true;
   }
 
   endDrag() {
     this.dragging = false;
     this.yawTarget = 0;
+    this.pitchTarget = 0;
   }
 }
 
