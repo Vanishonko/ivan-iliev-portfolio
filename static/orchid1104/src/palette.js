@@ -1,8 +1,8 @@
 export const DAY = {
-  petal: '#2f3a2d',
-  blush: '#8f5157',
-  lip: '#7e2338',
-  lipDark: '#531428',
+  petal: '#34422f',
+  blush: '#a34e66',
+  lip: '#84233a',
+  lipDark: '#551428',
   gold: '#8a5c1f',
   stem: '#456043',
   leaf: '#385035',
@@ -13,14 +13,14 @@ export const DAY = {
 };
 
 export const NIGHT = {
-  petal: '#f6ead6',
-  blush: '#e7a9b0',
-  lip: '#e05a7c',
+  petal: '#ffcfc2',
+  blush: '#ff8fae',
+  lip: '#ff4f7f',
   lipDark: '#7a1f3d',
-  gold: '#efc266',
-  stem: '#8fae86',
-  leaf: '#6f8f68',
-  pot: '#a06a4f',
+  gold: '#ffd173',
+  stem: '#9cc48f',
+  leaf: '#7fae76',
+  pot: '#b97a58',
   ink: '#f6ead6',
   shadow: '#3a2333',
   glow: '#e05a7c'
@@ -73,3 +73,6 @@ export const smoothstep = (a, b, x) => {
   return t * t * (3 - 2 * t);
 };
 export const easeOutCubic = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
+
+
+

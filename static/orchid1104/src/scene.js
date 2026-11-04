@@ -302,7 +302,7 @@ export class OrchidScene {
 
   budOpen(b, i) {
     if (this.reduced) return 1;
-    return smoothstep(4.6 + i * 0.5, 5.6 + i * 0.5, this.time);
+    return smoothstep(4.6, 5.6, this.time);
   }
 
   drawBloomTexture(pal) {
