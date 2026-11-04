@@ -48,6 +48,7 @@ export class OrchidScene {
     this.onState = onState;
     this.occupied = Array.from({ length: art.rows }, () => Array(art.cols).fill(false));
     for (const c of art.cells) this.occupied[c.y][c.x] = true;
+    this.initBloomPhysics();
     this.time = 0;
     this.theme = reduced ? 1 : 0;
     this.manualTheme = null;
@@ -80,6 +81,14 @@ export class OrchidScene {
     this.resize();
   }
 
+  initBloomPhysics() {
+    this.bphysics = this.art.blooms.map((b, i) => ({
+      x: 0, y: 0, vx: 0, vy: 0,
+      rot: 0, vrot: 0,
+      phase: i * 2.13 + 0.7
+    }));
+  }
+
   initParticles() {
     const cols = this.art.cols, rows = this.art.rows;
     const count = cols > 80 ? 44 : 28;
@@ -103,6 +112,7 @@ export class OrchidScene {
     this.art = art;
     this.occupied = Array.from({ length: art.rows }, () => Array(art.cols).fill(false));
     for (const c of art.cells) this.occupied[c.y][c.x] = true;
+    this.initBloomPhysics();
     this.cameraMode = cameraMode;
     this.setCamera(cameraMode);
     this.initParticles();
@@ -190,6 +200,7 @@ export class OrchidScene {
     this.hearts = [];
     this.heartsSpawned = false;
     this.lastPetal = 0;
+    this.initBloomPhysics();
     this.initParticles();
     this.emit(true);
     if (this.reduced) this.draw();
@@ -248,12 +259,34 @@ export class OrchidScene {
     this.yawVel += (targetYaw - this.yaw) * k * dt;
     this.yawVel *= Math.pow(damp, dt * 60);
     this.yaw += this.yawVel * dt;
-    this.yaw = clamp(this.yaw, -30, 30);
+    this.yaw = clamp(this.yaw, -55, 55);
 
     this.pitchVel += (this.pitchTarget - this.pitch) * 30 * dt;
     this.pitchVel *= Math.pow(0.86, dt * 60);
     this.pitch += this.pitchVel * dt;
-    this.pitch = clamp(this.pitch, -14, 14);
+    this.pitch = clamp(this.pitch, -20, 20);
+
+    // each flower has its own spring: it lags the plant, sways on its own
+    // phase, and takes a separate kick from clicks and drags.
+    const yr = (this.yaw * Math.PI) / 180;
+    const pr = (this.pitch * Math.PI) / 180;
+    for (const p of this.bphysics) {
+      const tx = Math.sin(yr) * 0.55 + Math.sin(this.time * 0.8 + p.phase) * 0.12;
+      const ty = Math.sin(pr) * 0.35 + Math.cos(this.time * 0.7 + p.phase) * 0.08;
+      const tr = Math.sin(yr) * 0.035 + Math.sin(this.time * 0.9 + p.phase) * 0.008;
+      p.vx += (tx - p.x) * 26 * dt;
+      p.vx *= Math.pow(0.84, dt * 60);
+      p.x += p.vx * dt;
+      p.vy += (ty - p.y) * 24 * dt;
+      p.vy *= Math.pow(0.84, dt * 60);
+      p.y += p.vy * dt;
+      p.vrot += (tr - p.rot) * 22 * dt;
+      p.vrot *= Math.pow(0.82, dt * 60);
+      p.rot += p.vrot * dt;
+      p.x = clamp(p.x, -2.8, 2.8);
+      p.y = clamp(p.y, -2.2, 2.2);
+      p.rot = clamp(p.rot, -0.20, 0.20);
+    }
 
     // particles
     for (const p of this.particles) {
@@ -431,6 +464,15 @@ export class OrchidScene {
         const scale = 0.16 + 0.84 * open;
         x = b.cx + (x - b.cx) * scale;
         y = b.cy + (y - b.cy) * scale;
+        const p = this.bphysics[bIdx];
+        if (p) {
+          const rx = x - b.cx;
+          const ry = y - b.cy;
+          const ca = Math.cos(p.rot);
+          const sa = Math.sin(p.rot);
+          x = b.cx + rx * ca - ry * sa + p.x;
+          y = b.cy + rx * sa + ry * ca + p.y;
+        }
         alpha = raw < 0.08 ? 0.55 : Math.min(1, open * 1.4);
       } else if (uIdx >= 0) {
         const b = art.buds[uIdx];
@@ -488,6 +530,7 @@ export class OrchidScene {
         ch: cell.ch,
         color,
         alpha,
+        key: cell.key,
         stipple: '.,:;`\'"'.includes(cell.ch)
       });
     }
@@ -523,6 +566,23 @@ export class OrchidScene {
       ctx.fillStyle = pal.gold;
       ctx.fillText(op.ch, px, py);
     }
+    ctx.globalAlpha = 1;
+
+    // the orchid's signature: a lit column, pollinia and a three-lobed lip
+    // sit on top of the plate so the flower cannot be mistaken for a daisy.
+    ctx.save();
+    ctx.font = `${font * 1.06}px ${MONO}`;
+    ctx.shadowBlur = this.theme > 0.5 ? 7 : 0;
+    for (const op of ops) {
+      if (op.key !== 'lip' && op.key !== 'lipDark' && op.key !== 'gold') continue;
+      const px = this.ox + (op.x + 0.5) * this.cw;
+      const py = this.oy + (op.y + 0.5) * this.ch;
+      ctx.globalAlpha = op.alpha * 0.95;
+      ctx.fillStyle = op.color;
+      ctx.shadowColor = op.key === 'gold' ? pal.gold : pal.glow;
+      ctx.fillText(op.ch, px, py);
+    }
+    ctx.restore();
     ctx.globalAlpha = 1;
 
     // pollen
@@ -600,6 +660,11 @@ export class OrchidScene {
       });
     }
     if (this.particles.length > 90) this.particles.splice(0, this.particles.length - 90);
+    for (const p of this.bphysics) {
+      p.vx += (Math.random() - 0.5) * 1.25;
+      p.vy += (Math.random() - 0.5) * 0.9;
+      p.vrot += (Math.random() - 0.5) * 0.12;
+    }
   }
 
   setPointer(x, y, rect) {
@@ -614,14 +679,21 @@ export class OrchidScene {
     this.dragStartY = y;
     this.dragStartYaw = this.yaw;
     this.dragStartPitch = this.pitch;
+    this.lastDragX = x;
   }
 
   moveDrag(x, width, y = 0, height = 1) {
     if (!this.dragging) return;
     const dx = x - this.dragStartX;
     const dy = y - this.dragStartY;
-    this.yawTarget = clamp(this.dragStartYaw + (dx / width) * 90, -28, 28);
-    this.pitchTarget = clamp(this.dragStartPitch - (dy / height) * 40, -12, 12);
+    this.yawTarget = clamp(this.dragStartYaw + (dx / width) * 150, -50, 50);
+    this.pitchTarget = clamp(this.dragStartPitch - (dy / height) * 55, -20, 20);
+    const step = x - (this.lastDragX ?? x);
+    this.lastDragX = x;
+    for (const p of this.bphysics) {
+      p.vx += (step / width) * 1.5 * (0.65 + Math.random() * 0.7);
+      p.vrot += (step / width) * 0.055 * (Math.random() - 0.5);
+    }
     this.dragHint = true;
   }
 
@@ -629,6 +701,7 @@ export class OrchidScene {
     this.dragging = false;
     this.yawTarget = 0;
     this.pitchTarget = 0;
+    this.lastDragX = null;
   }
 }
 
