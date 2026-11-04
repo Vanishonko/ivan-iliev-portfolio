@@ -128,7 +128,13 @@ export class OrchidScene {
       const y0 = clamp(b.cy - h * 0.45, 0, this.art.rows - h);
       this.camera = { x0, y0, w, h };
     } else {
-      this.camera = { x0: 0, y0: 0, w: this.art.cols, h: this.art.rows };
+      const b = this.art.bounds || { x0: 0, y0: 0, w: this.art.cols, h: this.art.rows };
+      const pad = 3;
+      const x0 = clamp(b.x0 - pad, 0, this.art.cols - 1);
+      const y0 = clamp(b.y0 - pad, 0, this.art.rows - 1);
+      const x1 = clamp(b.x0 + b.w - 1 + pad, 0, this.art.cols - 1);
+      const y1 = clamp(b.y0 + b.h - 1 + pad, 0, this.art.rows - 1);
+      this.camera = { x0, y0, w: x1 - x0 + 1, h: y1 - y0 + 1 };
     }
     this.resize();
     if (this.reduced) this.draw();
@@ -151,11 +157,12 @@ export class OrchidScene {
     const captionInset = Math.min(28, Math.max(20, h * 0.05));
     const usableH = h - captionInset;
     const font = Math.min((w - padX * 2) / (cam.w * 0.62), (usableH - padY * 2) / (cam.h * 1.16));
-    this.font = Math.max(5.5, font);
+    this.font = Math.max(2.5, font);
     this.cw = this.font * 0.62;
     this.ch = this.font * 1.16;
     this.ox = (w - cam.w * this.cw) / 2 - cam.x0 * this.cw;
-    this.oy = (usableH - cam.h * this.ch) / 2 - cam.y0 * this.ch;
+    const mobileBias = w < 700 ? Math.min(84, Math.max(0, (usableH - cam.h * this.ch) * 0.34)) : 0;
+    this.oy = (usableH - cam.h * this.ch) / 2 - cam.y0 * this.ch - mobileBias;
     if (this.reduced) this.draw();
   }
 
@@ -706,3 +713,4 @@ export class OrchidScene {
 }
 
 export const TIMELINE = T;
+
