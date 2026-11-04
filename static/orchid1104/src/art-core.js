@@ -76,8 +76,7 @@ export function parseArt({ text, layers, elements }, { bloomGap = 0.55 } = {}) {
     }
   }
 
-  const blooms = bloomEls.map((e, i) => ({
-    cx: e.center.x,
+  const blooms = bloomEls.map((e, i) => ({    cx: e.center.x,
     cy: e.center.y,
     rx: e.bbox.w / 2 + 1,
     ry: e.bbox.h / 2 + 1,
@@ -96,9 +95,21 @@ export function parseArt({ text, layers, elements }, { bloomGap = 0.55 } = {}) {
     layer: `bud${i}`
   }));
 
+  let bx0 = cols, by0 = rows, bx1 = -1, by1 = -1;
+  for (const c of cells) {
+    bx0 = Math.min(bx0, c.x);
+    by0 = Math.min(by0, c.y);
+    bx1 = Math.max(bx1, c.x);
+    by1 = Math.max(by1, c.y);
+  }
+  const bounds = cells.length
+    ? { x0: bx0, y0: by0, x1: bx1, y1: by1, w: bx1 - bx0 + 1, h: by1 - by0 + 1 }
+    : { x0: 0, y0: 0, x1: cols - 1, y1: rows - 1, w: cols, h: rows };
+
   return {
     cols,
     rows,
+    bounds,
     cells,
     blooms,
     buds,
