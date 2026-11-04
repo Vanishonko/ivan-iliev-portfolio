@@ -99,6 +99,15 @@ export class OrchidScene {
     }));
   }
 
+  setArt(art, cameraMode = 'full') {
+    this.art = art;
+    this.occupied = Array.from({ length: art.rows }, () => Array(art.cols).fill(false));
+    for (const c of art.cells) this.occupied[c.y][c.x] = true;
+    this.cameraMode = cameraMode;
+    this.setCamera(cameraMode);
+    this.initParticles();
+  }
+
   setCamera(mode = 'full') {
     this.cameraMode = mode;
     if (mode === 'close') {

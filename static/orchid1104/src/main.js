@@ -1,5 +1,7 @@
 import { ART_HD } from './art-hd.js';
+import { ART_FULL } from './art-full.js';
 import { OrchidScene } from './scene.js';
+import { Ambient } from './ambient.js';
 
 const canvas = document.getElementById('scene');
 const body = document.body;
@@ -10,10 +12,15 @@ const hint = document.getElementById('hint');
 const reducedQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 const desktopQuery = window.matchMedia('(min-width: 760px)');
 const reduced = reducedQuery.matches;
-const artForPage = ART_HD;
-document.querySelector('.plate-meta').textContent = `ASCII · ${artForPage.cols} × ${artForPage.rows}`;
+const isDesktop = desktopQuery.matches;
+const initialArt = isDesktop ? ART_FULL : ART_HD;
+const setMeta = (art) => {
+  document.querySelector('.plate-meta').textContent = `ASCII · ${art.cols} × ${art.rows}`;
+};
+setMeta(initialArt);
 
-const scene = new OrchidScene(canvas, artForPage, {
+let ambient;
+const scene = new OrchidScene(canvas, initialArt, {
   reduced,
   onState: ({ night, revealed }) => {
     body.classList.toggle('is-night', night);
@@ -21,25 +28,45 @@ const scene = new OrchidScene(canvas, artForPage, {
     themeBtn.textContent = night ? '[ day ]' : '[ night ]';
     themeBtn.setAttribute('aria-pressed', String(night));
     document.querySelector('meta[name="theme-color"]').setAttribute('content', night ? '#0b0910' : '#f6efe0');
+    ambient?.setNight(night);
   }
 });
+
+ambient = new Ambient(document.getElementById('ambient'), { reduced });
+ambient.setNight(body.classList.contains('is-night'));
 
 scene.emit(true);
 if (reduced) {
   body.classList.add('is-night', 'is-revealed');
   themeBtn.textContent = '[ day ]';
   themeBtn.setAttribute('aria-pressed', 'true');
+  ambient.setNight(true);
 }
-if (!reduced) scene.start();
+if (!reduced) {
+  scene.start();
+  ambient.start();
+}
 
-// The gift opens on a large, readable close-up; the button reveals the whole spray.
-cameraBtn.hidden = false;
-scene.setCamera('close');
-cameraBtn.textContent = '[ full plant ]';
+// Desktop opens on the whole plant; phones open on the readable hero close-up.
+if (isDesktop) {
+  scene.setCamera('full');
+  cameraBtn.hidden = false;
+  cameraBtn.textContent = '[ close-up ]';
+} else {
+  scene.setCamera('close');
+  cameraBtn.hidden = false;
+  cameraBtn.textContent = '[ full plant ]';
+}
 cameraBtn.addEventListener('click', () => {
-  const next = scene.cameraMode === 'close' ? 'full' : 'close';
-  scene.setCamera(next);
-  cameraBtn.textContent = next === 'close' ? '[ full plant ]' : '[ close-up ]';
+  if (scene.cameraMode === 'full') {
+    scene.setArt(ART_HD, 'close');
+    setMeta(ART_HD);
+    cameraBtn.textContent = '[ full plant ]';
+  } else {
+    scene.setArt(ART_FULL, 'full');
+    setMeta(ART_FULL);
+    cameraBtn.textContent = '[ close-up ]';
+  }
 });
 
 // controls
@@ -111,8 +138,8 @@ window.addEventListener('keydown', (e) => {
 window.setTimeout(() => hint.classList.add('is-hidden'), 9000);
 
 // static copy for assistive tech, and a no-JS-ish fallback
-const rows = Array.from({ length: artForPage.rows }, () => Array(artForPage.cols).fill(' '));
-for (const c of artForPage.cells) rows[c.y][c.x] = c.ch;
+const rows = Array.from({ length: ART_FULL.rows }, () => Array(ART_FULL.cols).fill(' '));
+for (const c of ART_FULL.cells) rows[c.y][c.x] = c.ch;
 document.getElementById('static-art').textContent = rows.map((r) => r.join('').replace(/\s+$/, '')).join('\n');
 
 // resize
@@ -126,4 +153,4 @@ reducedQuery.addEventListener?.('change', () => location.reload());
 desktopQuery.addEventListener?.('change', () => location.reload());
 
 // expose for QA
-window.__orchid = { scene, ART: artForPage, reduced };
+window.__orchid = { scene, ART_FULL, ART_HD, reduced, ambient };
